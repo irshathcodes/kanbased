@@ -21,6 +21,8 @@ export const boardsQueryOptions = queryOptions({
 export const sessionQueryOptions = queryOptions({
   queryKey: ["session"],
   queryFn: () => authClient.getSession(),
+  // TODO: Need to revisit this later.
+  staleTime: Infinity,
 });
 
 export const activeOrganizationQueryOptions = (
@@ -52,6 +54,7 @@ export function taskDetailQueryOptions(params: { taskId: string, columnsQueryKey
   return queryOptions({
     ...api.queryOptions("get", "/api/v1/tasks/{taskId}", {
       params: { path: { taskId: params.taskId } },
+      staleTime: 0,
     }),
 
     placeholderData: () => {

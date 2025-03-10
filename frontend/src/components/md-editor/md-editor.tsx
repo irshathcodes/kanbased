@@ -68,6 +68,7 @@ interface CodeMirrorEditorProps {
   onChange?: (value: string) => void;
   onModeChange: (mode: EditorMode) => void;
   onSave: () => void;
+  onSaveAndQuit: () => void;
 }
 
 export default function CodeMirrorEditor(props: CodeMirrorEditorProps) {
@@ -154,6 +155,10 @@ export default function CodeMirrorEditor(props: CodeMirrorEditorProps) {
       Vim.defineEx("write", "w", function () {
         props.onSave();
       });
+
+      Vim.defineEx("wq", "wq", function () {
+        props.onSaveAndQuit();
+      });
     }
 
     if (props.defaultAutoFocus) {
@@ -180,7 +185,7 @@ export default function CodeMirrorEditor(props: CodeMirrorEditorProps) {
         <div
           className={cn(
             `px-3 py-1 text-xs shrink-0 text-muted-foreground bg-muted uppercase font-bold w-fit rounded`,
-            props.defaultMode !== "vim" && ""
+            props.defaultMode !== "vim" && "invisible"
           )}
         >
           {vimMode} Mode
