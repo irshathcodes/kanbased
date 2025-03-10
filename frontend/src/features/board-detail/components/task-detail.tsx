@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +9,10 @@ import {
 import { QueryKey, useQuery } from "@tanstack/react-query";
 import { taskDetailQueryOptions } from "@/lib/query-options-factory";
 import { FullScreenError } from "@/components/errors";
-import { CodeMirrorEditorRefData } from "@/components/md-editor/md-editor";
+import {
+  CodeMirrorEditorRefData,
+  EditorMode,
+} from "@/components/md-editor/md-editor";
 import CodeMirrorEditor from "@/components/md-editor/md-editor";
 import MdPreview from "@/components/md-preview/md-preview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +22,7 @@ import { SaveIcon } from "lucide-react";
 import { api } from "@/lib/openapi-react-query";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 export function TaskDetail(props: {
   onClose: () => void;
@@ -43,6 +47,10 @@ export function TaskDetail(props: {
   );
 
   const editorRef = useRef<CodeMirrorEditorRefData>(null);
+  const [editorMode, setEditorMode] = useLocalStorage<EditorMode>(
+    "preferred-editor-mode",
+    "standard"
+  );
   const defaultContent = data?.content ?? "";
 
   const { parsedHtml, mode, handleModeChange, toggleModeShortcutKey } =
@@ -162,6 +170,10 @@ export function TaskDetail(props: {
                           defaultAutoFocus={mode === "write"}
                           ref={editorRef}
                           defaultContent={defaultContent}
+                          defaultMode={editorMode}
+                          onModeChange={(mode) => setEditorMode(mode)}
+                          key={editorMode}
+                          onSave={handleSave}
                         />
                       </div>
                     </TabsContent>
