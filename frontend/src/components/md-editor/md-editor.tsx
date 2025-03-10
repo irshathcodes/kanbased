@@ -6,6 +6,9 @@ import { vim, getCM, Vim } from "@replit/codemirror-vim";
 import { basicExtensions } from "@/components/md-editor/helpers";
 import { indentWithTab } from "@codemirror/commands";
 
+import "./theme.css";
+import { themeExtension } from "./theme";
+
 const customTheme = EditorView.theme({
   "&": {
     fontSize: "16px",
@@ -44,6 +47,8 @@ const customTheme = EditorView.theme({
 });
 
 type VimMode = "insert" | "normal" | "visual";
+type EditorMode = "vim" | "standard";
+
 export type CodeMirrorEditorRefData = {
   getData: () => string;
   focus: () => void;
@@ -104,6 +109,7 @@ export default function CodeMirrorEditor(props: CodeMirrorEditorProps) {
         basicExtensions,
         keymap.of([indentWithTab]),
         customTheme,
+        themeExtension(),
         markdown(),
         EditorView.lineWrapping,
         updateListenerExtension,
@@ -134,8 +140,23 @@ export default function CodeMirrorEditor(props: CodeMirrorEditorProps) {
     };
   }, []);
 
+  // Handle editor mode change
+  const handleEditorModeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newMode = e.target.value as EditorMode;
+  };
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col relative">
+      <div className="absolute top-2 right-2 z-10">
+        <select
+          value={""}
+          onChange={handleEditorModeChange}
+          className="text-xs px-2 py-1 rounded border border-gray-300 bg-background"
+        >
+          <option value="vim">Vim Mode</option>
+          <option value="standard">Standard Mode</option>
+        </select>
+      </div>
       <div ref={editorRef} className="flex-1 h-full min-h-0" />
       <div
         className={`px-3 py-1 text-xs shrink-0 text-muted-foreground bg-muted uppercase font-bold w-fit rounded`}

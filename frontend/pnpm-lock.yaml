@@ -35,6 +35,9 @@ importers:
       '@hello-pangea/dnd':
         specifier: ^17.0.0
         version: 17.0.0(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@lezer/highlight':
+        specifier: ^1.2.1
+        version: 1.2.1
       '@radix-ui/colors':
         specifier: ^3.0.0
         version: 3.0.0
