@@ -43,6 +43,13 @@
       "when": 1741159100649,
       "tag": "0005_classy_darkstar",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1741941842529,
+      "tag": "0006_minor_polaris",
+      "breakpoints": true
     }
   ]
 }

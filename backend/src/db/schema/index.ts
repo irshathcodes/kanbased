@@ -107,3 +107,49 @@ export const taskMarkdownTable = pgTable("task_markdown", {
   content: t.text(),
   ...commonColumns,
 });
+
+
+
+
+export const notesTable = pgTable("notes", {
+  id: t.uuid().primaryKey(),
+  name: t.varchar({ length: 255 }).notNull(),
+  createdAt: t.timestamp({ mode: "string" }),
+  updatedAt: t.timestamp({ mode: "string" }).notNull(),
+  deletedAt: t.timestamp({ mode: "string" }),
+  organizationId: t
+    .text()
+    .references(() => organizationsTable.id, { onDelete: "cascade" })
+    .notNull(),
+});
+
+
+export const notePermissionsTable = pgTable(
+  "note_permissions",
+  {
+    id: t.serial().primaryKey(),
+    noteId: t
+      .uuid()
+      .references(() => notesTable.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: t
+      .text()
+      .references(() => usersTable.id, { onDelete: "cascade" })
+      .notNull(),
+    organizationId: t
+      .text()
+      .references(() => organizationsTable.id, { onDelete: "cascade" })
+      .notNull(),
+    permission: t.varchar({ length: 255 }).notNull(),
+    createdAt: t.timestamp({ mode: "string" }).notNull().defaultNow(),
+  },
+  (table) => [
+    // Ensure user can only have one role per board
+    t
+      .unique("unique_note_member")
+      .on(table.noteId, table.userId, table.organizationId),
+    t.index("note_members_user_idx").on(table.userId),
+    t.index("note_members_note_idx").on(table.noteId),
+    t.index("note_members_organization_idx").on(table.organizationId),
+  ]
+);
