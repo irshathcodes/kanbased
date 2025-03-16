@@ -114,6 +114,7 @@ export const taskMarkdownTable = pgTable("task_markdown", {
 export const notesTable = pgTable("notes", {
   id: t.uuid().primaryKey(),
   name: t.varchar({ length: 255 }).notNull(),
+  content: t.text().notNull(),
   createdAt: t.timestamp({ mode: "string" }),
   updatedAt: t.timestamp({ mode: "string" }).notNull(),
   deletedAt: t.timestamp({ mode: "string" }),

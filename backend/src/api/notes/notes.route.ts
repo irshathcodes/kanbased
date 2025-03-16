@@ -1,8 +1,9 @@
-import { createRoute } from "@hono/zod-openapi";
+import { createRoute, } from "@hono/zod-openapi";
 import { ResponseBuilder } from "../../lib/response-builder.js";
 import { HTTP_STATUS_CODES } from "../../lib/constants.js";
 import { jsonContent, jsonContentRequired } from "../../lib/schema-helpers.js";
 import { zodDbSchema } from "../../db/zod-db-schema.js";
+import { z } from "zod";
 
 const createNoteSchema = zodDbSchema.notesTable.insert;
 const noteResponseSchema = zodDbSchema.notesTable.select;
@@ -12,10 +13,36 @@ const routes = {
     path: "/notes",
     method: "post",
     request: {
-      body: jsonContentRequired(createNoteSchema)
+      body: jsonContentRequired(createNoteSchema.pick({ name: true, content: true, createdAt: true, id: true }))
     },
     responses: ResponseBuilder.withAuthAndValidation({
       [HTTP_STATUS_CODES.CREATED]: jsonContent(noteResponseSchema)
+    })
+  }),
+  updateNote: createRoute({
+    path: "/notes/{noteId}",
+    method: "patch",
+    request: {
+      params: z.object({
+        noteId: z.string().uuid()
+      }),
+      body: jsonContent(createNoteSchema.pick({ content: true, updatedAt: true, name: true }))
+    },
+    responses: ResponseBuilder.withAuthAndValidation({
+      [HTTP_STATUS_CODES.OK]: jsonContent(noteResponseSchema)
+    })
+  }),
+
+  getNote: createRoute({
+    path: "/notes/{noteId}",
+    method: "get",
+    request: {
+      params: z.object({
+        noteId: z.string().uuid()
+      })
+    },
+    responses: ResponseBuilder.withAuthAndValidation({
+      [HTTP_STATUS_CODES.OK]: jsonContent(noteResponseSchema)
     })
   })
 }

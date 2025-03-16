@@ -74,3 +74,11 @@ export function taskDetailQueryOptions(params: { taskId: string, columnsQueryKey
     },
   });
 }
+
+export function getNoteQueryOptions(params: { noteId: string }) {
+  return queryOptions({
+    ...api.queryOptions("get", "/api/v1/notes/{noteId}", {
+      params: { path: { noteId: params.noteId } },
+    }),
+  });
+}

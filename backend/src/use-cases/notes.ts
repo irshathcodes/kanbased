@@ -5,19 +5,22 @@ import type { InsertType } from "../db/table-types.js";
 import type { AuthCtx } from "../lib/types.js";
 import { PermissionError } from "../lib/error-utils.js";
 
-type PermissionParams = {
-  action: 'create';
-} | {
-  action: 'read';
-  noteId: string;
-} | {
-  action: 'update';
-  noteId: string;
-} | {
-  action: 'delete';
-  noteId: string;
-}
-
+type PermissionParams =
+  | {
+    action: "create";
+  }
+  | {
+    action: "read";
+    noteId: string;
+  }
+  | {
+    action: "update";
+    noteId: string;
+  }
+  | {
+    action: "delete";
+    noteId: string;
+  };
 
 async function checkNotePermission(authCtx: AuthCtx, params: PermissionParams) {
   if (params.action === "create") {
@@ -25,13 +28,19 @@ async function checkNotePermission(authCtx: AuthCtx, params: PermissionParams) {
     return true;
   }
 
-  const permissions = await db.select().from(notePermissionsTable).where(
-    and(
-      eq(notePermissionsTable.noteId, params.noteId),
-      eq(notePermissionsTable.userId, authCtx.user.id),
-      eq(notePermissionsTable.organizationId, authCtx.session.activeOrganizationId),
-    )
-  )
+  const permissions = await db
+    .select()
+    .from(notePermissionsTable)
+    .where(
+      and(
+        eq(notePermissionsTable.noteId, params.noteId),
+        eq(notePermissionsTable.userId, authCtx.user.id),
+        eq(
+          notePermissionsTable.organizationId,
+          authCtx.session.activeOrganizationId
+        )
+      )
+    );
 
   if (permissions.length === 0) {
     throw new PermissionError("You do not have permission to access this note");
@@ -40,11 +49,17 @@ async function checkNotePermission(authCtx: AuthCtx, params: PermissionParams) {
   const permission = permissions[0]!;
 
   if (params.action === "read") {
-    return permission.permission === "owner" || permission.permission === "editor" || permission.permission === "viewer";
+    return (
+      permission.permission === "owner" ||
+      permission.permission === "editor" ||
+      permission.permission === "viewer"
+    );
   }
 
   if (params.action === "update") {
-    return permission.permission === "owner" || permission.permission === "editor";
+    return (
+      permission.permission === "owner" || permission.permission === "editor"
+    );
   }
 
   if (params.action === "delete") {
@@ -52,10 +67,49 @@ async function checkNotePermission(authCtx: AuthCtx, params: PermissionParams) {
   }
 }
 
-export const createNote = async (authCtx: AuthCtx, data: InsertType<"notesTable">) => {
+export const createNote = async (
+  authCtx: AuthCtx,
+  data: Pick<InsertType<"notesTable">, "content" | "name" | "createdAt" | "id">
+) => {
   await checkNotePermission(authCtx, { action: "create" });
+  const createdAt = data.createdAt ?? new Date().toISOString();
 
-  const note = await db.insert(notesTable).values(data).returning();
+  const note = await db
+    .insert(notesTable)
+    .values({
+      ...data,
+      organizationId: authCtx.session.activeOrganizationId,
+      updatedAt: createdAt,
+      createdAt,
+    })
+    .returning();
 
   return note[0]!;
-}
+};
+
+export const updateNote = async (
+  authCtx: AuthCtx,
+  noteId: string,
+  data: Pick<InsertType<"notesTable">, "content" | "updatedAt" | "name">
+) => {
+  await checkNotePermission(authCtx, { action: "update", noteId });
+
+  const note = await db
+    .update(notesTable)
+    .set(data)
+    .where(eq(notesTable.id, noteId))
+    .returning();
+
+  return note[0]!;
+};
+
+export const getNote = async (authCtx: AuthCtx, noteId: string) => {
+  await checkNotePermission(authCtx, { action: "read", noteId });
+
+  const note = await db
+    .select()
+    .from(notesTable)
+    .where(eq(notesTable.id, noteId));
+
+  return note[0]!;
+};

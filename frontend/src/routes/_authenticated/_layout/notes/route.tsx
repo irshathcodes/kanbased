@@ -16,6 +16,14 @@ export const Route = createFileRoute("/_authenticated/_layout/notes")({
       ]),
     };
   },
+
+  validateSearch: (search): { createNote?: boolean } => {
+    console.log(search);
+    return {
+      createNote:
+        typeof search.createNote === "boolean" ? search.createNote : undefined,
+    };
+  },
 });
 
 function RouteComponent() {

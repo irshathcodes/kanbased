@@ -12,6 +12,25 @@ const handlers: InferHandlers<typeof routes> = {
 
     return c.json(note, HTTP_STATUS_CODES.CREATED);
   },
+
+  updateNote: async (c) => {
+    const authCtx = c.var.authCtx;
+    const noteId = c.req.valid("param").noteId;
+    const body = c.req.valid("json");
+
+    const note = await noteUseCases.updateNote(authCtx, noteId, body);
+
+    return c.json(note, HTTP_STATUS_CODES.OK);
+  },
+
+  getNote: async (c) => {
+    const authCtx = c.var.authCtx;
+    const noteId = c.req.valid("param").noteId;
+
+    const note = await noteUseCases.getNote(authCtx, noteId);
+
+    return c.json(note, HTTP_STATUS_CODES.OK);
+  },
 }
 
 export default handlers;
