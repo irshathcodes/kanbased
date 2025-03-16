@@ -50,6 +50,13 @@
       "when": 1741941842529,
       "tag": "0006_minor_polaris",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1742139927419,
+      "tag": "0007_ancient_thaddeus_ross",
+      "breakpoints": true
     }
   ]
 }
