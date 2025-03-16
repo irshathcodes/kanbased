@@ -10,4 +10,8 @@ export const zodDbSchema = {
     insert: createInsertSchema(schema.taskMarkdownTable),
     select: createSelectSchema(schema.taskMarkdownTable),
   },
+  notesTable: {
+    insert: createInsertSchema(schema.notesTable),
+    select: createSelectSchema(schema.notesTable),
+  },
 } as const;

@@ -140,7 +140,7 @@ export const notePermissionsTable = pgTable(
       .text()
       .references(() => organizationsTable.id, { onDelete: "cascade" })
       .notNull(),
-    permission: t.varchar({ length: 255 }).notNull(),
+    permission: t.varchar({ length: 255, enum: ["owner", "editor", "viewer"] }).notNull(),
     createdAt: t.timestamp({ mode: "string" }).notNull().defaultNow(),
   },
   (table) => [
