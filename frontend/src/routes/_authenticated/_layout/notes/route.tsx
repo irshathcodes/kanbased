@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { CreateNoteButton } from "@/features/notes/components/create-note-button";
 import { ModalProvider } from "@/state/modals";
-import { createFileRoute, linkOptions } from "@tanstack/react-router";
-
+import {
+  createFileRoute,
+  linkOptions,
+  useRouter,
+} from "@tanstack/react-router";
+import { Actions } from "./-actions";
 export const Route = createFileRoute("/_authenticated/_layout/notes")({
   component: RouteComponent,
 
@@ -18,7 +22,6 @@ export const Route = createFileRoute("/_authenticated/_layout/notes")({
   },
 
   validateSearch: (search): { createNote?: boolean } => {
-    console.log(search);
     return {
       createNote:
         typeof search.createNote === "boolean" ? search.createNote : undefined,
@@ -27,6 +30,12 @@ export const Route = createFileRoute("/_authenticated/_layout/notes")({
 });
 
 function RouteComponent() {
+  const router = useRouter();
+
+  const handleCreateNote = () => {
+    router.navigate({ to: ".", search: { createNote: true } });
+  };
+
   return (
     <ModalProvider>
       <div className="container mx-auto px-4 py-8 w-full">
@@ -40,7 +49,7 @@ function RouteComponent() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button size="sm">Create Note</Button>
+              <CreateNoteButton size="sm" onClick={handleCreateNote} />
             </div>
           </div>
 
@@ -51,12 +60,14 @@ function RouteComponent() {
                 Create your first note to get started!
               </p>
 
-              <CreateNoteButton size="sm" />
+              <CreateNoteButton size="sm" onClick={handleCreateNote} />
             </div>
           ) : // Notes list here.
           null}
         </div>
       </div>
+
+      <Actions />
     </ModalProvider>
   );
 }

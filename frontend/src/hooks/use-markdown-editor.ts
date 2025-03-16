@@ -14,9 +14,11 @@ type Mode = "write" | "preview";
 export function useMarkdownEditorPreviewToggle({
   defaultContent = "",
   editorRef,
+  isDirty,
 }: {
   defaultContent: string;
   editorRef: CodeMirrorEditorRef;
+  isDirty: boolean;
 }) {
   const [parsedHtml, setParsedHtml] = useState(() => markdownToHtml(defaultContent));
   const [mode, setMode] = useState<Mode>("write");
@@ -68,9 +70,7 @@ export function useMarkdownEditorPreviewToggle({
   };
 
   const hasChanges = () => {
-    const currentContent = editorRef.current?.getData();
-
-    return currentContent !== defaultContent;
+    return !!isDirty;
   };
 
   useBlocker({

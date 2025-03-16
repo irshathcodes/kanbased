@@ -57,6 +57,7 @@ export default function EditTaskContent(props: {
   } = useMarkdownEditorPreviewToggle({
     defaultContent: props.defaultContent,
     editorRef: props.editorRef,
+    isDirty,
   });
 
   const content = useRef(props.defaultContent);

@@ -1,9 +1,7 @@
-
 import DOMPurify from "dompurify";
 import { marked } from "marked";
 
 import { ColumnsWithTasksResponse } from "@/types/api-response-types";
-
 
 export function transformColumnsQuery(data: ColumnsWithTasksResponse) {
   type ColumnWithTasks = (typeof data.columns)[number] & {
@@ -17,11 +15,11 @@ export function transformColumnsQuery(data: ColumnsWithTasksResponse) {
 
   for (let task of data.tasks) {
     if (columnWithTasksMap.has(task.columnId)) {
-      const column = columnWithTasksMap.get(task.columnId)!
+      const column = columnWithTasksMap.get(task.columnId)!;
       columnWithTasksMap.set(column.id, {
         ...column,
         tasks: [...column.tasks, task],
-      })
+      });
     }
   }
 
@@ -34,7 +32,6 @@ export function transformColumnsQuery(data: ColumnsWithTasksResponse) {
   };
 }
 
-
 export function markdownToHtml(markdown: string): string {
   if (!markdown) return "";
 
@@ -45,12 +42,20 @@ export function markdownToHtml(markdown: string): string {
   );
 
   return marked.parse(escapedContent) as string;
-
 }
 
-
-export function removeUndefinedKeys<T extends Record<string, any>>(obj: T): Partial<T> {
+export function removeUndefinedKeys<T extends Record<string, any>>(
+  obj: T
+): Partial<T> {
   return Object.fromEntries(
     Object.entries(obj).filter(([_, value]) => value !== undefined)
   ) as Partial<T>;
+}
+
+export function focusElementWithDelay(element: HTMLElement | null) {
+  if (!element) return;
+
+  setTimeout(() => {
+    element.focus();
+  }, 100);
 }

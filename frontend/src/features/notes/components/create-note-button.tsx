@@ -1,14 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { useNoteModalControls } from "@/features/notes/state/note";
 import { CirclePlus } from "lucide-react";
 
-export function CreateNoteButton({ size }: { size?: "sm" | "lg" }) {
-  const { openModal, closeModal } = useNoteModalControls();
-
+export function CreateNoteButton({
+  size,
+  onClick,
+}: {
+  size?: "sm" | "lg";
+  onClick: () => void;
+}) {
   return (
     <Button
+      id="create-note-button"
       size={size}
-      onClick={() => openModal({ type: "create-note", onClose: closeModal })}
+      onClick={onClick}
       className="gap-2"
     >
       <CirclePlus className="w-5 h-5" />
