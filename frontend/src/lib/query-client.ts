@@ -20,6 +20,7 @@ export const queryClient = new QueryClient({
 
         return false;
       },
+      refetchOnWindowFocus: false,
     },
     mutations: {
       meta: {

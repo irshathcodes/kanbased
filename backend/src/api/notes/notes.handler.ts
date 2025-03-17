@@ -31,6 +31,14 @@ const handlers: InferHandlers<typeof routes> = {
 
     return c.json(note, HTTP_STATUS_CODES.OK);
   },
-}
+
+  getAllNotes: async (c) => {
+    const authCtx = c.var.authCtx;
+
+    const notes = await noteUseCases.getAllNotes(authCtx);
+
+    return c.json({ notes }, HTTP_STATUS_CODES.OK);
+  },
+};
 
 export default handlers;

@@ -1346,7 +1346,78 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            notes: {
+                                /** Format: uuid */
+                                id: string;
+                                name: string;
+                                content: string;
+                                createdAt: string | null;
+                                updatedAt: string;
+                                deletedAt: string | null;
+                                organizationId: string;
+                            }[];
+                        };
+                    };
+                };
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                            statusCode: number;
+                        };
+                    };
+                };
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example false */
+                            success: boolean;
+                            error: {
+                                issues: {
+                                    code: string;
+                                    path: (string | number)[];
+                                    message?: string;
+                                }[];
+                                name: string;
+                            };
+                            statusCode: number;
+                        };
+                    };
+                };
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            message: string;
+                            statusCode: number;
+                        };
+                    };
+                };
+            };
+        };
         put?: never;
         post: {
             parameters: {

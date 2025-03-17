@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, desc } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { notePermissionsTable, notesTable } from "../db/schema/index.js";
 import type { InsertType } from "../db/table-types.js";
@@ -74,17 +74,32 @@ export const createNote = async (
   await checkNotePermission(authCtx, { action: "create" });
   const createdAt = data.createdAt ?? new Date().toISOString();
 
-  const note = await db
-    .insert(notesTable)
-    .values({
-      ...data,
-      organizationId: authCtx.session.activeOrganizationId,
-      updatedAt: createdAt,
-      createdAt,
-    })
-    .returning();
+  const createdNote = db.transaction(async (tx) => {
+    const result = await db
+      .insert(notesTable)
+      .values({
+        ...data,
+        organizationId: authCtx.session.activeOrganizationId,
+        updatedAt: createdAt,
+        createdAt,
+      })
+      .returning();
 
-  return note[0]!;
+    const note = result[0]!;
+
+    await tx
+      .insert(notePermissionsTable)
+      .values({
+        noteId: note.id,
+        userId: authCtx.user.id,
+        organizationId: authCtx.session.activeOrganizationId,
+        permission: "owner",
+      });
+
+    return note;
+  });
+
+  return createdNote;
 };
 
 export const updateNote = async (
@@ -112,4 +127,30 @@ export const getNote = async (authCtx: AuthCtx, noteId: string) => {
     .where(eq(notesTable.id, noteId));
 
   return note[0]!;
+};
+
+export const getAllNotes = async (authCtx: AuthCtx) => {
+  const notes = await db
+    .select({
+      name: notesTable.name,
+      id: notesTable.id,
+      updatedAt: notesTable.updatedAt,
+    })
+    .from(notesTable)
+    .innerJoin(
+      notePermissionsTable,
+      eq(notesTable.id, notePermissionsTable.noteId)
+    )
+    .where(
+      and(
+        eq(notePermissionsTable.userId, authCtx.user.id),
+        eq(
+          notePermissionsTable.organizationId,
+          authCtx.session.activeOrganizationId
+        )
+      )
+    )
+    .orderBy(desc(notesTable.createdAt));
+
+  return notes;
 };

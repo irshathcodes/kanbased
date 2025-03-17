@@ -7,7 +7,7 @@ import {
   columnsTable,
   tasksTable,
 } from "../db/schema/index.js";
-import { and, asc, count, eq, isNull } from "drizzle-orm";
+import { and, count, eq, isNull, desc } from "drizzle-orm";
 import { checkResourceAccess } from "./permissions.js";
 import { UnprocessableEntityError } from "../lib/error-utils.js";
 import type { AuthCtx } from "../lib/types.js";
@@ -89,7 +89,7 @@ export async function getBoards(authCtx: AuthCtx) {
       ),
     )
     .groupBy(boardsTable.id)
-    .orderBy(asc(boardsTable.createdAt));
+    .orderBy(desc(boardsTable.createdAt));
 }
 
 export async function toggleBoardDelete(

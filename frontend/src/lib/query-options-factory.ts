@@ -82,3 +82,7 @@ export function getNoteQueryOptions(params: { noteId: string }) {
     }),
   });
 }
+
+export const getAllNotesQueryOptions = queryOptions({
+  ...api.queryOptions("get", "/api/v1/notes"),
+});

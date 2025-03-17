@@ -114,18 +114,20 @@ export default function NoteEditor(props: NoteEditorProps) {
   });
 
   const handleSave = () => {
+    const now = new Date().toISOString();
     if (isCreate) {
       createNoteMutation.mutate({
         body: {
           content: content.current,
           name: "New Note",
           id: getId(),
+          createdAt: now,
         },
       });
     } else {
       updateNoteMutation.mutate({
         body: {
-          updatedAt: new Date().toISOString(),
+          updatedAt: now,
           content: content.current,
           name: "New Note",
         },
