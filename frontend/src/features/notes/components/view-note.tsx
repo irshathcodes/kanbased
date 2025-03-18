@@ -14,7 +14,9 @@ export function ViewNote(props: {
   const html = useMemo(() => markdownToHtml(props.content), [props.content]);
 
   useKeyDown((e) => {
-    if (e.key === "e") {
+    const isCtrlKey = e.metaKey || e.ctrlKey;
+
+    if (isCtrlKey && e.key === "e") {
       e.preventDefault();
       props.onEdit();
     }
@@ -23,7 +25,7 @@ export function ViewNote(props: {
   return (
     <div
       className={cn(
-        "w-full h-full flex flex-col gap-2",
+        "w-full h-full flex flex-col gap-8",
         props.wrapperClassName
       )}
     >
@@ -32,7 +34,9 @@ export function ViewNote(props: {
 
         <Button className="shrink-0" size="sm" onClick={props.onEdit}>
           Edit
-          <KeyboardShortcutIndicator>E</KeyboardShortcutIndicator>
+          <KeyboardShortcutIndicator commandOrCtrlKey>
+            E
+          </KeyboardShortcutIndicator>
         </Button>
       </div>
 

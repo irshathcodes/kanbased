@@ -1,8 +1,7 @@
-import { CreateNote } from "@/features/notes/components/create-note";
 import { focusElementWithDelay } from "@/lib/helpers";
 import { useRouter } from "@tanstack/react-router";
 import { getRouteApi } from "@tanstack/react-router";
-
+import NoteEditor from "@/features/notes/components/note-editor";
 const routeApi = getRouteApi("/_authenticated/_layout/notes");
 
 export function Actions() {
@@ -16,10 +15,17 @@ export function Actions() {
 
   if (createNote) {
     return (
-      <CreateNote
+      <NoteEditor
+        mode="create"
+        exitEditorWithoutSaving={handleClose}
         onClose={handleClose}
-        afterSave={() => {
-          router.navigate({ to: ".", search: undefined });
+        afterSave={({ noteId }) => {
+          router.navigate({
+            to: "/notes/$noteId",
+            params: { noteId },
+            search: undefined,
+            replace: true,
+          });
         }}
       />
     );

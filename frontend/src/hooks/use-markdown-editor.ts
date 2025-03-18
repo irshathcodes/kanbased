@@ -1,13 +1,12 @@
-import { CodeMirrorEditorRef, EditorMode } from "@/components/md-editor/md-editor";
+import {
+  CodeMirrorEditorRef,
+  EditorMode,
+} from "@/components/md-editor/md-editor";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { markdownToHtml } from "@/lib/helpers";
 import { useBlocker } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useState } from "react";
-
-
-
-
 
 type Mode = "write" | "preview";
 
@@ -20,7 +19,9 @@ export function useMarkdownEditorPreviewToggle({
   editorRef: CodeMirrorEditorRef;
   isDirty: boolean;
 }) {
-  const [parsedHtml, setParsedHtml] = useState(() => markdownToHtml(defaultContent));
+  const [parsedHtml, setParsedHtml] = useState(() =>
+    markdownToHtml(defaultContent)
+  );
   const [mode, setMode] = useState<Mode>("write");
   const [editorMode, setEditorMode] = useLocalStorage<EditorMode>(
     "preferred-editor-mode",

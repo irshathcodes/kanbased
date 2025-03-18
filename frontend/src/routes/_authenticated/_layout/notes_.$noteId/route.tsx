@@ -1,10 +1,13 @@
-import { createFileRoute, linkOptions } from "@tanstack/react-router";
-import { BreadcrumbsData } from "@/components/tsr-breadcrumbs";
+import {
+  createFileRoute,
+  linkOptions,
+  useRouter,
+} from "@tanstack/react-router";
 import { queryClient } from "@/lib/query-client";
 import { getNoteQueryOptions } from "@/lib/query-options-factory";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import MdPreview from "@/components/md-preview/md-preview";
 import { ViewNote } from "@/features/notes/components/view-note";
+import { Actions } from "./-actions";
 
 export const Route = createFileRoute("/_authenticated/_layout/notes_/$noteId")({
   component: RouteComponent,
@@ -28,15 +31,31 @@ export const Route = createFileRoute("/_authenticated/_layout/notes_/$noteId")({
       noteQueryOptions,
     };
   },
+
+  validateSearch: (search): { editNoteId?: string } => {
+    return {
+      editNoteId:
+        typeof search.editNoteId === "string" ? search.editNoteId : undefined,
+    };
+  },
 });
 
 function RouteComponent() {
   const { noteQueryOptions } = Route.useLoaderData();
   const { data } = useSuspenseQuery(noteQueryOptions);
+  const router = useRouter();
 
   return (
     <div className="py-4 px-6">
-      <ViewNote name={data.name} content={data.content} onEdit={() => {}} />
+      <ViewNote
+        name={data.name}
+        content={data.content}
+        onEdit={() => {
+          router.navigate({ to: ".", search: { editNoteId: data.id } });
+        }}
+      />
+
+      <Actions note={data} />
     </div>
   );
 }

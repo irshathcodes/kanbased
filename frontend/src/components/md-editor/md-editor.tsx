@@ -69,6 +69,7 @@ interface CodeMirrorEditorProps {
   onModeChange: (mode: EditorMode) => void;
   onSave: () => void;
   onExitEditorWithoutSaving?: () => void;
+  placeholder?: string;
 }
 
 export default function CodeMirrorEditor(props: CodeMirrorEditorProps) {
@@ -111,7 +112,9 @@ export default function CodeMirrorEditor(props: CodeMirrorEditorProps) {
       doc: props.defaultContent,
       extensions: [
         props.defaultMode === "vim" ? vim() : [],
-        basicExtensions,
+        basicExtensions({
+          placeholder: props.placeholder ?? "Write something...",
+        }),
         keymap.of([indentWithTab]),
         customTheme,
         themeExtension(),

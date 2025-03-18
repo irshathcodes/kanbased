@@ -5,6 +5,7 @@ import {
   highlightActiveLine,
   dropCursor,
   highlightActiveLineGutter,
+  placeholder
 } from "@codemirror/view";
 import { Extension, EditorState } from "@codemirror/state";
 import {
@@ -20,24 +21,27 @@ import {
   closeBracketsKeymap,
 } from "@codemirror/autocomplete";
 
-export const basicExtensions: Extension[] = [
-  highlightActiveLineGutter(),
-  highlightSpecialChars(),
-  history(),
-  drawSelection(),
-  dropCursor(),
-  EditorState.allowMultipleSelections.of(true),
-  indentOnInput(),
-  bracketMatching(),
-  closeBrackets(),
-  highlightActiveLine(),
-  highlightSelectionMatches(),
-  keymap.of([
-    ...closeBracketsKeymap,
-    ...defaultKeymap,
-    ...searchKeymap,
-    ...historyKeymap,
-    ...foldKeymap,
-    ...completionKeymap,
-  ]),
-];
+export const basicExtensions = (params: {
+  placeholder: string;
+}): Extension[] => [
+    highlightActiveLineGutter(),
+    highlightSpecialChars(),
+    history(),
+    drawSelection(),
+    dropCursor(),
+    EditorState.allowMultipleSelections.of(true),
+    indentOnInput(),
+    bracketMatching(),
+    closeBrackets(),
+    highlightActiveLine(),
+    highlightSelectionMatches(),
+    placeholder(params.placeholder),
+    keymap.of([
+      ...closeBracketsKeymap,
+      ...defaultKeymap,
+      ...searchKeymap,
+      ...historyKeymap,
+      ...foldKeymap,
+      ...completionKeymap,
+    ]),
+  ];
