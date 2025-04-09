@@ -1,0 +1,16 @@
+{
+  "name": "zero-cache",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "zero-cache-dev -p ../shared/src/schema.ts"
+  },
+  "dependencies": {
+    "@rocicorp/zero": "^0.18.2025040300"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.6.1"
+}

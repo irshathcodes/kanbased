@@ -46,10 +46,5 @@
   },
   "engines": {
     "node": "22.x"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
