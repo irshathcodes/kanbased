@@ -10,6 +10,7 @@ import {
   invitation as invitationsTable,
 } from "./auth-schema.js";
 import { commonColumns } from "../helpers.js";
+import { relations } from "drizzle-orm";
 
 export {
   organizationsTable,
@@ -20,6 +21,70 @@ export {
   membersTable,
   invitationsTable,
 };
+
+export const organizationsRelations = relations(
+  organizationsTable,
+  ({ many }) => ({
+    boards: many(boardsTable),
+    users: many(usersTable),
+    members: many(membersTable),
+    invitations: many(invitationsTable),
+    notes: many(notesTable),
+    sessions: many(sessionsTable),
+    boardPermissions: many(boardPermissionsTable),
+    notePermissions: many(notePermissionsTable),
+  }),
+);
+
+export const usersRelations = relations(usersTable, ({ many }) => ({
+  organizations: many(organizationsTable),
+  members: many(membersTable),
+  invitations: many(invitationsTable),
+  sessions: many(sessionsTable),
+  accounts: many(accountsTable),
+  boardPermissions: many(boardPermissionsTable),
+  notePermissions: many(notePermissionsTable),
+}));
+
+export const sessionRelations = relations(sessionsTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [sessionsTable.userId],
+    references: [usersTable.id],
+  }),
+  organization: one(organizationsTable, {
+    fields: [sessionsTable.activeOrganizationId],
+    references: [organizationsTable.id],
+  }),
+}));
+
+export const accountRelations = relations(accountsTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [accountsTable.userId],
+    references: [usersTable.id],
+  }),
+}));
+
+export const memberRelations = relations(membersTable, ({ one }) => ({
+  organization: one(organizationsTable, {
+    fields: [membersTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  user: one(usersTable, {
+    fields: [membersTable.userId],
+    references: [usersTable.id],
+  }),
+}));
+
+export const invitationRelations = relations(invitationsTable, ({ one }) => ({
+  organization: one(organizationsTable, {
+    fields: [invitationsTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  inviter: one(usersTable, {
+    fields: [invitationsTable.inviterId],
+    references: [usersTable.id],
+  }),
+}));
 
 export const boardsTable = pgTable("boards", {
   id: t.uuid().primaryKey(),
@@ -34,6 +99,15 @@ export const boardsTable = pgTable("boards", {
     .references(() => organizationsTable.id, { onDelete: "cascade" })
     .notNull(),
 });
+
+export const boardsRelations = relations(boardsTable, ({ one, many }) => ({
+  organization: one(organizationsTable, {
+    fields: [boardsTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  columns: many(columnsTable),
+  boardPermissions: many(boardPermissionsTable),
+}));
 
 export const columnsTable = pgTable(
   "columns",
@@ -52,6 +126,14 @@ export const columnsTable = pgTable(
   (table) => [t.index("column_board_idx").on(table.boardId)],
 );
 
+export const columnsRelations = relations(columnsTable, ({ one, many }) => ({
+  board: one(boardsTable, {
+    fields: [columnsTable.boardId],
+    references: [boardsTable.id],
+  }),
+  tasks: many(tasksTable),
+}));
+
 export const tasksTable = pgTable(
   "tasks",
   {
@@ -68,6 +150,17 @@ export const tasksTable = pgTable(
   },
   (table) => [t.index("column_id_idx").on(table.columnId)],
 );
+
+export const tasksRelations = relations(tasksTable, ({ one }) => ({
+  column: one(columnsTable, {
+    fields: [tasksTable.columnId],
+    references: [columnsTable.id],
+  }),
+  taskMarkdown: one(taskMarkdownTable, {
+    fields: [tasksTable.id],
+    references: [taskMarkdownTable.taskId],
+  }),
+}));
 
 export const boardPermissionsTable = pgTable(
   "board_permissions",
@@ -99,6 +192,20 @@ export const boardPermissionsTable = pgTable(
   ],
 );
 
+export const boardPermissionsRelations = relations(
+  boardPermissionsTable,
+  ({ one }) => ({
+    board: one(boardsTable, {
+      fields: [boardPermissionsTable.boardId],
+      references: [boardsTable.id],
+    }),
+    user: one(usersTable, {
+      fields: [boardPermissionsTable.userId],
+      references: [usersTable.id],
+    }),
+  }),
+);
+
 export const taskMarkdownTable = pgTable("task_markdown", {
   taskId: t
     .uuid()
@@ -107,6 +214,16 @@ export const taskMarkdownTable = pgTable("task_markdown", {
   content: t.text(),
   ...commonColumns,
 });
+
+export const taskMarkdownRelations = relations(
+  taskMarkdownTable,
+  ({ one }) => ({
+    task: one(tasksTable, {
+      fields: [taskMarkdownTable.taskId],
+      references: [tasksTable.id],
+    }),
+  }),
+);
 
 export const notesTable = pgTable("notes", {
   id: t.uuid().primaryKey(),
@@ -120,6 +237,14 @@ export const notesTable = pgTable("notes", {
     .references(() => organizationsTable.id, { onDelete: "cascade" })
     .notNull(),
 });
+
+export const notesRelations = relations(notesTable, ({ one, many }) => ({
+  organization: one(organizationsTable, {
+    fields: [notesTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  notePermissions: many(notePermissionsTable),
+}));
 
 export const notePermissionsTable = pgTable(
   "note_permissions",
@@ -151,4 +276,18 @@ export const notePermissionsTable = pgTable(
     t.index("note_members_note_idx").on(table.noteId),
     t.index("note_members_organization_idx").on(table.organizationId),
   ],
+);
+
+export const notePermissionsRelations = relations(
+  notePermissionsTable,
+  ({ one }) => ({
+    note: one(notesTable, {
+      fields: [notePermissionsTable.noteId],
+      references: [notesTable.id],
+    }),
+    user: one(usersTable, {
+      fields: [notePermissionsTable.userId],
+      references: [usersTable.id],
+    }),
+  }),
 );
