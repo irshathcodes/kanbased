@@ -3,10 +3,7 @@ import { useSession } from "@/queries/session";
 import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { useQuery, useZero } from "@rocicorp/zero/react";
 import { useZ } from "@/lib/zero-cache";
-
 export const Route = createFileRoute("/_authenticated/_layout/")({
   component: HomeComponent,
 });
@@ -14,29 +11,6 @@ export const Route = createFileRoute("/_authenticated/_layout/")({
 function HomeComponent() {
   const session = useSession();
   const z = useZ();
-
-  const notesQuery = z.query.zero_notes;
-  const [notes] = useQuery(notesQuery);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formElement = e.target as HTMLFormElement;
-    const formData = new FormData(formElement);
-    const title = formData.get("title") as string;
-    const content = formData.get("content") as string;
-
-    z.mutate.zero_notes.insert({
-      id: crypto.randomUUID(),
-      content,
-      title,
-      created_at: Date.now(),
-      updated_at: Date.now(),
-      deleted_at: null,
-    });
-
-    formElement.reset();
-    (formElement.children[0] as HTMLInputElement).focus();
-  };
 
   return (
     <div className="min-h-screen flex flex-col items-center p-4 bg-gradient-to-b from-background to-secondary/20">
@@ -78,39 +52,6 @@ function HomeComponent() {
           </div>
         </CardContent>
       </Card>
-
-      <div>
-        <h1>Notes</h1>
-        <ul>
-          {notes.map((note) => (
-            <li key={note.id} className="flex gap-2">
-              <h1>{note.title}:</h1>
-              <p>{note.content}</p>
-            </li>
-          ))}
-        </ul>
-
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            className="border-2 border-gray-300 rounded-md p-2"
-          />
-          <input
-            type="text"
-            name="content"
-            placeholder="Content"
-            className="border-2 border-gray-300 rounded-md p-2"
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white p-2 rounded-md"
-          >
-            Create
-          </button>
-        </form>
-      </div>
     </div>
   );
 }

@@ -152,12 +152,3 @@ export const notePermissionsTable = pgTable(
     t.index("note_members_organization_idx").on(table.organizationId),
   ],
 );
-
-export const zeroNotesTable = pgTable("zero_notes", {
-  id: t.text().primaryKey(),
-  title: t.varchar({ length: 255 }).notNull(),
-  content: t.text().notNull(),
-  createdAt: t.timestamp().notNull(),
-  updatedAt: t.timestamp(),
-  deletedAt: t.timestamp(),
-});

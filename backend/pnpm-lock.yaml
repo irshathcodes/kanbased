@@ -38,6 +38,9 @@ importers:
       drizzle-seed:
         specifier: ^0.3.1
         version: 0.3.1(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(gel@2.0.2)(kysely@0.27.6)(postgres@3.4.5))
+      drizzle-zero:
+        specifier: ^0.6.1
+        version: 0.6.1(@rocicorp/zero@0.18.2025040300)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(gel@2.0.2)(kysely@0.27.6)(postgres@3.4.5))
       drizzle-zod:
         specifier: ^0.7.0
         version: 0.7.1(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(gel@2.0.2)(kysely@0.27.6)(postgres@3.4.5))(zod@3.24.2)
@@ -1610,6 +1613,13 @@ packages:
     peerDependenciesMeta:
       drizzle-orm:
         optional: true
+
+  drizzle-zero@0.6.1:
+    resolution: {integrity: sha512-1AD8xiH/ZyW/+NGWzS+0hNahYovi6yhvr9TcC4B1taTSXttjGtfZMzklHzGjhpjGF4mzAYVNV/gNcKITgmxp0Q==}
+    hasBin: true
+    peerDependencies:
+      '@rocicorp/zero': '>=0.13.2025013101'
+      drizzle-orm: '>=0.36.0'
 
   drizzle-zod@0.7.1:
     resolution: {integrity: sha512-nZzALOdz44/AL2U005UlmMqaQ1qe5JfanvLujiTHiiT8+vZJTBFhj3pY4Vk+L6UWyKFfNmLhk602Hn4kCTynKQ==}
@@ -4119,6 +4129,11 @@ snapshots:
     dependencies:
       pure-rand: 6.1.0
     optionalDependencies:
+      drizzle-orm: 0.40.1(@opentelemetry/api@1.9.0)(gel@2.0.2)(kysely@0.27.6)(postgres@3.4.5)
+
+  drizzle-zero@0.6.1(@rocicorp/zero@0.18.2025040300)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(gel@2.0.2)(kysely@0.27.6)(postgres@3.4.5)):
+    dependencies:
+      '@rocicorp/zero': 0.18.2025040300
       drizzle-orm: 0.40.1(@opentelemetry/api@1.9.0)(gel@2.0.2)(kysely@0.27.6)(postgres@3.4.5)
 
   drizzle-zod@0.7.1(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(gel@2.0.2)(kysely@0.27.6)(postgres@3.4.5))(zod@3.24.2):
