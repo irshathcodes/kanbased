@@ -56,7 +56,8 @@
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "@rocicorp/zero": "0.18.2025040300"
+    "@rocicorp/zero": "0.18.2025040300",
+    "shared": "workspace:*"
   },
   "devDependencies": {
     "@tanstack/router-plugin": "^1.79.0",

@@ -8,10 +8,10 @@
 import {
   table,
   string,
-  number,
   createSchema,
   definePermissions,
   ANYONE_CAN,
+  number,
 } from "@rocicorp/zero";
 
 const notes = table("zero_notes")
@@ -19,7 +19,9 @@ const notes = table("zero_notes")
     id: string(),
     title: string(),
     content: string(),
-    timestamp: number(),
+    created_at: number(),
+    updated_at: number(),
+    deleted_at: number(),
   })
   .primaryKey("id");
 
@@ -27,6 +29,8 @@ export const schema = createSchema({
   tables: [notes],
   relationships: [],
 });
+
+export type Schema = typeof schema;
 
 export const permissions = definePermissions(schema, () => {
   return {

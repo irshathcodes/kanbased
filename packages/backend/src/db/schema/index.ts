@@ -49,7 +49,7 @@ export const columnsTable = pgTable(
     updatedAt: t.timestamp().notNull(),
     deletedAt: t.timestamp(),
   },
-  (table) => [t.index("column_board_idx").on(table.boardId)]
+  (table) => [t.index("column_board_idx").on(table.boardId)],
 );
 
 export const tasksTable = pgTable(
@@ -66,7 +66,7 @@ export const tasksTable = pgTable(
     updatedAt: t.timestamp().notNull(),
     deletedAt: t.timestamp(),
   },
-  (table) => [t.index("column_id_idx").on(table.columnId)]
+  (table) => [t.index("column_id_idx").on(table.columnId)],
 );
 
 export const boardPermissionsTable = pgTable(
@@ -96,7 +96,7 @@ export const boardPermissionsTable = pgTable(
     t.index("board_members_user_idx").on(table.userId),
     t.index("board_members_board_idx").on(table.boardId),
     t.index("board_members_organization_idx").on(table.organizationId),
-  ]
+  ],
 );
 
 export const taskMarkdownTable = pgTable("task_markdown", {
@@ -107,9 +107,6 @@ export const taskMarkdownTable = pgTable("task_markdown", {
   content: t.text(),
   ...commonColumns,
 });
-
-
-
 
 export const notesTable = pgTable("notes", {
   id: t.uuid().primaryKey(),
@@ -123,7 +120,6 @@ export const notesTable = pgTable("notes", {
     .references(() => organizationsTable.id, { onDelete: "cascade" })
     .notNull(),
 });
-
 
 export const notePermissionsTable = pgTable(
   "note_permissions",
@@ -141,7 +137,9 @@ export const notePermissionsTable = pgTable(
       .text()
       .references(() => organizationsTable.id, { onDelete: "cascade" })
       .notNull(),
-    permission: t.varchar({ length: 255, enum: ["owner", "editor", "viewer"] }).notNull(),
+    permission: t
+      .varchar({ length: 255, enum: ["owner", "editor", "viewer"] })
+      .notNull(),
     createdAt: t.timestamp().notNull().defaultNow(),
   },
   (table) => [
@@ -152,5 +150,14 @@ export const notePermissionsTable = pgTable(
     t.index("note_members_user_idx").on(table.userId),
     t.index("note_members_note_idx").on(table.noteId),
     t.index("note_members_organization_idx").on(table.organizationId),
-  ]
+  ],
 );
+
+export const zeroNotesTable = pgTable("zero_notes", {
+  id: t.text().primaryKey(),
+  title: t.varchar({ length: 255 }).notNull(),
+  content: t.text().notNull(),
+  createdAt: t.timestamp().notNull(),
+  updatedAt: t.timestamp(),
+  deletedAt: t.timestamp(),
+});

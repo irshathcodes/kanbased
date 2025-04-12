@@ -209,6 +209,9 @@ importers:
       react-markdown:
         specifier: ^10.0.0
         version: 10.1.0(@types/react@19.1.0)(react@19.1.0)
+      shared:
+        specifier: workspace:*
+        version: link:../shared
       sonner:
         specifier: ^1.7.0
         version: 1.7.4(react-dom@19.1.0(react@19.1.0))(react@19.1.0)

@@ -23,6 +23,7 @@ export const router = createRouter({
   defaultPendingMs: 0,
   defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
   defaultPendingComponent: DefaultPendingComponent,
+  scrollRestoration: true,
 });
 
 // Register things for typesafety

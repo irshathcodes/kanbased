@@ -1,8 +1,4 @@
-import {
-  Outlet,
-  ScrollRestoration,
-  createRootRouteWithContext,
-} from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AppContextProvider } from "@/state/app-state";
 import { lazy } from "react";
@@ -30,7 +26,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootComponent() {
   return (
     <AppContextProvider>
-      <ScrollRestoration />
       <Outlet />
       <Toaster />
       <TanStackRouterDevtools position="bottom-right" />

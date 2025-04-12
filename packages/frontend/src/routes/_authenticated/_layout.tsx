@@ -5,6 +5,10 @@ import { getSidebarStateFromCookie } from "@/lib/utils";
 import { createFileRoute, linkOptions, Outlet } from "@tanstack/react-router";
 import { BreadcrumbsData } from "@/components/tsr-breadcrumbs";
 import { TopSection } from "@/components/top-section";
+import { getZeroCache } from "@/lib/zero-cache";
+import { useSession } from "@/queries/session";
+import { ZeroProvider } from "@rocicorp/zero/react";
+
 export const Route = createFileRoute("/_authenticated/_layout")({
   component: RouteComponent,
   loader: (): BreadcrumbsData => ({
@@ -19,18 +23,22 @@ export const Route = createFileRoute("/_authenticated/_layout")({
 
 function RouteComponent() {
   const defaultSidebarState = useMemo(getSidebarStateFromCookie, []);
+  const session = useSession();
+  const z = useMemo(() => getZeroCache({ userId: session.user.id }), []);
 
   return (
-    <SidebarProvider defaultOpen={defaultSidebarState}>
-      <AppSidebar />
+    <ZeroProvider zero={z}>
+      <SidebarProvider defaultOpen={defaultSidebarState}>
+        <AppSidebar />
 
-      <main className="flex flex-col h-svh flex-1">
-        <TopSection />
+        <main className="flex flex-col h-svh flex-1">
+          <TopSection />
 
-        <div className="flex-1 min-h-0 h-full">
-          <Outlet />
-        </div>
-      </main>
-    </SidebarProvider>
+          <div className="flex-1 min-h-0 h-full">
+            <Outlet />
+          </div>
+        </main>
+      </SidebarProvider>
+    </ZeroProvider>
   );
 }
