@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useZ } from "@/lib/zero-cache";
+import { useQuery } from "@rocicorp/zero/react";
 export const Route = createFileRoute("/_authenticated/_layout/")({
   component: HomeComponent,
 });
@@ -11,6 +12,12 @@ export const Route = createFileRoute("/_authenticated/_layout/")({
 function HomeComponent() {
   const session = useSession();
   const z = useZ();
+
+  const boardsQuery = z.query.boardsTable.related("boardPermissions");
+
+  const [boards] = useQuery(boardsQuery);
+
+  console.log("boards: ", boards);
 
   return (
     <div className="min-h-screen flex flex-col items-center p-4 bg-gradient-to-b from-background to-secondary/20">

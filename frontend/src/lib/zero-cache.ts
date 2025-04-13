@@ -1,6 +1,9 @@
 import { Zero } from "@rocicorp/zero";
 import { useZero } from "@rocicorp/zero/react";
-import { schema, type Schema } from "../../../backend/src/db/zero-schema";
+import {
+  schema,
+  type Schema,
+} from "../../../backend/src/zero-cache/zero-schema";
 
 export function getZeroCache({ userId }: { userId: string }) {
   return new Zero({
@@ -15,3 +18,5 @@ export function getZeroCache({ userId }: { userId: string }) {
 export function useZ() {
   return useZero<Schema>();
 }
+
+console.log("schema: ", schema);

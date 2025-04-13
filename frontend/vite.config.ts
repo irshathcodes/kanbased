@@ -7,9 +7,7 @@ export default defineConfig({
   plugins: [
     TanStackRouterVite({ autoCodeSplitting: true }),
     react(),
-    tsconfigPaths({
-      root: "../../",
-    }),
+    tsconfigPaths(),
   ],
   envPrefix: "CLIENT_",
   server: {

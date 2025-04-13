@@ -8,7 +8,7 @@
     "prestart": "pnpm db:migrate",
     "start": "node --env-file=.env ./dist/src",
     "dev": "tsx watch --env-file=.env src/index.ts",
-    "dev:zero-cache": "zero-cache-dev -p ./src/db/zero-schema.ts",
+    "dev:zero-cache": "zero-cache-dev -p src/zero-cache/zero-schema.ts",
     "dev:db:start": "docker compose -f docker-compose.dev.yml up",
     "dev:db:clean": "docker volume rm -f docker_zstart_pgdata && rm -rf \"/tmp/hello_zero_replica.db\"*",
     "dev:db:delete": "docker compose -f docker-compose.dev.yml down -v",

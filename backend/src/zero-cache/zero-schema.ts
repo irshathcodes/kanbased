@@ -5,10 +5,9 @@
 // See https://github.com/rocicorp/mono/blob/main/apps/zbugs/schema.ts
 // for more complex examples, including many-to-many.
 
-import { definePermissions, ANYONE_CAN } from "@rocicorp/zero";
+import { ANYONE_CAN, definePermissions } from "@rocicorp/zero";
 import { createZeroSchema } from "drizzle-zero";
-import * as drizzleSchema from "./schema/index.js";
-import { env } from "../env.js";
+import * as drizzleSchema from "../db/schema/index.js";
 
 export const schema = createZeroSchema(drizzleSchema, {
   casing: "snake_case",
@@ -41,20 +40,13 @@ export const schema = createZeroSchema(drizzleSchema, {
       role: true,
       userId: true,
     },
-    boardPermissionsTable: {
-      boardId: true,
-      createdAt: true,
-      id: true,
-      organizationId: true,
-      userId: true,
-      permission: true,
-    },
     boardsTable: {
       id: true,
       boardUrl: true,
       createdAt: true,
       updatedAt: true,
       organizationId: true,
+      creatorId: true,
       name: true,
       color: true,
       deletedAt: true,
@@ -67,6 +59,8 @@ export const schema = createZeroSchema(drizzleSchema, {
       deletedAt: true,
       name: true,
       position: true,
+      organizationId: true,
+      creatorId: true,
     },
     tasksTable: {
       id: true,
@@ -76,14 +70,9 @@ export const schema = createZeroSchema(drizzleSchema, {
       name: true,
       position: true,
       updatedAt: true,
-    },
-    notePermissionsTable: {
-      id: true,
-      noteId: true,
-      permission: true,
-      createdAt: true,
-      userId: true,
       organizationId: true,
+      creatorId: true,
+      content: true,
     },
     notesTable: {
       id: true,
@@ -93,19 +82,73 @@ export const schema = createZeroSchema(drizzleSchema, {
       name: true,
       content: true,
       deletedAt: true,
-    },
-    taskMarkdownTable: {
-      content: true,
-      createdAt: true,
-      taskId: true,
-      updatedAt: true,
+      creatorId: true,
     },
   },
-  debug: env.NODE_ENV === "development",
+  manyToMany: {
+    organizationsTable: {
+      orgToUsers: [
+        {
+          sourceField: ["id"],
+          destTable: "membersTable",
+          destField: ["organizationId"],
+        },
+        {
+          sourceField: ["userId"],
+          destTable: "usersTable",
+          destField: ["id"],
+        },
+      ],
+    },
+  },
+  debug:
+    typeof process !== "undefined" && process.env.NODE_ENV === "development",
 });
 
 export type Schema = typeof schema;
 
-export const permissions = definePermissions(schema, () => {
-  return {};
+// Define the authentication data type that will be passed to permission rules
+type AuthData = {
+  sub: string; // User ID
+  activeOrganizationId: string;
+};
+
+export const permissions = definePermissions<AuthData, Schema>(schema, () => {
+  return {
+    boardsTable: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    columnsTable: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    tasksTable: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    usersTable: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    organizationsTable: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    membersTable: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+    notesTable: {
+      row: {
+        select: ANYONE_CAN,
+      },
+    },
+  };
 });
