@@ -18,5 +18,3 @@ export function getZeroCache({ userId }: { userId: string }) {
 export function useZ() {
   return useZero<Schema>();
 }
-
-console.log("schema: ", schema);

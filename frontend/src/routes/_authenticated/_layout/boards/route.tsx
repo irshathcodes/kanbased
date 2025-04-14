@@ -10,6 +10,8 @@ import { ModalProvider } from "@/state/modals";
 import { CreateBoardButton } from "@/features/boards/components/create-board-button";
 import { OtherActions } from "@/features/boards/components/other-boards-actions";
 import { getActiveOrganizationId } from "@/queries/session";
+import { useZ } from "@/lib/zero-cache";
+import { useQuery } from "@rocicorp/zero/react";
 
 export const Route = createFileRoute("/_authenticated/_layout/boards")({
   component: BoardsPage,
@@ -31,8 +33,12 @@ export const Route = createFileRoute("/_authenticated/_layout/boards")({
 });
 
 function BoardsPage() {
-  const { boardsQueryOptions } = Route.useLoaderData();
-  const { data: boards } = useSuspenseQuery(boardsQueryOptions);
+  // const { boardsQueryOptions } = Route.useLoaderData();
+  // const { data: boards } = useSuspenseQuery(boardsQueryOptions);
+
+  const z = useZ();
+  const boardsQuery = z.query.boardsTable;
+  const [boards] = useQuery(boardsQuery);
 
   return (
     <ModalProvider>

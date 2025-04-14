@@ -13,6 +13,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { useCreateBoardMutation } from "@/features/boards/queries/boards";
 import { CreateBoardModal } from "@/features/boards/state/board";
 import { getId } from "@/lib/utils";
+import { useZ } from "@/lib/zero-cache";
+import { useActiveOrganizationId } from "@/queries/session";
 import { Link } from "@tanstack/react-router";
 import { useState, type FormEventHandler } from "react";
 import { toast } from "sonner";
@@ -21,44 +23,40 @@ export function CreateBoard(props: CreateBoardModal) {
   const createBoardMutation = useCreateBoardMutation();
   const [boardName, setBoardName] = useState("");
   const boardUrl = boardName.toLowerCase().split(" ").join("-");
+  const z = useZ();
+  const activeOrganizationId = useActiveOrganizationId();
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    const currentDate = new Date().toISOString();
 
-    createBoardMutation.mutate(
-      {
-        body: {
-          id: getId(),
-          name: boardName,
-          boardUrl,
-          updatedAt: currentDate,
-          createdAt: currentDate,
-        },
-      },
-      {
-        onSuccess() {
-          toast.success(
-            <div className="flex items-center justify-between w-full">
-              <span>
-                <b>{boardName}</b> board created successfully
-              </span>
-              <Link
-                className={buttonVariants({
-                  size: "sm",
-                  className: "!h-8",
-                })}
-                to="/boards/$boardUrl"
-                params={{ boardUrl }}
-              >
-                View
-              </Link>
-            </div>,
-          );
-          props.onClose();
-        },
-      },
+    z.mutate.boardsTable.insert({
+      id: getId(),
+      name: boardName,
+      boardUrl,
+      updatedAt: Date.now(),
+      createdAt: Date.now(),
+      creatorId: z.userID,
+      organizationId: activeOrganizationId,
+    });
+
+    toast.success(
+      <div className="flex items-center justify-between w-full">
+        <span>
+          <b>{boardName}</b> board created successfully
+        </span>
+        <Link
+          className={buttonVariants({
+            size: "sm",
+            className: "!h-8",
+          })}
+          to="/boards/$boardUrl"
+          params={{ boardUrl }}
+        >
+          View
+        </Link>
+      </div>,
     );
+    props.onClose();
   };
 
   return (
