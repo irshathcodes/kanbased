@@ -1,25 +1,18 @@
 "use client";
-import { queryClient } from "@/lib/query-client";
 
 import { createFileRoute, linkOptions } from "@tanstack/react-router";
-import { useSuspenseQuery } from "@tanstack/react-query";
-import { boardsQueryOptions as getBoardsQueryOptions } from "@/lib/query-options-factory";
 import { BoardList } from "@/features/boards/components/board-list";
 import { BoardActions } from "@/features/boards/components/board-actions";
 import { ModalProvider } from "@/state/modals";
 import { CreateBoardButton } from "@/features/boards/components/create-board-button";
 import { OtherActions } from "@/features/boards/components/other-boards-actions";
-import { getActiveOrganizationId } from "@/queries/session";
 import { useZ } from "@/lib/zero-cache";
 import { useQuery } from "@rocicorp/zero/react";
+import { getBoardsListQuery } from "@/lib/zero-queries";
 
 export const Route = createFileRoute("/_authenticated/_layout/boards")({
   component: BoardsPage,
   loader: async () => {
-    const orgId = getActiveOrganizationId(queryClient);
-    const boardsQueryOptions = getBoardsQueryOptions({ orgId });
-    await queryClient.prefetchQuery(boardsQueryOptions);
-
     return {
       breadcrumbs: linkOptions([
         {
@@ -27,18 +20,14 @@ export const Route = createFileRoute("/_authenticated/_layout/boards")({
           to: "/boards",
         },
       ]),
-      boardsQueryOptions,
     };
   },
 });
 
 function BoardsPage() {
-  // const { boardsQueryOptions } = Route.useLoaderData();
-  // const { data: boards } = useSuspenseQuery(boardsQueryOptions);
-
   const z = useZ();
-  const boardsQuery = z.query.boardsTable;
-  const [boards] = useQuery(boardsQuery);
+  const boardsQuery = getBoardsListQuery(z);
+  const [boards, status] = useQuery(boardsQuery);
 
   return (
     <ModalProvider>

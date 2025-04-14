@@ -88,7 +88,6 @@ export function getSidebarStateFromCookie(): boolean {
   return sidebarCookie ? sidebarCookie.split("=")[1] === "true" : false;
 }
 
-
 // Types for the result object with discriminated union
 type Success<T> = {
   data: T;
@@ -112,4 +111,14 @@ export async function tryCatch<T, E = Error>(
   } catch (error) {
     return { data: null, error: error as E };
   }
+}
+
+const TOKEN_NAME = "token";
+
+export function getToken() {
+  return localStorage.getItem(TOKEN_NAME);
+}
+
+export function setToken(token: string) {
+  localStorage.setItem(TOKEN_NAME, token);
 }

@@ -1,4 +1,10 @@
-import { pgTable, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  integer,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -52,6 +58,13 @@ export const verification = pgTable("verification", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at"),
   updatedAt: timestamp("updated_at"),
+});
+
+export const jwks = pgTable("jwks", {
+  id: text("id").primaryKey(),
+  publicKey: text("public_key").notNull(),
+  privateKey: text("private_key").notNull(),
+  createdAt: timestamp("created_at").notNull(),
 });
 
 export const organization = pgTable("organization", {

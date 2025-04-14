@@ -6,11 +6,11 @@
 // for more complex examples, including many-to-many.
 
 import {
-  ANYONE_CAN,
   NOBODY_CAN,
   definePermissions,
   type ExpressionBuilder,
   type PermissionsConfig,
+  type PermissionRule,
 } from "@rocicorp/zero";
 import { createZeroSchema } from "drizzle-zero";
 import * as drizzleSchema from "../db/schema/index.js";
@@ -90,6 +90,7 @@ export const schema = createZeroSchema(drizzleSchema, {
       deletedAt: true,
       creatorId: true,
     },
+    jwksTable: false,
   },
   manyToMany: {
     organizationsTable: {
@@ -122,21 +123,17 @@ type AuthData = {
 
 type TableName = keyof Schema["tables"];
 
+function and<TTable extends TableName>(
+  ...rules: PermissionRule<AuthData, Schema, TTable>[]
+): PermissionRule<AuthData, Schema, TTable> {
+  return (authData, eb) => eb.and(...rules.map((rule) => rule(authData, eb)));
+}
+
 export const permissions = definePermissions<AuthData, Schema>(schema, () => {
   const userIsLoggedIn = (
     authData: AuthData,
     { cmpLit }: ExpressionBuilder<Schema, TableName>,
   ) => cmpLit(authData.sub, "IS NOT", null);
-
-  const userIsAdmin = (
-    authData: AuthData,
-    { cmpLit }: ExpressionBuilder<Schema, TableName>,
-  ) => cmpLit(authData.role, "=", "admin");
-
-  const userIsOwner = (
-    authData: AuthData,
-    { cmpLit }: ExpressionBuilder<Schema, TableName>,
-  ) => cmpLit(authData.role, "=", "owner");
 
   const userIsOwnerOrAdmin = (
     authData: AuthData,
@@ -146,11 +143,6 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
       cmpLit(authData.role, "=", "owner"),
       cmpLit(authData.role, "=", "admin"),
     );
-
-  const userIsMember = (
-    authData: AuthData,
-    { cmpLit }: ExpressionBuilder<Schema, TableName>,
-  ) => cmpLit(authData.role, "=", "member");
 
   const loggedInUserIsCreator = (
     authData: AuthData,
@@ -193,7 +185,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
     // Users table - only allow select access to users
     usersTable: {
       row: {
-        select: [userIsLoggedIn, membersBelongToActiveOrg],
+        select: [and(userIsLoggedIn, membersBelongToActiveOrg)],
         insert: NOBODY_CAN, // User creation handled by auth system
         update: {
           preMutation: NOBODY_CAN, // User updates handled by auth system
@@ -206,7 +198,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
     // Organizations table - users can only see orgs they are members of
     organizationsTable: {
       row: {
-        select: [userIsLoggedIn, allowIfActiveOrg],
+        select: [and(userIsLoggedIn, allowIfActiveOrg)],
         insert: NOBODY_CAN, // Org creation handled elsewhere
         update: {
           preMutation: NOBODY_CAN,
@@ -231,128 +223,160 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
 
     boardsTable: {
       row: {
-        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        select: [and(userIsLoggedIn, itemsBelongToActiveOrg)],
         insert: [
-          userIsLoggedIn,
-          userIsOwnerOrAdmin,
-          itemsBelongToActiveOrg,
-          loggedInUserIsCreator,
+          and(
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ),
         ],
         update: {
           preMutation: [
-            userIsLoggedIn,
-            userIsOwnerOrAdmin,
-            itemsBelongToActiveOrg,
-            loggedInUserIsCreator,
+            and(
+              userIsLoggedIn,
+              userIsOwnerOrAdmin,
+              itemsBelongToActiveOrg,
+              loggedInUserIsCreator,
+            ),
           ],
           postMutation: [
-            userIsLoggedIn,
-            userIsOwnerOrAdmin,
-            itemsBelongToActiveOrg,
-            loggedInUserIsCreator,
+            and(
+              userIsLoggedIn,
+              userIsOwnerOrAdmin,
+              itemsBelongToActiveOrg,
+              loggedInUserIsCreator,
+            ),
           ],
         },
         delete: [
-          userIsLoggedIn,
-          userIsOwnerOrAdmin,
-          itemsBelongToActiveOrg,
-          loggedInUserIsCreator,
+          and(
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ),
         ],
       },
     },
 
     columnsTable: {
       row: {
-        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        select: [and(userIsLoggedIn, itemsBelongToActiveOrg)],
         insert: [
-          userIsLoggedIn,
-          userIsOwnerOrAdmin,
-          itemsBelongToActiveOrg,
-          loggedInUserIsCreator,
+          and(
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ),
         ],
         update: {
           preMutation: [
-            userIsLoggedIn,
-            userIsOwnerOrAdmin,
-            itemsBelongToActiveOrg,
-            loggedInUserIsCreator,
+            and(
+              userIsLoggedIn,
+              userIsOwnerOrAdmin,
+              itemsBelongToActiveOrg,
+              loggedInUserIsCreator,
+            ),
           ],
           postMutation: [
-            userIsLoggedIn,
-            userIsOwnerOrAdmin,
-            itemsBelongToActiveOrg,
-            loggedInUserIsCreator,
+            and(
+              userIsLoggedIn,
+              userIsOwnerOrAdmin,
+              itemsBelongToActiveOrg,
+              loggedInUserIsCreator,
+            ),
           ],
         },
         delete: [
-          userIsLoggedIn,
-          userIsOwnerOrAdmin,
-          itemsBelongToActiveOrg,
-          loggedInUserIsCreator,
+          and(
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ),
         ],
       },
     },
 
     tasksTable: {
       row: {
-        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        select: [and(userIsLoggedIn, itemsBelongToActiveOrg)],
         insert: [
-          userIsLoggedIn,
-          userIsOwnerOrAdmin,
-          itemsBelongToActiveOrg,
-          loggedInUserIsCreator,
+          and(
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ),
         ],
         update: {
           preMutation: [
-            userIsLoggedIn,
-            userIsOwnerOrAdmin,
-            itemsBelongToActiveOrg,
-            loggedInUserIsCreator,
+            and(
+              userIsLoggedIn,
+              userIsOwnerOrAdmin,
+              itemsBelongToActiveOrg,
+              loggedInUserIsCreator,
+            ),
           ],
           postMutation: [
-            userIsLoggedIn,
-            userIsOwnerOrAdmin,
-            itemsBelongToActiveOrg,
-            loggedInUserIsCreator,
+            and(
+              userIsLoggedIn,
+              userIsOwnerOrAdmin,
+              itemsBelongToActiveOrg,
+              loggedInUserIsCreator,
+            ),
           ],
         },
         delete: [
-          userIsLoggedIn,
-          userIsOwnerOrAdmin,
-          itemsBelongToActiveOrg,
-          loggedInUserIsCreator,
+          and(
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ),
         ],
       },
     },
 
     notesTable: {
       row: {
-        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        select: [and(userIsLoggedIn, itemsBelongToActiveOrg)],
         insert: [
-          userIsLoggedIn,
-          userIsOwnerOrAdmin,
-          itemsBelongToActiveOrg,
-          loggedInUserIsCreator,
+          and(
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ),
         ],
         update: {
           preMutation: [
-            userIsLoggedIn,
-            userIsOwnerOrAdmin,
-            itemsBelongToActiveOrg,
-            loggedInUserIsCreator,
+            and(
+              userIsLoggedIn,
+              userIsOwnerOrAdmin,
+              itemsBelongToActiveOrg,
+              loggedInUserIsCreator,
+            ),
           ],
           postMutation: [
-            userIsLoggedIn,
-            userIsOwnerOrAdmin,
-            itemsBelongToActiveOrg,
-            loggedInUserIsCreator,
+            and(
+              userIsLoggedIn,
+              userIsOwnerOrAdmin,
+              itemsBelongToActiveOrg,
+              loggedInUserIsCreator,
+            ),
           ],
         },
         delete: [
-          userIsLoggedIn,
-          userIsOwnerOrAdmin,
-          itemsBelongToActiveOrg,
-          loggedInUserIsCreator,
+          and(
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ),
         ],
       },
     },

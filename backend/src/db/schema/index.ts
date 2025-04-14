@@ -8,6 +8,7 @@ import {
   verification as verificationsTable,
   member as membersTable,
   invitation as invitationsTable,
+  jwks as jwksTable,
 } from "./auth-schema.js";
 import { commonColumns } from "../helpers.js";
 import { relations } from "drizzle-orm";
@@ -20,6 +21,7 @@ export {
   verificationsTable,
   membersTable,
   invitationsTable,
+  jwksTable,
 };
 
 export const organizationsRelations = relations(
