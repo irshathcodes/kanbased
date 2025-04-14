@@ -5,7 +5,13 @@
 // See https://github.com/rocicorp/mono/blob/main/apps/zbugs/schema.ts
 // for more complex examples, including many-to-many.
 
-import { ANYONE_CAN, definePermissions } from "@rocicorp/zero";
+import {
+  ANYONE_CAN,
+  NOBODY_CAN,
+  definePermissions,
+  type ExpressionBuilder,
+  type PermissionsConfig,
+} from "@rocicorp/zero";
 import { createZeroSchema } from "drizzle-zero";
 import * as drizzleSchema from "../db/schema/index.js";
 
@@ -111,44 +117,244 @@ export type Schema = typeof schema;
 type AuthData = {
   sub: string; // User ID
   activeOrganizationId: string;
+  role: "member" | "admin" | "owner";
 };
 
+type TableName = keyof Schema["tables"];
+
 export const permissions = definePermissions<AuthData, Schema>(schema, () => {
+  const userIsLoggedIn = (
+    authData: AuthData,
+    { cmpLit }: ExpressionBuilder<Schema, TableName>,
+  ) => cmpLit(authData.sub, "IS NOT", null);
+
+  const userIsAdmin = (
+    authData: AuthData,
+    { cmpLit }: ExpressionBuilder<Schema, TableName>,
+  ) => cmpLit(authData.role, "=", "admin");
+
+  const userIsOwner = (
+    authData: AuthData,
+    { cmpLit }: ExpressionBuilder<Schema, TableName>,
+  ) => cmpLit(authData.role, "=", "owner");
+
+  const userIsOwnerOrAdmin = (
+    authData: AuthData,
+    { cmpLit, or }: ExpressionBuilder<Schema, TableName>,
+  ) =>
+    or(
+      cmpLit(authData.role, "=", "owner"),
+      cmpLit(authData.role, "=", "admin"),
+    );
+
+  const userIsMember = (
+    authData: AuthData,
+    { cmpLit }: ExpressionBuilder<Schema, TableName>,
+  ) => cmpLit(authData.role, "=", "member");
+
+  const loggedInUserIsCreator = (
+    authData: AuthData,
+    eb: ExpressionBuilder<
+      Schema,
+      "boardsTable" | "columnsTable" | "tasksTable" | "notesTable"
+    >,
+  ) => eb.cmp("creatorId", "=", authData.sub);
+
+  const membersBelongToActiveOrg = (
+    authData: AuthData,
+    { exists }: ExpressionBuilder<Schema, "usersTable">,
+  ) =>
+    exists("members", (q) =>
+      q.where((eb) =>
+        eb.cmp("organizationId", "=", authData.activeOrganizationId),
+      ),
+    );
+
+  const allowIfActiveOrg = (
+    authData: AuthData,
+    { cmp }: ExpressionBuilder<Schema, "organizationsTable">,
+  ) => cmp("id", "=", authData.activeOrganizationId);
+
+  const itemsBelongToActiveOrg = (
+    authData: AuthData,
+    {
+      cmp,
+    }: ExpressionBuilder<
+      Schema,
+      | "boardsTable"
+      | "columnsTable"
+      | "tasksTable"
+      | "notesTable"
+      | "membersTable"
+    >,
+  ) => cmp("organizationId", "=", authData.activeOrganizationId);
+
   return {
-    boardsTable: {
-      row: {
-        select: ANYONE_CAN,
-      },
-    },
-    columnsTable: {
-      row: {
-        select: ANYONE_CAN,
-      },
-    },
-    tasksTable: {
-      row: {
-        select: ANYONE_CAN,
-      },
-    },
+    // Users table - only allow select access to users
     usersTable: {
       row: {
-        select: ANYONE_CAN,
+        select: [userIsLoggedIn, membersBelongToActiveOrg],
+        insert: NOBODY_CAN, // User creation handled by auth system
+        update: {
+          preMutation: NOBODY_CAN, // User updates handled by auth system
+          postMutation: NOBODY_CAN,
+        },
+        delete: NOBODY_CAN, // User deletion handled by auth system
       },
     },
+
+    // Organizations table - users can only see orgs they are members of
     organizationsTable: {
       row: {
-        select: ANYONE_CAN,
+        select: [userIsLoggedIn, allowIfActiveOrg],
+        insert: NOBODY_CAN, // Org creation handled elsewhere
+        update: {
+          preMutation: NOBODY_CAN,
+          postMutation: NOBODY_CAN,
+        },
+        delete: NOBODY_CAN, // Org deletion handled elsewhere
       },
     },
+
+    // Members table - users can only see members of their active organization
     membersTable: {
       row: {
-        select: ANYONE_CAN,
+        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        insert: NOBODY_CAN, // Member management handled elsewhere
+        update: {
+          preMutation: NOBODY_CAN,
+          postMutation: NOBODY_CAN,
+        },
+        delete: NOBODY_CAN,
       },
     },
+
+    boardsTable: {
+      row: {
+        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        insert: [
+          userIsLoggedIn,
+          userIsOwnerOrAdmin,
+          itemsBelongToActiveOrg,
+          loggedInUserIsCreator,
+        ],
+        update: {
+          preMutation: [
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ],
+          postMutation: [
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ],
+        },
+        delete: [
+          userIsLoggedIn,
+          userIsOwnerOrAdmin,
+          itemsBelongToActiveOrg,
+          loggedInUserIsCreator,
+        ],
+      },
+    },
+
+    columnsTable: {
+      row: {
+        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        insert: [
+          userIsLoggedIn,
+          userIsOwnerOrAdmin,
+          itemsBelongToActiveOrg,
+          loggedInUserIsCreator,
+        ],
+        update: {
+          preMutation: [
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ],
+          postMutation: [
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ],
+        },
+        delete: [
+          userIsLoggedIn,
+          userIsOwnerOrAdmin,
+          itemsBelongToActiveOrg,
+          loggedInUserIsCreator,
+        ],
+      },
+    },
+
+    tasksTable: {
+      row: {
+        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        insert: [
+          userIsLoggedIn,
+          userIsOwnerOrAdmin,
+          itemsBelongToActiveOrg,
+          loggedInUserIsCreator,
+        ],
+        update: {
+          preMutation: [
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ],
+          postMutation: [
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ],
+        },
+        delete: [
+          userIsLoggedIn,
+          userIsOwnerOrAdmin,
+          itemsBelongToActiveOrg,
+          loggedInUserIsCreator,
+        ],
+      },
+    },
+
     notesTable: {
       row: {
-        select: ANYONE_CAN,
+        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        insert: [
+          userIsLoggedIn,
+          userIsOwnerOrAdmin,
+          itemsBelongToActiveOrg,
+          loggedInUserIsCreator,
+        ],
+        update: {
+          preMutation: [
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ],
+          postMutation: [
+            userIsLoggedIn,
+            userIsOwnerOrAdmin,
+            itemsBelongToActiveOrg,
+            loggedInUserIsCreator,
+          ],
+        },
+        delete: [
+          userIsLoggedIn,
+          userIsOwnerOrAdmin,
+          itemsBelongToActiveOrg,
+          loggedInUserIsCreator,
+        ],
       },
     },
-  };
+  } satisfies PermissionsConfig<AuthData, Schema>;
 });
