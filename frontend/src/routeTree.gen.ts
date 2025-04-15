@@ -10,230 +10,230 @@
 
 // Import Routes
 
-import { Route as rootRoute } from "./routes/__root";
-import { Route as AuthenticatedImport } from "./routes/_authenticated";
-import { Route as AuthenticatedLayoutImport } from "./routes/_authenticated/_layout";
-import { Route as AuthenticatedUserSettingsRouteImport } from "./routes/_authenticated/user-settings/route";
-import { Route as AuthenticatedNewOrganizationRouteImport } from "./routes/_authenticated/new-organization/route";
-import { Route as authSignupRouteImport } from "./routes/(auth)/signup/route";
-import { Route as authResetPasswordRouteImport } from "./routes/(auth)/reset-password/route";
-import { Route as authLoginRouteImport } from "./routes/(auth)/login/route";
-import { Route as authForgotPasswordRouteImport } from "./routes/(auth)/forgot-password/route";
-import { Route as AuthenticatedLayoutIndexImport } from "./routes/_authenticated/_layout/index";
-import { Route as AuthenticatedLayoutNotesRouteImport } from "./routes/_authenticated/_layout/notes/route";
-import { Route as AuthenticatedLayoutBoardsRouteImport } from "./routes/_authenticated/_layout/boards/route";
-import { Route as AuthenticatedLayoutNotesNoteIdRouteImport } from "./routes/_authenticated/_layout/notes_.$noteId/route";
-import { Route as AuthenticatedLayoutBoardsBoardUrlRouteImport } from "./routes/_authenticated/_layout/boards_.$boardUrl/route";
+import { Route as rootRoute } from './routes/__root'
+import { Route as AuthenticatedImport } from './routes/_authenticated'
+import { Route as AuthenticatedLayoutImport } from './routes/_authenticated/_layout'
+import { Route as AuthenticatedUserSettingsRouteImport } from './routes/_authenticated/user-settings/route'
+import { Route as AuthenticatedNewOrganizationRouteImport } from './routes/_authenticated/new-organization/route'
+import { Route as authSignupRouteImport } from './routes/(auth)/signup/route'
+import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password/route'
+import { Route as authLoginRouteImport } from './routes/(auth)/login/route'
+import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password/route'
+import { Route as AuthenticatedLayoutIndexImport } from './routes/_authenticated/_layout/index'
+import { Route as AuthenticatedLayoutNotesRouteImport } from './routes/_authenticated/_layout/notes/route'
+import { Route as AuthenticatedLayoutBoardsRouteImport } from './routes/_authenticated/_layout/boards/route'
+import { Route as AuthenticatedLayoutNotesNoteIdRouteImport } from './routes/_authenticated/_layout/notes_.$noteId/route'
+import { Route as AuthenticatedLayoutBoardsSlugRouteImport } from './routes/_authenticated/_layout/boards_.$slug/route'
 
 // Create/Update Routes
 
 const AuthenticatedRoute = AuthenticatedImport.update({
-  id: "/_authenticated",
+  id: '/_authenticated',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const AuthenticatedLayoutRoute = AuthenticatedLayoutImport.update({
-  id: "/_layout",
+  id: '/_layout',
   getParentRoute: () => AuthenticatedRoute,
-} as any);
+} as any)
 
 const AuthenticatedUserSettingsRouteRoute =
   AuthenticatedUserSettingsRouteImport.update({
-    id: "/user-settings",
-    path: "/user-settings",
+    id: '/user-settings',
+    path: '/user-settings',
     getParentRoute: () => AuthenticatedRoute,
-  } as any);
+  } as any)
 
 const AuthenticatedNewOrganizationRouteRoute =
   AuthenticatedNewOrganizationRouteImport.update({
-    id: "/new-organization",
-    path: "/new-organization",
+    id: '/new-organization',
+    path: '/new-organization',
     getParentRoute: () => AuthenticatedRoute,
-  } as any);
+  } as any)
 
 const authSignupRouteRoute = authSignupRouteImport.update({
-  id: "/(auth)/signup",
-  path: "/signup",
+  id: '/(auth)/signup',
+  path: '/signup',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const authResetPasswordRouteRoute = authResetPasswordRouteImport.update({
-  id: "/(auth)/reset-password",
-  path: "/reset-password",
+  id: '/(auth)/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const authLoginRouteRoute = authLoginRouteImport.update({
-  id: "/(auth)/login",
-  path: "/login",
+  id: '/(auth)/login',
+  path: '/login',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const authForgotPasswordRouteRoute = authForgotPasswordRouteImport.update({
-  id: "/(auth)/forgot-password",
-  path: "/forgot-password",
+  id: '/(auth)/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRoute,
-} as any);
+} as any)
 
 const AuthenticatedLayoutIndexRoute = AuthenticatedLayoutIndexImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => AuthenticatedLayoutRoute,
-} as any);
+} as any)
 
 const AuthenticatedLayoutNotesRouteRoute =
   AuthenticatedLayoutNotesRouteImport.update({
-    id: "/notes",
-    path: "/notes",
+    id: '/notes',
+    path: '/notes',
     getParentRoute: () => AuthenticatedLayoutRoute,
-  } as any);
+  } as any)
 
 const AuthenticatedLayoutBoardsRouteRoute =
   AuthenticatedLayoutBoardsRouteImport.update({
-    id: "/boards",
-    path: "/boards",
+    id: '/boards',
+    path: '/boards',
     getParentRoute: () => AuthenticatedLayoutRoute,
-  } as any);
+  } as any)
 
 const AuthenticatedLayoutNotesNoteIdRouteRoute =
   AuthenticatedLayoutNotesNoteIdRouteImport.update({
-    id: "/notes_/$noteId",
-    path: "/notes/$noteId",
+    id: '/notes_/$noteId',
+    path: '/notes/$noteId',
     getParentRoute: () => AuthenticatedLayoutRoute,
-  } as any);
+  } as any)
 
-const AuthenticatedLayoutBoardsBoardUrlRouteRoute =
-  AuthenticatedLayoutBoardsBoardUrlRouteImport.update({
-    id: "/boards_/$boardUrl",
-    path: "/boards/$boardUrl",
+const AuthenticatedLayoutBoardsSlugRouteRoute =
+  AuthenticatedLayoutBoardsSlugRouteImport.update({
+    id: '/boards_/$slug',
+    path: '/boards/$slug',
     getParentRoute: () => AuthenticatedLayoutRoute,
-  } as any);
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/_authenticated": {
-      id: "/_authenticated";
-      path: "";
-      fullPath: "";
-      preLoaderRoute: typeof AuthenticatedImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/(auth)/forgot-password": {
-      id: "/(auth)/forgot-password";
-      path: "/forgot-password";
-      fullPath: "/forgot-password";
-      preLoaderRoute: typeof authForgotPasswordRouteImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/(auth)/login": {
-      id: "/(auth)/login";
-      path: "/login";
-      fullPath: "/login";
-      preLoaderRoute: typeof authLoginRouteImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/(auth)/reset-password": {
-      id: "/(auth)/reset-password";
-      path: "/reset-password";
-      fullPath: "/reset-password";
-      preLoaderRoute: typeof authResetPasswordRouteImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/(auth)/signup": {
-      id: "/(auth)/signup";
-      path: "/signup";
-      fullPath: "/signup";
-      preLoaderRoute: typeof authSignupRouteImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/_authenticated/new-organization": {
-      id: "/_authenticated/new-organization";
-      path: "/new-organization";
-      fullPath: "/new-organization";
-      preLoaderRoute: typeof AuthenticatedNewOrganizationRouteImport;
-      parentRoute: typeof AuthenticatedImport;
-    };
-    "/_authenticated/user-settings": {
-      id: "/_authenticated/user-settings";
-      path: "/user-settings";
-      fullPath: "/user-settings";
-      preLoaderRoute: typeof AuthenticatedUserSettingsRouteImport;
-      parentRoute: typeof AuthenticatedImport;
-    };
-    "/_authenticated/_layout": {
-      id: "/_authenticated/_layout";
-      path: "";
-      fullPath: "";
-      preLoaderRoute: typeof AuthenticatedLayoutImport;
-      parentRoute: typeof AuthenticatedImport;
-    };
-    "/_authenticated/_layout/boards": {
-      id: "/_authenticated/_layout/boards";
-      path: "/boards";
-      fullPath: "/boards";
-      preLoaderRoute: typeof AuthenticatedLayoutBoardsRouteImport;
-      parentRoute: typeof AuthenticatedLayoutImport;
-    };
-    "/_authenticated/_layout/notes": {
-      id: "/_authenticated/_layout/notes";
-      path: "/notes";
-      fullPath: "/notes";
-      preLoaderRoute: typeof AuthenticatedLayoutNotesRouteImport;
-      parentRoute: typeof AuthenticatedLayoutImport;
-    };
-    "/_authenticated/_layout/": {
-      id: "/_authenticated/_layout/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof AuthenticatedLayoutIndexImport;
-      parentRoute: typeof AuthenticatedLayoutImport;
-    };
-    "/_authenticated/_layout/boards_/$boardUrl": {
-      id: "/_authenticated/_layout/boards_/$boardUrl";
-      path: "/boards/$boardUrl";
-      fullPath: "/boards/$boardUrl";
-      preLoaderRoute: typeof AuthenticatedLayoutBoardsBoardUrlRouteImport;
-      parentRoute: typeof AuthenticatedLayoutImport;
-    };
-    "/_authenticated/_layout/notes_/$noteId": {
-      id: "/_authenticated/_layout/notes_/$noteId";
-      path: "/notes/$noteId";
-      fullPath: "/notes/$noteId";
-      preLoaderRoute: typeof AuthenticatedLayoutNotesNoteIdRouteImport;
-      parentRoute: typeof AuthenticatedLayoutImport;
-    };
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedImport
+      parentRoute: typeof rootRoute
+    }
+    '/(auth)/forgot-password': {
+      id: '/(auth)/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof authForgotPasswordRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/(auth)/login': {
+      id: '/(auth)/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof authLoginRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/(auth)/reset-password': {
+      id: '/(auth)/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof authResetPasswordRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/(auth)/signup': {
+      id: '/(auth)/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof authSignupRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authenticated/new-organization': {
+      id: '/_authenticated/new-organization'
+      path: '/new-organization'
+      fullPath: '/new-organization'
+      preLoaderRoute: typeof AuthenticatedNewOrganizationRouteImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/user-settings': {
+      id: '/_authenticated/user-settings'
+      path: '/user-settings'
+      fullPath: '/user-settings'
+      preLoaderRoute: typeof AuthenticatedUserSettingsRouteImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/_layout': {
+      id: '/_authenticated/_layout'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedLayoutImport
+      parentRoute: typeof AuthenticatedImport
+    }
+    '/_authenticated/_layout/boards': {
+      id: '/_authenticated/_layout/boards'
+      path: '/boards'
+      fullPath: '/boards'
+      preLoaderRoute: typeof AuthenticatedLayoutBoardsRouteImport
+      parentRoute: typeof AuthenticatedLayoutImport
+    }
+    '/_authenticated/_layout/notes': {
+      id: '/_authenticated/_layout/notes'
+      path: '/notes'
+      fullPath: '/notes'
+      preLoaderRoute: typeof AuthenticatedLayoutNotesRouteImport
+      parentRoute: typeof AuthenticatedLayoutImport
+    }
+    '/_authenticated/_layout/': {
+      id: '/_authenticated/_layout/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedLayoutIndexImport
+      parentRoute: typeof AuthenticatedLayoutImport
+    }
+    '/_authenticated/_layout/boards_/$slug': {
+      id: '/_authenticated/_layout/boards_/$slug'
+      path: '/boards/$slug'
+      fullPath: '/boards/$slug'
+      preLoaderRoute: typeof AuthenticatedLayoutBoardsSlugRouteImport
+      parentRoute: typeof AuthenticatedLayoutImport
+    }
+    '/_authenticated/_layout/notes_/$noteId': {
+      id: '/_authenticated/_layout/notes_/$noteId'
+      path: '/notes/$noteId'
+      fullPath: '/notes/$noteId'
+      preLoaderRoute: typeof AuthenticatedLayoutNotesNoteIdRouteImport
+      parentRoute: typeof AuthenticatedLayoutImport
+    }
   }
 }
 
 // Create and export the route tree
 
 interface AuthenticatedLayoutRouteChildren {
-  AuthenticatedLayoutBoardsRouteRoute: typeof AuthenticatedLayoutBoardsRouteRoute;
-  AuthenticatedLayoutNotesRouteRoute: typeof AuthenticatedLayoutNotesRouteRoute;
-  AuthenticatedLayoutIndexRoute: typeof AuthenticatedLayoutIndexRoute;
-  AuthenticatedLayoutBoardsBoardUrlRouteRoute: typeof AuthenticatedLayoutBoardsBoardUrlRouteRoute;
-  AuthenticatedLayoutNotesNoteIdRouteRoute: typeof AuthenticatedLayoutNotesNoteIdRouteRoute;
+  AuthenticatedLayoutBoardsRouteRoute: typeof AuthenticatedLayoutBoardsRouteRoute
+  AuthenticatedLayoutNotesRouteRoute: typeof AuthenticatedLayoutNotesRouteRoute
+  AuthenticatedLayoutIndexRoute: typeof AuthenticatedLayoutIndexRoute
+  AuthenticatedLayoutBoardsSlugRouteRoute: typeof AuthenticatedLayoutBoardsSlugRouteRoute
+  AuthenticatedLayoutNotesNoteIdRouteRoute: typeof AuthenticatedLayoutNotesNoteIdRouteRoute
 }
 
 const AuthenticatedLayoutRouteChildren: AuthenticatedLayoutRouteChildren = {
   AuthenticatedLayoutBoardsRouteRoute: AuthenticatedLayoutBoardsRouteRoute,
   AuthenticatedLayoutNotesRouteRoute: AuthenticatedLayoutNotesRouteRoute,
   AuthenticatedLayoutIndexRoute: AuthenticatedLayoutIndexRoute,
-  AuthenticatedLayoutBoardsBoardUrlRouteRoute:
-    AuthenticatedLayoutBoardsBoardUrlRouteRoute,
+  AuthenticatedLayoutBoardsSlugRouteRoute:
+    AuthenticatedLayoutBoardsSlugRouteRoute,
   AuthenticatedLayoutNotesNoteIdRouteRoute:
     AuthenticatedLayoutNotesNoteIdRouteRoute,
-};
+}
 
 const AuthenticatedLayoutRouteWithChildren =
-  AuthenticatedLayoutRoute._addFileChildren(AuthenticatedLayoutRouteChildren);
+  AuthenticatedLayoutRoute._addFileChildren(AuthenticatedLayoutRouteChildren)
 
 interface AuthenticatedRouteChildren {
-  AuthenticatedNewOrganizationRouteRoute: typeof AuthenticatedNewOrganizationRouteRoute;
-  AuthenticatedUserSettingsRouteRoute: typeof AuthenticatedUserSettingsRouteRoute;
-  AuthenticatedLayoutRoute: typeof AuthenticatedLayoutRouteWithChildren;
+  AuthenticatedNewOrganizationRouteRoute: typeof AuthenticatedNewOrganizationRouteRoute
+  AuthenticatedUserSettingsRouteRoute: typeof AuthenticatedUserSettingsRouteRoute
+  AuthenticatedLayoutRoute: typeof AuthenticatedLayoutRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -241,112 +241,112 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
     AuthenticatedNewOrganizationRouteRoute,
   AuthenticatedUserSettingsRouteRoute: AuthenticatedUserSettingsRouteRoute,
   AuthenticatedLayoutRoute: AuthenticatedLayoutRouteWithChildren,
-};
+}
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
-);
+)
 
 export interface FileRoutesByFullPath {
-  "": typeof AuthenticatedLayoutRouteWithChildren;
-  "/forgot-password": typeof authForgotPasswordRouteRoute;
-  "/login": typeof authLoginRouteRoute;
-  "/reset-password": typeof authResetPasswordRouteRoute;
-  "/signup": typeof authSignupRouteRoute;
-  "/new-organization": typeof AuthenticatedNewOrganizationRouteRoute;
-  "/user-settings": typeof AuthenticatedUserSettingsRouteRoute;
-  "/boards": typeof AuthenticatedLayoutBoardsRouteRoute;
-  "/notes": typeof AuthenticatedLayoutNotesRouteRoute;
-  "/": typeof AuthenticatedLayoutIndexRoute;
-  "/boards/$boardUrl": typeof AuthenticatedLayoutBoardsBoardUrlRouteRoute;
-  "/notes/$noteId": typeof AuthenticatedLayoutNotesNoteIdRouteRoute;
+  '': typeof AuthenticatedLayoutRouteWithChildren
+  '/forgot-password': typeof authForgotPasswordRouteRoute
+  '/login': typeof authLoginRouteRoute
+  '/reset-password': typeof authResetPasswordRouteRoute
+  '/signup': typeof authSignupRouteRoute
+  '/new-organization': typeof AuthenticatedNewOrganizationRouteRoute
+  '/user-settings': typeof AuthenticatedUserSettingsRouteRoute
+  '/boards': typeof AuthenticatedLayoutBoardsRouteRoute
+  '/notes': typeof AuthenticatedLayoutNotesRouteRoute
+  '/': typeof AuthenticatedLayoutIndexRoute
+  '/boards/$slug': typeof AuthenticatedLayoutBoardsSlugRouteRoute
+  '/notes/$noteId': typeof AuthenticatedLayoutNotesNoteIdRouteRoute
 }
 
 export interface FileRoutesByTo {
-  "": typeof AuthenticatedRouteWithChildren;
-  "/forgot-password": typeof authForgotPasswordRouteRoute;
-  "/login": typeof authLoginRouteRoute;
-  "/reset-password": typeof authResetPasswordRouteRoute;
-  "/signup": typeof authSignupRouteRoute;
-  "/new-organization": typeof AuthenticatedNewOrganizationRouteRoute;
-  "/user-settings": typeof AuthenticatedUserSettingsRouteRoute;
-  "/boards": typeof AuthenticatedLayoutBoardsRouteRoute;
-  "/notes": typeof AuthenticatedLayoutNotesRouteRoute;
-  "/": typeof AuthenticatedLayoutIndexRoute;
-  "/boards/$boardUrl": typeof AuthenticatedLayoutBoardsBoardUrlRouteRoute;
-  "/notes/$noteId": typeof AuthenticatedLayoutNotesNoteIdRouteRoute;
+  '': typeof AuthenticatedRouteWithChildren
+  '/forgot-password': typeof authForgotPasswordRouteRoute
+  '/login': typeof authLoginRouteRoute
+  '/reset-password': typeof authResetPasswordRouteRoute
+  '/signup': typeof authSignupRouteRoute
+  '/new-organization': typeof AuthenticatedNewOrganizationRouteRoute
+  '/user-settings': typeof AuthenticatedUserSettingsRouteRoute
+  '/boards': typeof AuthenticatedLayoutBoardsRouteRoute
+  '/notes': typeof AuthenticatedLayoutNotesRouteRoute
+  '/': typeof AuthenticatedLayoutIndexRoute
+  '/boards/$slug': typeof AuthenticatedLayoutBoardsSlugRouteRoute
+  '/notes/$noteId': typeof AuthenticatedLayoutNotesNoteIdRouteRoute
 }
 
 export interface FileRoutesById {
-  __root__: typeof rootRoute;
-  "/_authenticated": typeof AuthenticatedRouteWithChildren;
-  "/(auth)/forgot-password": typeof authForgotPasswordRouteRoute;
-  "/(auth)/login": typeof authLoginRouteRoute;
-  "/(auth)/reset-password": typeof authResetPasswordRouteRoute;
-  "/(auth)/signup": typeof authSignupRouteRoute;
-  "/_authenticated/new-organization": typeof AuthenticatedNewOrganizationRouteRoute;
-  "/_authenticated/user-settings": typeof AuthenticatedUserSettingsRouteRoute;
-  "/_authenticated/_layout": typeof AuthenticatedLayoutRouteWithChildren;
-  "/_authenticated/_layout/boards": typeof AuthenticatedLayoutBoardsRouteRoute;
-  "/_authenticated/_layout/notes": typeof AuthenticatedLayoutNotesRouteRoute;
-  "/_authenticated/_layout/": typeof AuthenticatedLayoutIndexRoute;
-  "/_authenticated/_layout/boards_/$boardUrl": typeof AuthenticatedLayoutBoardsBoardUrlRouteRoute;
-  "/_authenticated/_layout/notes_/$noteId": typeof AuthenticatedLayoutNotesNoteIdRouteRoute;
+  __root__: typeof rootRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/(auth)/forgot-password': typeof authForgotPasswordRouteRoute
+  '/(auth)/login': typeof authLoginRouteRoute
+  '/(auth)/reset-password': typeof authResetPasswordRouteRoute
+  '/(auth)/signup': typeof authSignupRouteRoute
+  '/_authenticated/new-organization': typeof AuthenticatedNewOrganizationRouteRoute
+  '/_authenticated/user-settings': typeof AuthenticatedUserSettingsRouteRoute
+  '/_authenticated/_layout': typeof AuthenticatedLayoutRouteWithChildren
+  '/_authenticated/_layout/boards': typeof AuthenticatedLayoutBoardsRouteRoute
+  '/_authenticated/_layout/notes': typeof AuthenticatedLayoutNotesRouteRoute
+  '/_authenticated/_layout/': typeof AuthenticatedLayoutIndexRoute
+  '/_authenticated/_layout/boards_/$slug': typeof AuthenticatedLayoutBoardsSlugRouteRoute
+  '/_authenticated/_layout/notes_/$noteId': typeof AuthenticatedLayoutNotesNoteIdRouteRoute
 }
 
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | ""
-    | "/forgot-password"
-    | "/login"
-    | "/reset-password"
-    | "/signup"
-    | "/new-organization"
-    | "/user-settings"
-    | "/boards"
-    | "/notes"
-    | "/"
-    | "/boards/$boardUrl"
-    | "/notes/$noteId";
-  fileRoutesByTo: FileRoutesByTo;
+    | ''
+    | '/forgot-password'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/new-organization'
+    | '/user-settings'
+    | '/boards'
+    | '/notes'
+    | '/'
+    | '/boards/$slug'
+    | '/notes/$noteId'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | ""
-    | "/forgot-password"
-    | "/login"
-    | "/reset-password"
-    | "/signup"
-    | "/new-organization"
-    | "/user-settings"
-    | "/boards"
-    | "/notes"
-    | "/"
-    | "/boards/$boardUrl"
-    | "/notes/$noteId";
+    | ''
+    | '/forgot-password'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/new-organization'
+    | '/user-settings'
+    | '/boards'
+    | '/notes'
+    | '/'
+    | '/boards/$slug'
+    | '/notes/$noteId'
   id:
-    | "__root__"
-    | "/_authenticated"
-    | "/(auth)/forgot-password"
-    | "/(auth)/login"
-    | "/(auth)/reset-password"
-    | "/(auth)/signup"
-    | "/_authenticated/new-organization"
-    | "/_authenticated/user-settings"
-    | "/_authenticated/_layout"
-    | "/_authenticated/_layout/boards"
-    | "/_authenticated/_layout/notes"
-    | "/_authenticated/_layout/"
-    | "/_authenticated/_layout/boards_/$boardUrl"
-    | "/_authenticated/_layout/notes_/$noteId";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/_authenticated'
+    | '/(auth)/forgot-password'
+    | '/(auth)/login'
+    | '/(auth)/reset-password'
+    | '/(auth)/signup'
+    | '/_authenticated/new-organization'
+    | '/_authenticated/user-settings'
+    | '/_authenticated/_layout'
+    | '/_authenticated/_layout/boards'
+    | '/_authenticated/_layout/notes'
+    | '/_authenticated/_layout/'
+    | '/_authenticated/_layout/boards_/$slug'
+    | '/_authenticated/_layout/notes_/$noteId'
+  fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren;
-  authForgotPasswordRouteRoute: typeof authForgotPasswordRouteRoute;
-  authLoginRouteRoute: typeof authLoginRouteRoute;
-  authResetPasswordRouteRoute: typeof authResetPasswordRouteRoute;
-  authSignupRouteRoute: typeof authSignupRouteRoute;
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  authForgotPasswordRouteRoute: typeof authForgotPasswordRouteRoute
+  authLoginRouteRoute: typeof authLoginRouteRoute
+  authResetPasswordRouteRoute: typeof authResetPasswordRouteRoute
+  authSignupRouteRoute: typeof authSignupRouteRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -355,11 +355,11 @@ const rootRouteChildren: RootRouteChildren = {
   authLoginRouteRoute: authLoginRouteRoute,
   authResetPasswordRouteRoute: authResetPasswordRouteRoute,
   authSignupRouteRoute: authSignupRouteRoute,
-};
+}
 
 export const routeTree = rootRoute
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
 /* ROUTE_MANIFEST_START
 {
@@ -409,7 +409,7 @@ export const routeTree = rootRoute
         "/_authenticated/_layout/boards",
         "/_authenticated/_layout/notes",
         "/_authenticated/_layout/",
-        "/_authenticated/_layout/boards_/$boardUrl",
+        "/_authenticated/_layout/boards_/$slug",
         "/_authenticated/_layout/notes_/$noteId"
       ]
     },
@@ -425,8 +425,8 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/_layout/index.tsx",
       "parent": "/_authenticated/_layout"
     },
-    "/_authenticated/_layout/boards_/$boardUrl": {
-      "filePath": "_authenticated/_layout/boards_.$boardUrl/route.tsx",
+    "/_authenticated/_layout/boards_/$slug": {
+      "filePath": "_authenticated/_layout/boards_.$slug/route.tsx",
       "parent": "/_authenticated/_layout"
     },
     "/_authenticated/_layout/notes_/$noteId": {

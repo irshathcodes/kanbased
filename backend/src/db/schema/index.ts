@@ -79,7 +79,7 @@ export const boardsTable = pgTable("boards", {
   id: t.varchar({ length: 26 }).primaryKey(),
   name: t.varchar({ length: 255 }).notNull(),
   color: t.varchar({ length: 255 }),
-  boardUrl: t.text().notNull(),
+  slug: t.text().notNull(),
   ...commonColumns,
 });
 

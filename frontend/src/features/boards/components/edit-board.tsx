@@ -17,7 +17,7 @@ import { useZ } from "@/lib/zero-cache";
 export function EditBoard(props: EditBoardModal) {
   const { board } = props;
   const [boardName, setBoardName] = useState(board.name);
-  const boardUrl = boardName.toLowerCase().split(" ").join("-");
+  const slug = boardName.toLowerCase().split(" ").join("-");
   const z = useZ();
 
   const handleSubmit: FormEventHandler = (e) => {
@@ -26,7 +26,7 @@ export function EditBoard(props: EditBoardModal) {
     z.mutate.boardsTable.update({
       id: board.id,
       name: boardName,
-      boardUrl,
+      slug,
       updatedAt: Date.now(),
     });
 
@@ -62,7 +62,7 @@ export function EditBoard(props: EditBoardModal) {
             </DialogDescription>
 
             <p className="text-xs">
-              Board URL: <b>{boardUrl}</b>
+              Board URL: <b>{slug}</b>
             </p>
           </div>
 

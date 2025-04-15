@@ -19,7 +19,7 @@ import { toast } from "sonner";
 
 export function CreateBoard(props: CreateBoardModal) {
   const [boardName, setBoardName] = useState("");
-  const boardUrl = boardName.toLowerCase().split(" ").join("-");
+  const slug = boardName.toLowerCase().split(" ").join("-");
   const z = useZ();
   const activeOrganizationId = useActiveOrganizationId();
 
@@ -29,7 +29,7 @@ export function CreateBoard(props: CreateBoardModal) {
     z.mutate.boardsTable.insert({
       id: createId(),
       name: boardName,
-      boardUrl,
+      slug,
       updatedAt: Date.now(),
       createdAt: Date.now(),
       creatorId: z.userID,
@@ -46,8 +46,8 @@ export function CreateBoard(props: CreateBoardModal) {
             size: "sm",
             className: "!h-8",
           })}
-          to="/boards/$boardUrl"
-          params={{ boardUrl }}
+          to="/boards/$slug"
+          params={{ slug }}
         >
           View
         </Link>
@@ -80,7 +80,7 @@ export function CreateBoard(props: CreateBoardModal) {
             </DialogDescription>
 
             <p className="text-xs">
-              Board URL: <b>{boardUrl}</b>
+              Board URL: <b>{slug}</b>
             </p>
           </div>
 

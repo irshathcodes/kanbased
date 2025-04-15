@@ -11,7 +11,7 @@ import { TaskDetailPage } from "./-actions";
 import { getActiveOrganizationId } from "@/queries/session";
 
 export const Route = createFileRoute(
-  "/_authenticated/_layout/boards_/$boardUrl",
+  "/_authenticated/_layout/boards_/$slug",
 )({
   component: BoardPage,
   validateSearch: (search): { taskId?: string } => {

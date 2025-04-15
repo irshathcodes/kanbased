@@ -48,7 +48,7 @@ export const schema = createZeroSchema(drizzleSchema, {
     },
     boardsTable: {
       id: true,
-      boardUrl: true,
+      slug: true,
       createdAt: true,
       updatedAt: true,
       organizationId: true,
