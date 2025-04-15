@@ -7,75 +7,23 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
-import { api } from "@/lib/openapi-react-query";
-import { queryClient } from "@/lib/query-client";
-import { boardsQueryOptions } from "@/lib/query-options-factory";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { DeleteBoardModal } from "@/features/boards/state/board";
-import { useActiveOrganizationId } from "@/queries/session";
+import { useZ } from "@/lib/zero-cache";
 
 export function DeleteBoard(props: DeleteBoardModal) {
-  const deleteBoardMutation = api.useMutation(
-    "patch",
-    "/api/v1/boards/{boardId}/toggle-delete",
-  );
-  const orgId = useActiveOrganizationId();
-  const boardsQueryKey = boardsQueryOptions({ orgId }).queryKey;
+  const z = useZ();
 
-  const handleUndoDelete = (boardId: string) => {
-    toast.promise(
-      deleteBoardMutation.mutateAsync(
-        {
-          params: { path: { boardId } },
-          body: { deleted: false },
-        },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: boardsQueryKey });
-          },
-        },
-      ),
-      {
-        loading: "Restoring board...",
-        success: "Board restored successfully",
-        error: "Failed to restore board",
-      },
-    );
-  };
+  const handleDelete = () => {
+    z.mutate.boardsTable.update({
+      id: props.board.id,
+      deletedAt: Date.now(),
+    });
 
-  const handleDelete = async () => {
-    await deleteBoardMutation.mutateAsync(
-      {
-        params: { path: { boardId: props.board.id } },
-        body: { deleted: true },
-      },
-      {
-        onSuccess: (result) => {
-          queryClient.invalidateQueries({ queryKey: boardsQueryKey });
+    toast.success(`${props.board.name} board deleted successfully`);
 
-          toast.success(
-            <div className="flex items-center justify-between w-full">
-              <span>
-                <b>{result.name}</b> board deleted successfully
-              </span>
-              <button
-                className={buttonVariants({
-                  size: "sm",
-                  className: "!h-8",
-                })}
-                onClick={() => handleUndoDelete(result.id)}
-              >
-                Undo
-              </button>
-            </div>,
-          );
-
-          props.onClose();
-        },
-      },
-    );
+    props.onClose();
   };
 
   const handleOpenChange = () => {
@@ -96,19 +44,8 @@ export function DeleteBoard(props: DeleteBoardModal) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button
-            disabled={deleteBoardMutation.isPending}
-            variant="destructive"
-            onClick={handleDelete}
-            type="submit"
-          >
-            {deleteBoardMutation.isPending ? (
-              <>
-                <Spinner />
-              </>
-            ) : (
-              "Delete"
-            )}
+          <Button variant="destructive" onClick={handleDelete} type="submit">
+            Delete
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

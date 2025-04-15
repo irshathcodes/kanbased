@@ -9,8 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
-import { useCreateBoardMutation } from "@/features/boards/queries/boards";
 import { CreateBoardModal } from "@/features/boards/state/board";
 import { createId } from "@/lib/utils";
 import { useZ } from "@/lib/zero-cache";
@@ -20,7 +18,6 @@ import { useState, type FormEventHandler } from "react";
 import { toast } from "sonner";
 
 export function CreateBoard(props: CreateBoardModal) {
-  const createBoardMutation = useCreateBoardMutation();
   const [boardName, setBoardName] = useState("");
   const boardUrl = boardName.toLowerCase().split(" ").join("-");
   const z = useZ();
@@ -56,6 +53,7 @@ export function CreateBoard(props: CreateBoardModal) {
         </Link>
       </div>,
     );
+
     props.onClose();
   };
 
@@ -87,12 +85,8 @@ export function CreateBoard(props: CreateBoardModal) {
           </div>
 
           <DialogFooter>
-            <Button
-              disabled={createBoardMutation.isPending}
-              type="submit"
-              className="w-[72px]"
-            >
-              {createBoardMutation.isPending ? <Spinner /> : "Create"}
+            <Button type="submit" className="w-[72px]">
+              Create
             </Button>
           </DialogFooter>
         </form>

@@ -9,49 +9,30 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
-import { api } from "@/lib/openapi-react-query";
-import { queryClient } from "@/lib/query-client";
 import { useState, type FormEventHandler } from "react";
 import { toast } from "sonner";
-import { boardsQueryOptions } from "@/lib/query-options-factory";
 import { EditBoardModal } from "@/features/boards/state/board";
-import { useActiveOrganizationId } from "@/queries/session";
+import { useZ } from "@/lib/zero-cache";
 
 export function EditBoard(props: EditBoardModal) {
   const { board } = props;
   const [boardName, setBoardName] = useState(board.name);
   const boardUrl = boardName.toLowerCase().split(" ").join("-");
-  const orgId = useActiveOrganizationId();
-  const { mutate, isPending } = api.useMutation(
-    "patch",
-    "/api/v1/boards/{boardId}",
-  );
+  const z = useZ();
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
-    const currentDate = new Date().toISOString();
-    const boardsQueryKey = boardsQueryOptions({ orgId }).queryKey;
 
-    mutate(
-      {
-        body: {
-          name: boardName,
-          boardUrl,
-          updatedAt: currentDate,
-        },
-        params: {
-          path: { boardId: board.id },
-        },
-      },
-      {
-        onSuccess() {
-          queryClient.invalidateQueries({ queryKey: boardsQueryKey });
-          toast.success("Board updated successfully");
-          props.onClose();
-        },
-      },
-    );
+    z.mutate.boardsTable.update({
+      id: board.id,
+      name: boardName,
+      boardUrl,
+      updatedAt: Date.now(),
+    });
+
+    toast.success("Board updated successfully");
+
+    props.onClose();
   };
 
   const handleOpenChange = () => {
@@ -86,8 +67,8 @@ export function EditBoard(props: EditBoardModal) {
           </div>
 
           <DialogFooter>
-            <Button disabled={isPending} type="submit" className="w-[72px]">
-              {isPending ? <Spinner /> : "Update"}
+            <Button type="submit" className="w-[72px]">
+              Update
             </Button>
           </DialogFooter>
         </form>
