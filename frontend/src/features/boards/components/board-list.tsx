@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@tanstack/react-router";
 import { useBoardModalControls } from "@/features/boards/state/board";
-import { BoardsListResult } from "@/lib/zero-queries";
+import { GetBoardsListQueryResult } from "@/lib/zero-queries";
 import { getRelativeTimeString } from "@/lib/utils";
 
-function BoardItem({ board }: { board: BoardsListResult[number] }) {
+function BoardItem({ board }: { board: GetBoardsListQueryResult[number] }) {
   const { openModal, closeModal } = useBoardModalControls();
 
   return (
@@ -94,7 +94,7 @@ function BoardItem({ board }: { board: BoardsListResult[number] }) {
   );
 }
 
-export function BoardList(props: { boards: BoardsListResult }) {
+export function BoardList(props: { boards: GetBoardsListQueryResult }) {
   return (
     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {props.boards?.map((board) => <BoardItem board={board} key={board.id} />)}

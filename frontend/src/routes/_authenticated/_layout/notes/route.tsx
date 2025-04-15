@@ -6,21 +6,15 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import { Actions } from "./-actions";
-import { queryClient } from "@/lib/query-client";
-import { getAllNotesQueryOptions } from "@/lib/query-options-factory";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@rocicorp/zero/react";
 import { NoteList } from "@/features/notes/components/note-list";
-import { getActiveOrganizationId } from "@/queries/session";
+import { getNotesListQuery } from "@/lib/zero-queries";
+import { useZ } from "@/lib/zero-cache";
 
 export const Route = createFileRoute("/_authenticated/_layout/notes")({
   component: RouteComponent,
 
   loader: async () => {
-    const orgId = getActiveOrganizationId(queryClient);
-    const notesQueryOptions = getAllNotesQueryOptions({ orgId });
-
-    await queryClient.prefetchQuery(notesQueryOptions);
-
     return {
       breadcrumbs: linkOptions([
         {
@@ -28,7 +22,6 @@ export const Route = createFileRoute("/_authenticated/_layout/notes")({
           to: "/notes",
         },
       ]),
-      notesQueryOptions,
     };
   },
 
@@ -42,8 +35,8 @@ export const Route = createFileRoute("/_authenticated/_layout/notes")({
 
 function RouteComponent() {
   const router = useRouter();
-  const { notesQueryOptions } = Route.useLoaderData();
-  const { data } = useSuspenseQuery(notesQueryOptions);
+  const z = useZ();
+  const [notes] = useQuery(getNotesListQuery(z));
 
   const handleCreateNote = () => {
     router.navigate({ to: ".", search: { createNote: true } });
@@ -56,7 +49,7 @@ function RouteComponent() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
-                Notes ({data.notes.length})
+                Notes ({notes.length})
               </h1>
               <p className="text-muted-foreground mt-1">
                 Manage and organize your notes
@@ -68,7 +61,7 @@ function RouteComponent() {
             </div>
           </div>
 
-          {data.notes.length === 0 ? (
+          {notes.length === 0 ? (
             <div className="text-center py-12 border rounded-lg bg-muted/10">
               <h1 className="text-xl font-bold mb-1">No notes yet</h1>
               <p className="text-muted-foreground mb-4 text-sm">
@@ -78,7 +71,7 @@ function RouteComponent() {
               <CreateNoteButton size="sm" onClick={handleCreateNote} />
             </div>
           ) : (
-            <NoteList notes={data.notes} />
+            <NoteList notes={notes} />
           )}
         </div>
       </div>

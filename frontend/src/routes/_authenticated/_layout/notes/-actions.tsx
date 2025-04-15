@@ -17,7 +17,6 @@ export function Actions() {
     return (
       <NoteEditor
         mode="create"
-        exitEditorWithoutSaving={handleClose}
         onClose={handleClose}
         afterSave={({ noteId }) => {
           router.navigate({

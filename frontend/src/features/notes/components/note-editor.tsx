@@ -6,16 +6,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMarkdownEditorPreviewToggle } from "@/hooks/use-markdown-editor";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/openapi-react-query";
 import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { KeyboardShortcutIndicator } from "@/components/keyboard-shortcut";
 import MdPreview from "@/components/md-preview/md-preview";
 import CodeMirrorEditor from "@/components/md-editor/md-editor";
 import { useKeyDown } from "@/hooks/use-keydown";
-import { useQueryClient } from "@tanstack/react-query";
 import { createId } from "@/lib/utils";
-import { flushSync } from "react-dom";
 import {
   Dialog,
   DialogContent,
@@ -25,9 +22,9 @@ import {
 } from "@/components/ui/dialog";
 import { Suspense } from "react";
 import { EditableText } from "@/components/editable-text";
-import { getNoteQueryOptions } from "@/lib/query-options-factory";
+import { useZ } from "@/lib/zero-cache";
+import { flushSync } from "react-dom";
 import { useActiveOrganizationId } from "@/queries/session";
-
 type CommonProps = {
   afterSave: (data: { noteId: string }) => void;
   onClose: () => void;
@@ -46,51 +43,12 @@ type NoteEditorProps =
 
 export default function NoteEditor(props: NoteEditorProps) {
   const [isDirty, setIsDirty] = useState(false);
-  const queryClient = useQueryClient();
   const isCreate = props.mode === "create";
   const editorRef = useRef<CodeMirrorEditorRefData>(null);
-  const orgId = useActiveOrganizationId();
-
-  const updateNoteMutation = api.useMutation(
-    "patch",
-    "/api/v1/notes/{noteId}",
-    {
-      onSuccess: async () => {
-        const noteId = !isCreate ? props.noteId : undefined!;
-        const queryKey = getNoteQueryOptions({ noteId, orgId }).queryKey;
-
-        await queryClient.invalidateQueries({
-          queryKey,
-        });
-
-        flushSync(() => {
-          setIsDirty(false);
-        });
-
-        toast.success("Note updated");
-        props.afterSave({ noteId });
-      },
-    },
-  );
-
-  const createNoteMutation = api.useMutation("post", "/api/v1/notes", {
-    onSuccess: (data) => {
-      flushSync(() => {
-        setIsDirty(false);
-      });
-
-      toast.success("Note created");
-
-      props.afterSave({ noteId: data.id });
-    },
-  });
+  const z = useZ();
 
   const defaultTitle = isCreate ? "Untitled Note" : props.title;
   const defaultContent = isCreate ? "" : props.content;
-
-  const isPending = isCreate
-    ? createNoteMutation.isPending
-    : updateNoteMutation.isPending;
 
   const {
     parsedHtml,
@@ -105,6 +63,7 @@ export default function NoteEditor(props: NoteEditorProps) {
     isDirty,
   });
 
+  const activeOrganizationId = useActiveOrganizationId();
   const [title, setTitle] = useState(defaultTitle);
   const content = useRef(defaultContent);
 
@@ -124,30 +83,25 @@ export default function NoteEditor(props: NoteEditorProps) {
   });
 
   const handleSave = () => {
-    const now = new Date().toISOString();
-    if (isCreate) {
-      createNoteMutation.mutate({
-        body: {
-          content: content.current,
-          name: title,
-          id: createId(),
-          createdAt: now,
-        },
-      });
-    } else {
-      updateNoteMutation.mutate({
-        body: {
-          updatedAt: now,
-          content: content.current,
-          name: title,
-        },
-        params: {
-          path: {
-            noteId: props.noteId,
-          },
-        },
-      });
-    }
+    const noteId = isCreate ? createId() : props.noteId;
+    const now = Date.now();
+
+    z.mutate.notesTable.upsert({
+      id: noteId,
+      name: title,
+      content: content.current,
+      createdAt: now,
+      updatedAt: isCreate ? null : now,
+      organizationId: activeOrganizationId,
+      creatorId: z.userID,
+    });
+
+    flushSync(() => {
+      setIsDirty(false);
+    });
+
+    toast.success(isCreate ? "Note created" : "Note updated");
+    props.afterSave({ noteId });
   };
 
   const handleEditorModeChange = (mode: EditorMode) => {
@@ -242,21 +196,14 @@ export default function NoteEditor(props: NoteEditorProps) {
                       type="button"
                       size="sm"
                       className="flex items-center gap-2"
-                      disabled={isPending || !isDirty}
+                      disabled={!isDirty}
                     >
-                      {isPending ? (
-                        <>
-                          <Spinner className="mr-1" />
-                          <span className="w-20">Saving...</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Save</span>
-                          <KeyboardShortcutIndicator commandOrCtrlKey>
-                            S
-                          </KeyboardShortcutIndicator>
-                        </>
-                      )}
+                      <>
+                        <span>Save</span>
+                        <KeyboardShortcutIndicator commandOrCtrlKey>
+                          S
+                        </KeyboardShortcutIndicator>
+                      </>
                     </Button>
                   </div>
                 </div>

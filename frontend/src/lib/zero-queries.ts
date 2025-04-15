@@ -6,4 +6,15 @@ export function getBoardsListQuery(z: Z) {
   return boardsQuery;
 }
 
-export type BoardsListResult = ZeroQueryResult<typeof getBoardsListQuery>[];
+export type GetBoardsListQueryResult = ZeroQueryResult<
+  typeof getBoardsListQuery
+>[];
+
+export function getNotesListQuery(z: Z) {
+  const notesQuery = z.query.notesTable.where("deletedAt", "IS", null);
+  return notesQuery;
+}
+
+export type GetNotesListQueryResult = ZeroQueryResult<
+  typeof getNotesListQuery
+>[];

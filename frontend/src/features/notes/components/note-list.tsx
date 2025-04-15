@@ -1,10 +1,8 @@
 import { getRelativeTimeString } from "@/lib/utils";
-import { NoteListResponse } from "@/types/api-response-types";
 import { Link } from "@tanstack/react-router";
+import { GetNotesListQueryResult } from "@/lib/zero-queries";
 
-type Note = NoteListResponse["notes"][number];
-
-function NoteItem({ note }: { note: Note }) {
+function NoteItem({ note }: { note: GetNotesListQueryResult[number] }) {
   return (
     <Link
       to="/notes/$noteId"
@@ -23,17 +21,26 @@ function NoteItem({ note }: { note: Note }) {
             </h3>
           </div>
 
+          {/* Created at */}
+          {note.createdAt && (
+            <p className="text-sm text-muted-foreground">
+              Created {getRelativeTimeString(new Date(note.createdAt))}
+            </p>
+          )}
+
           {/* Updated at */}
-          <p className="text-sm text-muted-foreground">
-            Updated {getRelativeTimeString(new Date(note.updatedAt ?? ""))}
-          </p>
+          {note.updatedAt && (
+            <p className="text-sm text-muted-foreground">
+              Updated {getRelativeTimeString(new Date(note.updatedAt))}
+            </p>
+          )}
         </div>
       </div>
     </Link>
   );
 }
 
-export function NoteList(props: { notes: NoteListResponse["notes"] }) {
+export function NoteList(props: { notes: GetNotesListQueryResult }) {
   return (
     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {props.notes?.map((note) => <NoteItem note={note} key={note.id} />)}
