@@ -1,11 +1,11 @@
 import { getRouteApi, useRouter } from "@tanstack/react-router";
 import NoteEditor from "@/features/notes/components/note-editor";
-import { NoteResponse } from "@/types/api-response-types";
 import { focusElementWithDelay } from "@/lib/helpers";
+import { GetNoteQueryResult } from "@/lib/zero-queries";
 
 const routeApi = getRouteApi("/_authenticated/_layout/notes_/$noteId");
 
-export function Actions(props: { note: NoteResponse }) {
+export function Actions(props: { note: NonNullable<GetNoteQueryResult> }) {
   const router = useRouter();
   const { editNoteId } = routeApi.useSearch();
 

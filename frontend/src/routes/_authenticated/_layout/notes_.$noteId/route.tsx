@@ -1,26 +1,15 @@
-import {
-  createFileRoute,
-  linkOptions,
-  useRouter,
-} from "@tanstack/react-router";
-import { queryClient } from "@/lib/query-client";
-import { getNoteQueryOptions } from "@/lib/query-options-factory";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, linkOptions } from "@tanstack/react-router";
 import { ViewNote } from "@/features/notes/components/view-note";
 import { Actions } from "./-actions";
-import { getSession } from "@/queries/session";
+import { useZ } from "@/lib/zero-cache";
+import { getNoteQuery } from "@/lib/zero-queries";
+import { useQuery } from "@rocicorp/zero/react";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/_layout/notes_/$noteId")({
   component: RouteComponent,
 
   loader: async (ctx) => {
-    const orgId = getSession(queryClient).session.activeOrganizationId!;
-    const noteQueryOptions = getNoteQueryOptions({
-      noteId: ctx.params.noteId,
-      orgId,
-    });
-    const note = await queryClient.ensureQueryData(noteQueryOptions);
-
     return {
       breadcrumbs: linkOptions([
         {
@@ -28,12 +17,12 @@ export const Route = createFileRoute("/_authenticated/_layout/notes_/$noteId")({
           to: "/notes",
         },
         {
-          label: note.name,
+          // TODO: get note name
+          label: "Note",
           to: "/notes/$noteId",
           params: { noteId: ctx.params.noteId },
         },
       ]),
-      noteQueryOptions,
     };
   },
 
@@ -46,15 +35,23 @@ export const Route = createFileRoute("/_authenticated/_layout/notes_/$noteId")({
 });
 
 function RouteComponent() {
-  const { noteQueryOptions } = Route.useLoaderData();
   const { editNoteId } = Route.useSearch();
-  const { data } = useSuspenseQuery(noteQueryOptions);
+  const { noteId } = Route.useParams();
+  const z = useZ();
+  const [note] = useQuery(getNoteQuery(z, noteId));
+
+  useEffect(() => {}, [note]);
+
+  if (!note) {
+    // TODO: Handle not found case
+    return null;
+  }
 
   return (
     <div className="py-4 px-6">
-      <ViewNote note={data} isEditing={!!editNoteId} />
+      <ViewNote note={note} isEditing={!!editNoteId} />
 
-      <Actions note={data} />
+      <Actions note={note} />
     </div>
   );
 }

@@ -18,3 +18,10 @@ export function getNotesListQuery(z: Z) {
 export type GetNotesListQueryResult = ZeroQueryResult<
   typeof getNotesListQuery
 >[];
+
+export function getNoteQuery(z: Z, noteId: string) {
+  const noteQuery = z.query.notesTable.where("id", noteId).one();
+  return noteQuery;
+}
+
+export type GetNoteQueryResult = ZeroQueryResult<typeof getNoteQuery>;

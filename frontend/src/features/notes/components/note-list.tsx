@@ -21,17 +21,14 @@ function NoteItem({ note }: { note: GetNotesListQueryResult[number] }) {
             </h3>
           </div>
 
-          {/* Created at */}
-          {note.createdAt && (
-            <p className="text-sm text-muted-foreground">
-              Created {getRelativeTimeString(new Date(note.createdAt))}
-            </p>
-          )}
-
           {/* Updated at */}
-          {note.updatedAt && (
+          {note.updatedAt ? (
             <p className="text-sm text-muted-foreground">
               Updated {getRelativeTimeString(new Date(note.updatedAt))}
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Created {getRelativeTimeString(new Date(note.createdAt))}
             </p>
           )}
         </div>

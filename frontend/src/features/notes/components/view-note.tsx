@@ -2,12 +2,12 @@ import { KeyboardShortcutIndicator } from "@/components/keyboard-shortcut";
 import { buttonVariants } from "@/components/ui/button";
 import { markdownToHtml } from "@/lib/helpers";
 import { cn } from "@/lib/utils";
-import { NoteResponse } from "@/types/api-response-types";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect, useMemo } from "react";
+import { GetNoteQueryResult } from "@/lib/zero-queries";
 
 export function ViewNote(props: {
-  note: NoteResponse;
+  note: NonNullable<GetNoteQueryResult>;
   wrapperClassName?: string;
   isEditing: boolean;
 }) {
