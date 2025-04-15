@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { useCreateBoardMutation } from "@/features/boards/queries/boards";
 import { CreateBoardModal } from "@/features/boards/state/board";
-import { getId } from "@/lib/utils";
+import { createId } from "@/lib/utils";
 import { useZ } from "@/lib/zero-cache";
 import { useActiveOrganizationId } from "@/queries/session";
 import { Link } from "@tanstack/react-router";
@@ -30,7 +30,7 @@ export function CreateBoard(props: CreateBoardModal) {
     e.preventDefault();
 
     z.mutate.boardsTable.insert({
-      id: getId(),
+      id: createId(),
       name: boardName,
       boardUrl,
       updatedAt: Date.now(),

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { CustomizedTextarea } from "@/components/ui/customized-textarea";
 import { useCreateTaskMutation } from "@/features/board-detail/queries/tasks";
 import { useInteractiveOutside } from "@/hooks/use-interactive-outside";
-import { getId } from "@/lib/utils";
+import { createId } from "@/lib/utils";
 import { QueryKey } from "@tanstack/react-query";
 import { useRef, type FormEvent } from "react";
 
@@ -36,7 +36,7 @@ export function CreateTask(props: CreateCardProps) {
 
     createTaskMutation.mutate({
       body: {
-        id: getId(),
+        id: createId(),
         columnId: props.columnId,
         name,
         position: props.nextPosition,

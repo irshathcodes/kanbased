@@ -14,7 +14,7 @@ import MdPreview from "@/components/md-preview/md-preview";
 import CodeMirrorEditor from "@/components/md-editor/md-editor";
 import { useKeyDown } from "@/hooks/use-keydown";
 import { useQueryClient } from "@tanstack/react-query";
-import { getId } from "@/lib/utils";
+import { createId } from "@/lib/utils";
 import { flushSync } from "react-dom";
 import {
   Dialog,
@@ -130,7 +130,7 @@ export default function NoteEditor(props: NoteEditorProps) {
         body: {
           content: content.current,
           name: title,
-          id: getId(),
+          id: createId(),
           createdAt: now,
         },
       });

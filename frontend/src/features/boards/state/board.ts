@@ -1,5 +1,5 @@
+import { BoardsListResult } from "@/lib/zero-queries";
 import { useModalControls, useModalState } from "@/state/modals";
-import { BoardListResponse } from "@/types/api-response-types";
 
 export interface CreateBoardModal {
   type: "create-board";
@@ -8,13 +8,13 @@ export interface CreateBoardModal {
 
 export interface EditBoardModal {
   type: "edit-board";
-  board: BoardListResponse[number];
+  board: BoardsListResult[number];
   onClose: () => void;
 }
 
 export interface DeleteBoardModal {
   type: "delete-board";
-  board: BoardListResponse[number];
+  board: BoardsListResult[number];
   onClose: () => void;
 }
 

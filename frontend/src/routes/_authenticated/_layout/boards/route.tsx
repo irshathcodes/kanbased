@@ -1,5 +1,3 @@
-"use client";
-
 import { createFileRoute, linkOptions } from "@tanstack/react-router";
 import { BoardList } from "@/features/boards/components/board-list";
 import { BoardActions } from "@/features/boards/components/board-actions";
@@ -27,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/_layout/boards")({
 function BoardsPage() {
   const z = useZ();
   const boardsQuery = getBoardsListQuery(z);
-  const [boards, status] = useQuery(boardsQuery);
+  const [boards] = useQuery(boardsQuery);
 
   return (
     <ModalProvider>

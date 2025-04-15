@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ColumnWrapper } from "@/components/column-ui";
 import { Input } from "@/components/ui/input";
 import { FormEventHandler } from "react";
-import { getId } from "@/lib/utils";
+import { createId } from "@/lib/utils";
 import { useCreateColumnMutation } from "@/features/board-detail/queries/columns";
 import { QueryKey } from "@tanstack/react-query";
 
@@ -32,7 +32,7 @@ export function CreateColumn(props: CreateColumnProps) {
 
     createColumnMutation.mutate({
       body: {
-        id: getId(),
+        id: createId(),
         boardId: data.boardId,
         name,
         position: data.nextPosition,

@@ -56,7 +56,8 @@
     "react-markdown": "^10.0.0",
     "sonner": "^1.7.0",
     "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "ulid": "^3.0.0"
   },
   "devDependencies": {
     "@tanstack/router-plugin": "^1.79.0",

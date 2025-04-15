@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { ulid } from "ulid";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -9,8 +10,8 @@ export function useBetterParams<TParams extends Record<string, any>>() {
   return {};
 }
 
-export function getId() {
-  return crypto.randomUUID();
+export function createId() {
+  return ulid();
 }
 
 export async function promiseTimeout(delayInMs: number) {
@@ -121,4 +122,24 @@ export function getToken() {
 
 export function setToken(token: string) {
   localStorage.setItem(TOKEN_NAME, token);
+}
+
+export function getRelativeTimeString(date: Date): string {
+  const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  const now = new Date();
+  const diffInMs = date.getTime() - now.getTime();
+  const diffInSecs = Math.round(diffInMs / 1000);
+  const diffInMins = Math.round(diffInSecs / 60);
+  const diffInHours = Math.round(diffInMins / 60);
+  const diffInDays = Math.round(diffInHours / 24);
+
+  if (Math.abs(diffInSecs) < 60) {
+    return formatter.format(0, "seconds");
+  } else if (Math.abs(diffInMins) < 60) {
+    return formatter.format(diffInMins, "minutes");
+  } else if (Math.abs(diffInHours) < 24) {
+    return formatter.format(diffInHours, "hours");
+  } else {
+    return formatter.format(diffInDays, "days");
+  }
 }

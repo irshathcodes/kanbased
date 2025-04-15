@@ -1,4 +1,6 @@
+import { Row } from "@rocicorp/zero";
 import { Z } from "./zero-cache";
+import { ZeroQueryResult } from "@/types/type-helpers";
 
 export function getBoardsListQuery(z: Z) {
   const boardsQuery = z.query.boardsTable
@@ -6,3 +8,5 @@ export function getBoardsListQuery(z: Z) {
     .orderBy("createdAt", "asc");
   return boardsQuery;
 }
+
+export type BoardsListResult = ZeroQueryResult<typeof getBoardsListQuery>[];

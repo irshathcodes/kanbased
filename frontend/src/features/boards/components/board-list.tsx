@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@tanstack/react-router";
 import { useBoardModalControls } from "@/features/boards/state/board";
+import { BoardsListResult } from "@/lib/zero-queries";
+import { getRelativeTimeString } from "@/lib/utils";
 
-type Board = BoardListResponse[number];
-
-function BoardItem({ board }: { board: Board }) {
+function BoardItem({ board }: { board: BoardsListResult[number] }) {
   const { openModal, closeModal } = useBoardModalControls();
 
   return (
@@ -75,12 +75,18 @@ function BoardItem({ board }: { board: Board }) {
           </div>
 
           {/* Stats */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <div className="flex items-center text-sm text-muted-foreground">
               <span>{board.columnsCount ?? 0} columns</span>
               <span className="mx-2">•</span>
               <span>{board.tasksCount ?? 0} tasks</span>
             </div>
+          </div> */}
+
+          <div className="flex items-center text-sm text-muted-foreground">
+            <span>
+              Created {getRelativeTimeString(new Date(board.createdAt))}
+            </span>
           </div>
         </div>
       </div>
@@ -88,7 +94,7 @@ function BoardItem({ board }: { board: Board }) {
   );
 }
 
-export function BoardList(props: { boards: BoardListResponse }) {
+export function BoardList(props: { boards: BoardsListResult }) {
   return (
     <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {props.boards?.map((board) => <BoardItem board={board} key={board.id} />)}
