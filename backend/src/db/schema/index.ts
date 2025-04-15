@@ -76,7 +76,7 @@ export const invitationRelations = relations(invitationsTable, ({ one }) => ({
 }));
 
 export const boardsTable = pgTable("boards", {
-  id: t.uuid().primaryKey(),
+  id: t.varchar({ length: 26 }).primaryKey(),
   name: t.varchar({ length: 255 }).notNull(),
   color: t.varchar({ length: 255 }),
   boardUrl: t.text().notNull(),
@@ -98,10 +98,10 @@ export const boardsRelations = relations(boardsTable, ({ one, many }) => ({
 export const columnsTable = pgTable(
   "columns",
   {
-    id: t.uuid().primaryKey(),
+    id: t.varchar({ length: 26 }).primaryKey(),
     name: t.varchar({ length: 100 }).notNull(),
     boardId: t
-      .uuid()
+      .varchar({ length: 26 })
       .references(() => boardsTable.id, { onDelete: "cascade" })
       .notNull(),
     position: t.integer().notNull(),
@@ -129,11 +129,11 @@ export const columnsRelations = relations(columnsTable, ({ one, many }) => ({
 export const tasksTable = pgTable(
   "tasks",
   {
-    id: t.uuid().primaryKey(),
+    id: t.varchar({ length: 26 }).primaryKey(),
     name: t.text().notNull(),
     content: t.text(),
     columnId: t
-      .uuid()
+      .varchar({ length: 26 })
       .references(() => columnsTable.id, { onDelete: "cascade" })
       .notNull(),
     position: t.doublePrecision().notNull(),
@@ -158,7 +158,7 @@ export const tasksRelations = relations(tasksTable, ({ one }) => ({
 }));
 
 export const notesTable = pgTable("notes", {
-  id: t.uuid().primaryKey(),
+  id: t.varchar({ length: 26 }).primaryKey(),
   name: t.varchar({ length: 255 }).notNull(),
   content: t.text().notNull(),
   ...commonColumns,

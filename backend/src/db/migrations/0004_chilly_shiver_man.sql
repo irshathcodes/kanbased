@@ -1,1 +1,0 @@
-ALTER TABLE "task_markdown" ALTER COLUMN "content" DROP NOT NULL;

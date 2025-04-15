@@ -1,1 +1,0 @@
-ALTER TABLE "task_markdown" DROP COLUMN IF EXISTS "id";
