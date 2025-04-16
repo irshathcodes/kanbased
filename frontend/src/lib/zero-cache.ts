@@ -7,7 +7,7 @@ import {
 import { authClient } from "@/lib/auth";
 import { getToken, setToken } from "@/lib/utils";
 
-export function getZeroCache({ userId }: { userId: string }) {
+export function createZeroCache({ userId }: { userId: string }) {
   return new Zero({
     userID: userId,
     auth: async (status) => {
@@ -44,4 +44,4 @@ export function useZ() {
   return useZero<Schema>();
 }
 
-export type Z = ReturnType<typeof getZeroCache>;
+export type Z = ReturnType<typeof createZeroCache>;

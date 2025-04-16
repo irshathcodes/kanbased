@@ -14,12 +14,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DeleteColumn } from "@/features/board-detail/components/delete-column";
+import { GetBoardWithColumnsAndTasksQueryResult } from "@/lib/zero-queries";
 
 type ColumnProps = {
-  column: ColumnsWithTasksQueryData["columns"][number];
+  column: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"][number];
   index: number;
   columnRef?: (node: HTMLElement | null) => void;
-  columnsQueryKey: QueryKey;
 };
 
 export function Column({ column, index, columnRef }: ColumnProps) {

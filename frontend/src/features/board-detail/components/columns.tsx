@@ -6,16 +6,13 @@ import {
   Droppable,
   OnDragEndResponder,
 } from "@hello-pangea/dnd";
-import {
-  useColumnsSuspenseQuery,
-  useMoveColumnsMutation,
-} from "@/features/board-detail/queries/columns";
 import { useMoveTasksMutation } from "@/features/board-detail/queries/tasks";
 import {
   useColumnModalControls,
   useColumnModalState,
 } from "@/features/board-detail/state/column";
 import { GetBoardWithColumnsAndTasksQueryResult } from "@/lib/zero-queries";
+import { useZ } from "@/lib/zero-cache";
 
 export function Columns({
   boardId,
@@ -24,12 +21,10 @@ export function Columns({
   boardId: string;
   columns: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"];
 }) {
-  const boardUrl = "";
+  const z = useZ();
   const columnsQueryKey: any[] = [];
-  const moveColumnsMutation = useMoveColumnsMutation({ columnsQueryKey });
   const moveTasksMutation = useMoveTasksMutation({ columnsQueryKey });
   const containerRef = useRef<HTMLDivElement>(null);
-  const data = {};
   const { closeModal } = useColumnModalControls();
 
   const lastColumnRef = useCallback((node: HTMLElement | null) => {
@@ -71,15 +66,17 @@ export function Columns({
       colCopy.splice(e.destination.index, 0, removedEl!);
 
       const updatedColPositions = colCopy.map((col, index) => ({
-        ...col,
+        id: col.id,
         position: index + 1,
       }));
 
-      moveColumnsMutation.mutate({
-        body: updatedColPositions.map((col) => ({
-          id: col.id,
-          position: col.position,
-        })),
+      z.mutateBatch(async (mutate) => {
+        for (let col of updatedColPositions) {
+          await mutate.columnsTable.update({
+            id: col.id,
+            position: col.position,
+          });
+        }
       });
 
       return;
@@ -147,7 +144,6 @@ export function Columns({
                 {columns.map((column, i, arr) => (
                   <Column
                     column={column}
-                    columnsQueryKey={columnsQueryKey}
                     columnRef={arr.length - 1 === i ? lastColumnRef : undefined}
                     index={i}
                     key={column.id}
