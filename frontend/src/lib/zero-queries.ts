@@ -11,8 +11,7 @@ export type GetBoardsListQueryResult = ZeroQueryResult<
 >[];
 
 export function getNotesListQuery(z: Z) {
-  const notesQuery = z.query.notesTable.where("deletedAt", "IS", null);
-  return notesQuery;
+  return z.query.notesTable.where("deletedAt", "IS", null);
 }
 
 export type GetNotesListQueryResult = ZeroQueryResult<
@@ -20,8 +19,23 @@ export type GetNotesListQueryResult = ZeroQueryResult<
 >[];
 
 export function getNoteQuery(z: Z, noteId: string) {
-  const noteQuery = z.query.notesTable.where("id", noteId).one();
-  return noteQuery;
+  return z.query.notesTable.where("id", noteId).one();
 }
 
 export type GetNoteQueryResult = ZeroQueryResult<typeof getNoteQuery>;
+
+export function getBoardWithColumnsAndTasksQuery(z: Z, slug: string) {
+  return z.query.boardsTable
+    .where("slug", slug)
+    .related("columns", (q) =>
+      q
+        .where("deletedAt", "IS", null)
+        .related("tasks", (q) => q.where("deletedAt", "IS", null)),
+    )
+    .where("deletedAt", "IS", null)
+    .one();
+}
+
+export type GetBoardWithColumnsAndTasksQueryResult = ZeroQueryResult<
+  typeof getBoardWithColumnsAndTasksQuery
+>;

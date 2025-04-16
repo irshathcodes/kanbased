@@ -7,7 +7,6 @@ import {
   OnDragEndResponder,
 } from "@hello-pangea/dnd";
 import {
-  ColumnsWithTasksQueryData,
   useColumnsSuspenseQuery,
   useMoveColumnsMutation,
 } from "@/features/board-detail/queries/columns";
@@ -16,21 +15,22 @@ import {
   useColumnModalControls,
   useColumnModalState,
 } from "@/features/board-detail/state/column";
-import { QueryKey } from "@tanstack/react-query";
+import { GetBoardWithColumnsAndTasksQueryResult } from "@/lib/zero-queries";
 
 export function Columns({
-  boardUrl,
-  columnsQueryKey,
+  boardId,
+  columns,
 }: {
-  boardUrl: string;
-  columnsQueryKey: QueryKey;
+  boardId: string;
+  columns: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"];
 }) {
-  const { data } = useColumnsSuspenseQuery({ boardUrl });
+  const boardUrl = "";
+  const columnsQueryKey: any[] = [];
   const moveColumnsMutation = useMoveColumnsMutation({ columnsQueryKey });
   const moveTasksMutation = useMoveTasksMutation({ columnsQueryKey });
   const containerRef = useRef<HTMLDivElement>(null);
+  const data = {};
   const { closeModal } = useColumnModalControls();
-  const columns = data.columns;
 
   const lastColumnRef = useCallback((node: HTMLElement | null) => {
     /*
@@ -159,10 +159,9 @@ export function Columns({
               <CreateColumnModalGate>
                 <CreateColumn
                   data={{
-                    boardId: data.boardId,
+                    boardId,
                     nextPosition:
                       (columns[columns.length - 1]?.position ?? 0) + 1,
-                    columnsQueryKey,
                   }}
                   onClose={closeModal}
                 />

@@ -3,43 +3,39 @@ import { ColumnWrapper } from "@/components/column-ui";
 import { Input } from "@/components/ui/input";
 import { FormEventHandler } from "react";
 import { createId } from "@/lib/utils";
-import { useCreateColumnMutation } from "@/features/board-detail/queries/columns";
-import { QueryKey } from "@tanstack/react-query";
+import { useZ } from "@/lib/zero-cache";
+import { useActiveOrganizationId } from "@/queries/session";
 
 export type CreateColumnProps = {
   data: {
     boardId: string;
     nextPosition: number;
-    columnsQueryKey: QueryKey;
   };
   onClose: () => void;
 };
 
 export function CreateColumn(props: CreateColumnProps) {
-  const createColumnMutation = useCreateColumnMutation({
-    columnsQueryKey: props.data.columnsQueryKey,
-  });
-
   const { data } = props;
+  const z = useZ();
+  const orgId = useActiveOrganizationId();
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
     const formEl = e.target as HTMLFormElement;
     const fd = new FormData(formEl);
     const name = fd.get("column-name") as string;
-    const currentDate = new Date().toISOString();
-    formEl.reset();
 
-    createColumnMutation.mutate({
-      body: {
-        id: createId(),
-        boardId: data.boardId,
-        name,
-        position: data.nextPosition,
-        createdAt: currentDate,
-        updatedAt: currentDate,
-      },
+    z.mutate.columnsTable.insert({
+      id: createId(),
+      boardId: data.boardId,
+      name,
+      position: data.nextPosition,
+      createdAt: Date.now(),
+      organizationId: orgId,
+      creatorId: z.userID,
     });
+
+    formEl.reset();
   };
 
   const handleClose = () => {

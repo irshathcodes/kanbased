@@ -36,6 +36,7 @@ export function getZeroCache({ userId }: { userId: string }) {
     server: import.meta.env.CLIENT_PUBLIC_SERVER,
     schema: schema,
     kvStore: "mem",
+    logLevel: import.meta.env.DEV ? "debug" : undefined,
   });
 }
 

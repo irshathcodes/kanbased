@@ -1,13 +1,10 @@
 import { ColumnWrapper } from "@/components/column-ui";
 import { Draggable } from "@hello-pangea/dnd";
-import { GripVertical, MoreVertical, Trash2 } from "lucide-react";
+import { GripVertical, MoreVertical } from "lucide-react";
 import { useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { EditableColumnName } from "@/features/board-detail/components/editable-column-name";
-import {
-  ColumnsWithTasksQueryData,
-  useDeleteColumnMutation,
-} from "@/features/board-detail/queries/columns";
+import { ColumnsWithTasksQueryData } from "@/features/board-detail/queries/columns";
 import { Tasks } from "@/features/board-detail/components/tasks";
 import { QueryKey } from "@tanstack/react-query";
 import {
@@ -16,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { DeleteColumn } from "@/features/board-detail/components/delete-column";
 
 type ColumnProps = {
   column: ColumnsWithTasksQueryData["columns"][number];
@@ -24,14 +22,7 @@ type ColumnProps = {
   columnsQueryKey: QueryKey;
 };
 
-export function Column({
-  column,
-  index,
-  columnRef,
-  columnsQueryKey,
-}: ColumnProps) {
-  const deleteColumnMutation = useDeleteColumnMutation({ columnsQueryKey });
-
+export function Column({ column, index, columnRef }: ColumnProps) {
   return (
     <Draggable draggableId={column.id} index={index}>
       {(provided, snapshot) => {
@@ -59,7 +50,6 @@ export function Column({
               <EditableColumnName
                 columnName={column.name}
                 columnId={column.id}
-                columnsQueryKey={columnsQueryKey}
               />
 
               <DropdownMenu>
@@ -72,25 +62,14 @@ export function Column({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      deleteColumnMutation.mutate({
-                        params: { path: { columnId: column.id } },
-                      });
-                    }}
-                    className="text-destructive focus:text-destructive"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Column
+                  <DropdownMenuItem asChild>
+                    <DeleteColumn columnId={column.id} />
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <Tasks
-              tasks={column.tasks}
-              columnId={column.id}
-              columnsQueryKey={columnsQueryKey}
-            />
+
+            <Tasks tasks={column.tasks} columnId={column.id} />
           </ColumnWrapper>
         );
       }}

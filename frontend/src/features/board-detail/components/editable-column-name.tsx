@@ -1,35 +1,29 @@
-import { useEditColumnMutation } from "@/features/board-detail/queries/columns";
-import { QueryKey } from "@tanstack/react-query";
+import { useZ } from "@/lib/zero-cache";
 import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
 export function EditableColumnName(props: {
   columnName: string;
   columnId: string;
-  columnsQueryKey: QueryKey;
 }) {
   const [edit, setEdit] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const editColumnMutation = useEditColumnMutation({
-    columnsQueryKey: props.columnsQueryKey,
-    afterOptimisticUpdate: () => {
-      setTimeout(() => {
-        flushSync(() => {
-          setEdit(false);
-        });
-      }, 0);
-    },
-  });
+  const z = useZ();
 
   const handleSubmit: React.FormEventHandler = (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const newName = formData.get(props.columnName) as string;
-    editColumnMutation.mutate({
-      params: { path: { columnId: props.columnId } },
-      body: { name: newName },
+
+    z.mutate.columnsTable.update({
+      id: props.columnId,
+      name: newName,
+      updatedAt: Date.now(),
     });
+
+    setTimeout(() => {
+      setEdit(false);
+    }, 0);
   };
 
   if (edit) {

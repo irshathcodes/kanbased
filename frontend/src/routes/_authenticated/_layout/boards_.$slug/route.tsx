@@ -2,17 +2,15 @@
 import { Columns } from "@/features/board-detail/components/columns";
 
 import { createFileRoute, linkOptions } from "@tanstack/react-router";
-import { queryClient } from "@/lib/query-client";
-import { columnsQueryOptions as getColumnsQueryOptions } from "@/lib/query-options-factory";
 import { ModalProvider } from "@/state/modals";
 import { CreateColumnButton } from "@/features/board-detail/components/create-column-button";
 import { useColumnsSuspenseQuery } from "@/features/board-detail/queries/columns";
 import { TaskDetailPage } from "./-actions";
-import { getActiveOrganizationId } from "@/queries/session";
+import { useQuery } from "@rocicorp/zero/react";
+import { getBoardWithColumnsAndTasksQuery } from "@/lib/zero-queries";
+import { useZ } from "@/lib/zero-cache";
 
-export const Route = createFileRoute(
-  "/_authenticated/_layout/boards_/$slug",
-)({
+export const Route = createFileRoute("/_authenticated/_layout/boards_/$slug")({
   component: BoardPage,
   validateSearch: (search): { taskId?: string } => {
     return {
@@ -20,15 +18,6 @@ export const Route = createFileRoute(
     };
   },
   loader: async (ctx) => {
-    const { boardUrl } = ctx.params;
-    const orgId = getActiveOrganizationId(queryClient);
-    const columnsQueryOptions = getColumnsQueryOptions({ orgId, boardUrl });
-
-    await queryClient.prefetchQuery(columnsQueryOptions);
-
-    const { boardName } =
-      await queryClient.ensureQueryData(columnsQueryOptions);
-
     return {
       breadcrumbs: linkOptions([
         {
@@ -36,12 +25,12 @@ export const Route = createFileRoute(
           to: "/boards",
         },
         {
-          label: boardName,
-          to: "/boards/$boardUrl",
-          params: { boardUrl },
+          // TODO: Use the board name instead of the slug
+          label: ctx.params.slug,
+          to: "/boards/$slug",
+          params: { slug: ctx.params.slug },
         },
       ]),
-      columnsQueryOptions,
     };
   },
   errorComponent: (error) => {
@@ -50,31 +39,28 @@ export const Route = createFileRoute(
 });
 
 function BoardPage() {
-  const { boardUrl } = Route.useParams();
-  const { data, error } = useColumnsSuspenseQuery({ boardUrl });
-  const boardName = data.boardName;
-  const { columnsQueryOptions } = Route.useLoaderData();
-  const columnsQueryKey = columnsQueryOptions.queryKey;
+  const { slug } = Route.useParams();
+  const z = useZ();
+  const [board] = useQuery(getBoardWithColumnsAndTasksQuery(z, slug));
 
-  // Not sure why. The error component is not being rendered when there is an error.
-  // Hence, we are checking the error status code manually.
-  if (error) {
-    return <ErrorComponent message={error?.message} />;
+  if (!board) {
+    // TODO: Show a loading state or figure out a better way to handle this
+    return null;
   }
 
   return (
     <ModalProvider>
       <div className="pt-4 flex-1 h-full min-h-0 flex flex-col gap-8">
         <div className="flex gap-5 items-center shrink-0 px-8">
-          <h1 className="text-2xl font-bold">{boardName}</h1>
+          <h1 className="text-2xl font-bold">{board.name}</h1>
           <CreateColumnButton />
         </div>
 
         <div className="flex-1 h-full min-h-0">
-          <Columns boardUrl={boardUrl} columnsQueryKey={columnsQueryKey} />
+          <Columns boardId={board.id} columns={board.columns} />
         </div>
       </div>
-      <TaskDetailPage columnsQueryKey={columnsQueryKey} />
+      {/* <TaskDetailPage columnsQueryKey={columnsQueryKey} /> */}
     </ModalProvider>
   );
 }
