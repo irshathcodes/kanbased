@@ -17,8 +17,8 @@ function BoardItem({ board }: { board: GetBoardsListQueryResult[number] }) {
 
   return (
     <Link
-      to="/boards/$boardUrl"
-      params={{ boardUrl: board.boardUrl }}
+      to="/boards/$slug"
+      params={{ slug: board.slug }}
       className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-lg"
     >
       <div className="relative p-6">
