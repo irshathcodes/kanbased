@@ -3,15 +3,13 @@ import { flushSync } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Droppable } from "@hello-pangea/dnd";
 import { cn } from "@/lib/utils";
-import { ColumnsWithTasksQueryData } from "@/features/board-detail/queries/columns";
 import { Task } from "@/features/board-detail/components/task";
 import { CreateTask } from "@/features/board-detail/components/create-task";
-import { QueryKey } from "@tanstack/react-query";
+import { GetBoardWithColumnsAndTasksQueryResult } from "@/lib/zero-queries";
 
 type TasksProps = {
-  tasks: ColumnsWithTasksQueryData["columns"][number]["tasks"];
+  tasks: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"][number]["tasks"];
   columnId: string;
-  columnsQueryKey: QueryKey;
 };
 
 function TaskList(props: TasksProps) {
@@ -20,14 +18,7 @@ function TaskList(props: TasksProps) {
       {[...props.tasks]
         .sort((a, b) => a.position - b.position)
         .map((task, i, arr) => {
-          return (
-            <Task
-              task={task}
-              key={task.id}
-              index={i}
-              columnsQueryKey={props.columnsQueryKey}
-            />
-          );
+          return <Task task={task} key={task.id} index={i} />;
         })}
     </>
   );
@@ -69,7 +60,6 @@ export function Tasks(props: TasksProps) {
                 <MemoizedTaskList
                   columnId={props.columnId}
                   tasks={props.tasks}
-                  columnsQueryKey={props.columnsQueryKey}
                 />
 
                 {droppableProvided.placeholder}
@@ -91,11 +81,8 @@ export function Tasks(props: TasksProps) {
             onComplete={() => {
               setShowAddTask(false);
             }}
-            columnsQueryKey={props.columnsQueryKey}
-            onOptimisticTaskCreated={() => {
-              setTimeout(() => {
-                scrollList();
-              }, 0);
+            onAdd={() => {
+              scrollList();
             }}
           />
         ) : (

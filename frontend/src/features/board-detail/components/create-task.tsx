@@ -3,6 +3,8 @@ import { CustomizedTextarea } from "@/components/ui/customized-textarea";
 import { useCreateTaskMutation } from "@/features/board-detail/queries/tasks";
 import { useInteractiveOutside } from "@/hooks/use-interactive-outside";
 import { createId } from "@/lib/utils";
+import { useZ } from "@/lib/zero-cache";
+import { useActiveOrganizationId } from "@/queries/session";
 import { QueryKey } from "@tanstack/react-query";
 import { useRef, type FormEvent } from "react";
 
@@ -10,19 +12,15 @@ export type CreateCardProps = {
   columnId: string;
   nextPosition: number;
   onComplete: () => void;
-  onOptimisticTaskCreated: () => void;
-  columnsQueryKey: QueryKey;
+  onAdd: () => void;
 };
 
 export function CreateTask(props: CreateCardProps) {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-
-  const createTaskMutation = useCreateTaskMutation({
-    columnsQueryKey: props.columnsQueryKey,
-    onOptimisticUpdate: props.onOptimisticTaskCreated,
-  });
+  const z = useZ();
+  const organizationId = useActiveOrganizationId();
 
   useInteractiveOutside(wrapperRef, () => {
     props.onComplete();
@@ -32,18 +30,18 @@ export function CreateTask(props: CreateCardProps) {
     e.preventDefault();
     const name = textAreaRef.current!.value;
     textAreaRef.current!.value = "";
-    const currentDate = new Date().toISOString();
 
-    createTaskMutation.mutate({
-      body: {
-        id: createId(),
-        columnId: props.columnId,
-        name,
-        position: props.nextPosition,
-        createdAt: currentDate,
-        updatedAt: currentDate,
-      },
+    await z.mutate.tasksTable.insert({
+      id: createId(),
+      columnId: props.columnId,
+      name,
+      position: props.nextPosition,
+      createdAt: Date.now(),
+      creatorId: z.userID,
+      organizationId,
     });
+
+    props.onAdd();
   };
 
   return (

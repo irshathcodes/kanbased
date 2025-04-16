@@ -1,47 +1,31 @@
 import { CustomizedTextarea } from "@/components/ui/customized-textarea";
-import { useUpdateTaskMutation } from "@/features/board-detail/queries/tasks";
 import { useInteractiveOutside } from "@/hooks/use-interactive-outside";
+import { useZ } from "@/lib/zero-cache";
 import { ColumnsWithTasksResponse } from "@/types/api-response-types";
-import { QueryKey } from "@tanstack/react-query";
 import { useCallback, useRef } from "react";
 
 export type EditTaskProps = {
   task: ColumnsWithTasksResponse["tasks"][number];
   onComplete: () => void;
-  columnsQueryKey: QueryKey;
   className?: string;
 };
 
 export function EditTask(props: EditTaskProps) {
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-  const updateTaskMutation = useUpdateTaskMutation({
-    columnsQueryKey: props.columnsQueryKey,
-    afterOptimisticUpdate: () => {
-      setTimeout(() => {
-        props.onComplete();
-      }, 0);
-    },
-  });
+  const z = useZ();
 
   useInteractiveOutside(textAreaRef, () => {
     props.onComplete();
   });
 
   const handleSubmit = async () => {
-    const name = textAreaRef.current!.value;
-    const currentDate = new Date().toISOString();
-
-    updateTaskMutation.mutate({
-      params: {
-        path: {
-          taskId: props.task.id,
-        },
-      },
-      body: {
-        name,
-        updatedAt: currentDate,
-      },
+    z.mutate.tasksTable.update({
+      id: props.task.id,
+      name: textAreaRef.current!.value,
+      updatedAt: Date.now(),
     });
+
+    props.onComplete();
   };
 
   return (

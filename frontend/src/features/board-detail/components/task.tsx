@@ -18,11 +18,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@tanstack/react-router";
+import { GetBoardWithColumnsAndTasksQueryResult } from "@/lib/zero-queries";
+import { useZ } from "@/lib/zero-cache";
 
 export type TaskProps = {
-  task: ColumnsWithTasksResponse["tasks"][number];
+  task: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"][number]["tasks"][number];
   index: number;
-  columnsQueryKey: QueryKey;
 };
 
 function ViewTask(props: {
@@ -30,12 +31,16 @@ function ViewTask(props: {
   dndProps: { provided: DraggableProvided; snapshot: DraggableStateSnapshot };
   onEdit: () => void;
 }) {
-  const { task, columnsQueryKey } = props.taskProps;
+  const { task } = props.taskProps;
   const { provided, snapshot } = props.dndProps;
+  const z = useZ();
 
-  const deleteTaskMutation = useDeleteTaskMutation({
-    columnsQueryKey: columnsQueryKey,
-  });
+  const handleDeleteTask = () => {
+    z.mutate.tasksTable.update({
+      id: task.id,
+      deletedAt: Date.now(),
+    });
+  };
 
   const linkRef = useCallback((node: HTMLAnchorElement | null) => {
     provided.innerRef(node);
@@ -85,13 +90,7 @@ function ViewTask(props: {
             <DropdownMenuItem
               onClick={(e) => {
                 e.stopPropagation();
-                deleteTaskMutation.mutate({
-                  params: {
-                    path: {
-                      taskId: task.id,
-                    },
-                  },
-                });
+                handleDeleteTask();
               }}
               className="text-destructive focus:text-destructive"
             >
@@ -116,7 +115,6 @@ function TaskComp(props: TaskProps) {
           {isEditing ? (
             <EditTask
               task={task}
-              columnsQueryKey={props.columnsQueryKey}
               onComplete={() => {
                 setIsEditing(false);
               }}
