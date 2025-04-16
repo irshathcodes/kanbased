@@ -6,8 +6,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMarkdownEditorPreviewToggle } from "@/hooks/use-markdown-editor";
 import { Button } from "@/components/ui/button";
-import { api } from "@/lib/openapi-react-query";
-import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 import { KeyboardShortcutIndicator } from "@/components/keyboard-shortcut";
 import MdPreview from "@/components/md-preview/md-preview";
@@ -19,7 +17,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { QueryKey, useQueryClient } from "@tanstack/react-query";
+import { useZ } from "@/lib/zero-cache";
 
 export default function EditTaskContent(props: {
   defaultContent: string;
@@ -27,25 +25,9 @@ export default function EditTaskContent(props: {
   taskId: string;
   afterSave: () => void;
   exitEditorWithoutSaving: () => void;
-  taskDetailQueryKey: QueryKey;
 }) {
   const [isDirty, setIsDirty] = useState(false);
-  const queryClient = useQueryClient();
-
-  const updateContentMutation = api.useMutation(
-    "patch",
-    "/api/v1/tasks/{taskId}",
-    {
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({
-          queryKey: props.taskDetailQueryKey,
-        });
-
-        toast.success("Task updated");
-        props.afterSave();
-      },
-    },
-  );
+  const z = useZ();
 
   const {
     parsedHtml,
@@ -78,17 +60,14 @@ export default function EditTaskContent(props: {
   });
 
   const handleSave = () => {
-    updateContentMutation.mutate({
-      body: {
-        updatedAt: new Date().toISOString(),
-        content: props.editorRef.current?.getData(),
-      },
-      params: {
-        path: {
-          taskId: props.taskId,
-        },
-      },
+    z.mutate.tasksTable.update({
+      id: props.taskId,
+      updatedAt: Date.now(),
+      content: props.editorRef.current?.getData(),
     });
+
+    toast.success("Task updated");
+    props.afterSave();
   };
 
   const handleEditorModeChange = (mode: EditorMode) => {
@@ -150,21 +129,14 @@ export default function EditTaskContent(props: {
               type="button"
               size="sm"
               className="flex items-center gap-2"
-              disabled={updateContentMutation.isPending || !isDirty}
+              disabled={!isDirty}
             >
-              {updateContentMutation.isPending ? (
-                <>
-                  <Spinner className="mr-1" />
-                  <span className="w-20">Saving...</span>
-                </>
-              ) : (
-                <>
-                  <span>Save</span>
-                  <KeyboardShortcutIndicator commandOrCtrlKey>
-                    S
-                  </KeyboardShortcutIndicator>
-                </>
-              )}
+              <>
+                <span>Save</span>
+                <KeyboardShortcutIndicator commandOrCtrlKey>
+                  S
+                </KeyboardShortcutIndicator>
+              </>
             </Button>
           </div>
         </div>

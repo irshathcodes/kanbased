@@ -42,3 +42,12 @@ export function getBoardWithColumnsAndTasksQuery(z: Z, slug: string) {
 export type GetBoardWithColumnsAndTasksQueryResult = ZeroQueryResult<
   typeof getBoardWithColumnsAndTasksQuery
 >;
+
+export function getTaskQuery(z: Z, taskId: string) {
+  return z.query.tasksTable
+    .where("id", taskId)
+    .where("deletedAt", "IS", null)
+    .one();
+}
+
+export type GetTaskQueryResult = ZeroQueryResult<typeof getTaskQuery>;

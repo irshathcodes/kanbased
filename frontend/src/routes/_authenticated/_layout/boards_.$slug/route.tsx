@@ -4,11 +4,10 @@ import { Columns } from "@/features/board-detail/components/columns";
 import { createFileRoute, linkOptions } from "@tanstack/react-router";
 import { ModalProvider } from "@/state/modals";
 import { CreateColumnButton } from "@/features/board-detail/components/create-column-button";
-import { useColumnsSuspenseQuery } from "@/features/board-detail/queries/columns";
-import { TaskDetailPage } from "./-actions";
 import { useQuery } from "@rocicorp/zero/react";
 import { getBoardWithColumnsAndTasksQuery } from "@/lib/zero-queries";
 import { useZ } from "@/lib/zero-cache";
+import { TaskDetailPage } from "./-actions";
 
 export const Route = createFileRoute("/_authenticated/_layout/boards_/$slug")({
   component: BoardPage,
@@ -32,9 +31,6 @@ export const Route = createFileRoute("/_authenticated/_layout/boards_/$slug")({
         },
       ]),
     };
-  },
-  errorComponent: (error) => {
-    return <ErrorComponent message={error.error?.message} />;
   },
 });
 
@@ -60,15 +56,7 @@ function BoardPage() {
           <Columns boardId={board.id} columns={board.columns} />
         </div>
       </div>
-      {/* <TaskDetailPage columnsQueryKey={columnsQueryKey} /> */}
+      <TaskDetailPage />
     </ModalProvider>
-  );
-}
-
-function ErrorComponent({ message }: { message?: string }) {
-  return (
-    <p className="text-center text-destructive-foreground">
-      {message || "An error occurred"}
-    </p>
   );
 }
