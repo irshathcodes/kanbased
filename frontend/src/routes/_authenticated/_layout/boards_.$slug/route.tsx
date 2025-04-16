@@ -1,9 +1,9 @@
 "use client";
-import { Columns } from "@/features/board-detail/components/columns";
+import { Columns } from "@/features/board-detail/columns";
 
 import { createFileRoute, linkOptions } from "@tanstack/react-router";
 import { ModalProvider } from "@/state/modals";
-import { CreateColumnButton } from "@/features/board-detail/components/create-column-button";
+import { CreateColumnButton } from "@/features/board-detail/create-column-button";
 import { useQuery } from "@rocicorp/zero/react";
 import { getBoardWithColumnsAndTasksQuery } from "@/lib/zero-queries";
 import { useZ } from "@/lib/zero-cache";

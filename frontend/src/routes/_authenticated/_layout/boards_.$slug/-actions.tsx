@@ -1,6 +1,6 @@
 import { useRouter } from "@tanstack/react-router";
 import { getRouteApi } from "@tanstack/react-router";
-import { TaskDetail } from "@/features/board-detail/components/task-detail";
+import { TaskDetail } from "@/features/board-detail/task-detail";
 
 const routeApi = getRouteApi("/_authenticated/_layout/boards_/$slug");
 

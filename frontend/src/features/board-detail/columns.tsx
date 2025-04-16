@@ -1,16 +1,15 @@
-import { Column } from "@/features/board-detail/components/column";
+import { Column } from "@/features/board-detail/column";
 import { useCallback, useRef } from "react";
-import { CreateColumn } from "@/features/board-detail/components/create-column";
+import { CreateColumn } from "@/features/board-detail/create-column";
 import {
   DragDropContext,
   Droppable,
   OnDragEndResponder,
 } from "@hello-pangea/dnd";
-import { useMoveTasksMutation } from "@/features/board-detail/queries/tasks";
 import {
   useColumnModalControls,
   useColumnModalState,
-} from "@/features/board-detail/state/column";
+} from "@/features/board-detail/column.state";
 import { GetBoardWithColumnsAndTasksQueryResult } from "@/lib/zero-queries";
 import { useZ } from "@/lib/zero-cache";
 
@@ -23,7 +22,6 @@ export function Columns({
 }) {
   const z = useZ();
   const columnsQueryKey: any[] = [];
-  const moveTasksMutation = useMoveTasksMutation({ columnsQueryKey });
   const containerRef = useRef<HTMLDivElement>(null);
   const { closeModal } = useColumnModalControls();
 

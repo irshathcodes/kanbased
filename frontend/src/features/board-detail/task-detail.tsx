@@ -15,11 +15,11 @@ import { cn } from "@/lib/utils";
 import { useZ } from "@/lib/zero-cache";
 
 const EditTaskContentLazy = lazy(
-  () => import("@/features/board-detail/components/edit-task-content"),
+  () => import("@/features/board-detail/edit-task-content"),
 );
 
 const ViewTaskContentLazy = lazy(
-  () => import("@/features/board-detail/components/view-task-content"),
+  () => import("@/features/board-detail/view-task-content"),
 );
 
 export function TaskDetail(props: { onClose: () => void; taskId: string }) {

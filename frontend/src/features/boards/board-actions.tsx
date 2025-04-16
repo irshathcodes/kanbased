@@ -1,9 +1,9 @@
-import { useBoardModalState } from "@/features/boards/state/board";
-import { CreateBoard } from "@/features/boards/components/create-board";
-import { DeleteBoard } from "@/features/boards/components/delete-board";
-import { EditBoard } from "@/features/boards/components/edit-board";
-import { ExportBoards } from "@/features/boards/components/export-boards";
-import { ImportBoards } from "@/features/boards/components/import-boards";
+import { useBoardModalState } from "@/features/boards/board.state";
+import { CreateBoard } from "@/features/boards/create-board";
+import { DeleteBoard } from "@/features/boards/delete-board";
+import { EditBoard } from "@/features/boards/edit-board";
+import { ExportBoards } from "@/features/boards/export-boards";
+import { ImportBoards } from "@/features/boards/import-boards";
 
 export function BoardActions() {
   const { activeModal } = useBoardModalState();

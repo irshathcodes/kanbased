@@ -1,7 +1,7 @@
 import { focusElementWithDelay } from "@/lib/helpers";
 import { useRouter } from "@tanstack/react-router";
 import { getRouteApi } from "@tanstack/react-router";
-import NoteEditor from "@/features/notes/components/note-editor";
+import NoteEditor from "@/features/notes/note-editor";
 const routeApi = getRouteApi("/_authenticated/_layout/notes");
 
 export function Actions() {

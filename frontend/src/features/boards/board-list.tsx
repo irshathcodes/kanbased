@@ -1,4 +1,3 @@
-import { BoardListResponse } from "@/types/api-response-types";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import {
@@ -8,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@tanstack/react-router";
-import { useBoardModalControls } from "@/features/boards/state/board";
+import { useBoardModalControls } from "@/features/boards/board.state";
 import { GetBoardsListQueryResult } from "@/lib/zero-queries";
 import { getRelativeTimeString } from "@/lib/utils";
 

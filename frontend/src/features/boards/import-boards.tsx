@@ -4,7 +4,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ImportBoardsModal } from "@/features/boards/state/board";
+import { ImportBoardsModal } from "@/features/boards/board.state";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +14,6 @@ import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { ImportIcon, CheckCircle } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { boardsQueryOptions } from "@/lib/query-options-factory";
 import { useActiveOrganizationId } from "@/queries/session";
 
 export function ImportBoards({ onClose }: ImportBoardsModal) {
@@ -30,7 +29,7 @@ export function ImportBoards({ onClose }: ImportBoardsModal) {
       onSuccess: () => {
         toast.success("Boards imported successfully");
         queryClient.invalidateQueries({
-          queryKey: boardsQueryOptions({ orgId }).queryKey,
+          // queryKey: boardsQueryOptions({ orgId }).queryKey,
         });
       },
       onError: () => {

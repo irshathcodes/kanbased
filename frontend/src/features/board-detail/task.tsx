@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { EditTask } from "@/features/board-detail/components/edit-task";
+import { EditTask } from "@/features/board-detail/edit-task";
 import { cn } from "@/lib/utils";
 import {
   Draggable,

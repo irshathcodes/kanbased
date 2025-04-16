@@ -3,8 +3,8 @@ import { flushSync } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Droppable } from "@hello-pangea/dnd";
 import { cn } from "@/lib/utils";
-import { Task } from "@/features/board-detail/components/task";
-import { CreateTask } from "@/features/board-detail/components/create-task";
+import { Task } from "@/features/board-detail/task";
+import { CreateTask } from "@/features/board-detail/create-task";
 import { GetBoardWithColumnsAndTasksQueryResult } from "@/lib/zero-queries";
 
 type TasksProps = {

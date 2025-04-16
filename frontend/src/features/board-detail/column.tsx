@@ -3,15 +3,15 @@ import { Draggable } from "@hello-pangea/dnd";
 import { GripVertical, MoreVertical } from "lucide-react";
 import { useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { EditableColumnName } from "@/features/board-detail/components/editable-column-name";
-import { Tasks } from "@/features/board-detail/components/tasks";
+import { EditableColumnName } from "@/features/board-detail/editable-column-name";
+import { Tasks } from "@/features/board-detail/tasks";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DeleteColumn } from "@/features/board-detail/components/delete-column";
+import { DeleteColumn } from "@/features/board-detail/delete-column";
 import { GetBoardWithColumnsAndTasksQueryResult } from "@/lib/zero-queries";
 
 type ColumnProps = {

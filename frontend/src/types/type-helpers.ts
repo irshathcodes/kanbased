@@ -2,10 +2,10 @@ import { paths } from "@/types/api-schema";
 import { Query, Row, Schema, TableSchema } from "@rocicorp/zero";
 
 type AvailablePaths = keyof paths;
-// @ts-ignore
 export type Api200Response<
   TPath extends AvailablePaths,
   TMethod extends keyof paths[TPath],
+  // @ts-ignore
 > = paths[TPath][TMethod]["responses"]["200"]["content"]["application/json"];
 
 export type ZeroQueryResult<

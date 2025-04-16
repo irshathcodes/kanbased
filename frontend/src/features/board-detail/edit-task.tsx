@@ -1,11 +1,11 @@
 import { CustomizedTextarea } from "@/components/ui/customized-textarea";
 import { useInteractiveOutside } from "@/hooks/use-interactive-outside";
 import { useZ } from "@/lib/zero-cache";
-import { ColumnsWithTasksResponse } from "@/types/api-response-types";
 import { useCallback, useRef } from "react";
+import { GetTaskQueryResult } from "@/lib/zero-queries";
 
 export type EditTaskProps = {
-  task: ColumnsWithTasksResponse["tasks"][number];
+  task: NonNullable<GetTaskQueryResult>;
   onComplete: () => void;
   className?: string;
 };

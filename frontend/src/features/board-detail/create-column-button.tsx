@@ -4,7 +4,7 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useColumnModalControls } from "@/features/board-detail/state/column";
+import { useColumnModalControls } from "@/features/board-detail/column.state";
 import { CirclePlus } from "lucide-react";
 
 export function CreateColumnButton() {

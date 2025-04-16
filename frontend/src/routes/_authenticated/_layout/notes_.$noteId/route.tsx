@@ -1,5 +1,5 @@
 import { createFileRoute, linkOptions } from "@tanstack/react-router";
-import { ViewNote } from "@/features/notes/components/view-note";
+import { ViewNote } from "@/features/notes/view-note";
 import { Actions } from "./-actions";
 import { useZ } from "@/lib/zero-cache";
 import { getNoteQuery } from "@/lib/zero-queries";

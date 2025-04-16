@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useBoardModalControls } from "@/features/boards/state/board";
+import { useBoardModalControls } from "@/features/boards/board.state";
 import { EllipsisVertical } from "lucide-react";
 import {
   DropdownMenu,

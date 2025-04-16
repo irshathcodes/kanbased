@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { CreateBoardModal } from "@/features/boards/state/board";
+import { CreateBoardModal } from "@/features/boards/board.state";
 import { createId } from "@/lib/utils";
 import { useZ } from "@/lib/zero-cache";
 import { useActiveOrganizationId } from "@/queries/session";
