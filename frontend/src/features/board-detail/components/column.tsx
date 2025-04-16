@@ -4,9 +4,7 @@ import { GripVertical, MoreVertical } from "lucide-react";
 import { useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { EditableColumnName } from "@/features/board-detail/components/editable-column-name";
-import { ColumnsWithTasksQueryData } from "@/features/board-detail/queries/columns";
 import { Tasks } from "@/features/board-detail/components/tasks";
-import { QueryKey } from "@tanstack/react-query";
 import {
   DropdownMenu,
   DropdownMenuContent,

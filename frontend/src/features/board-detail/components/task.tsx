@@ -1,14 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { EditTask } from "@/features/board-detail/components/edit-task";
-import { useDeleteTaskMutation } from "@/features/board-detail/queries/tasks";
 import { cn } from "@/lib/utils";
-import { ColumnsWithTasksResponse } from "@/types/api-response-types";
 import {
   Draggable,
   DraggableProvided,
   DraggableStateSnapshot,
 } from "@hello-pangea/dnd";
-import { QueryKey } from "@tanstack/react-query";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { memo, useCallback, useState } from "react";
 import {

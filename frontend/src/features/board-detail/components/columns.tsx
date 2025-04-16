@@ -83,44 +83,15 @@ export function Columns({
     }
 
     if (e.type === "TASK") {
-      // task update logic here
-
-      // Find the destination column
-      const column = columns.find(
-        (col) => col.id === e.destination!.droppableId,
-      )!;
-
-      // Sort tasks by position
-      let orderedTasks = [...column.tasks]
-        .sort((a, b) => a.position - b.position)
-        .map((task) => ({
-          id: task.id,
-          position: task.position,
-          columnId: task.columnId,
-        }));
-
-      const isDropOnSameColumn =
-        e.source.droppableId === e.destination.droppableId;
-
-      if (isDropOnSameColumn) {
-        const [removedTask] = orderedTasks.splice(e.source.index, 1);
-        orderedTasks.splice(e.destination.index, 0, removedTask!);
-      } else {
-        orderedTasks.splice(e.destination.index, 0, {
-          id: e.draggableId,
-          position: 0,
-          columnId: e.destination.droppableId,
-        });
-      }
-
-      orderedTasks = orderedTasks.map((task, i) => ({
-        ...task,
-        position: i + 1,
-      }));
-
-      moveTasksMutation.mutate({
-        body: orderedTasks,
+      const updatedTask = reorderTask({
+        sourceColumnId: e.source.droppableId,
+        sourceTaskId: e.draggableId,
+        destinationColumnId: e.destination!.droppableId,
+        destinationTaskIndex: e.destination!.index,
+        columns,
       });
+
+      z.mutate.tasksTable.update(updatedTask);
     }
   };
 
@@ -178,4 +149,63 @@ function CreateColumnModalGate(props: React.PropsWithChildren) {
   }
 
   return props.children;
+}
+
+function reorderTask(params: {
+  sourceColumnId: string;
+  sourceTaskId: string;
+  destinationColumnId: string;
+  destinationTaskIndex: number;
+  columns: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"];
+}) {
+  const isSameColumn = params.sourceColumnId === params.destinationColumnId;
+  const destinationColumnId = params.destinationColumnId;
+
+  const destinationColumn = params.columns.find(
+    (col) => col.id === destinationColumnId,
+  )!;
+
+  let destinationTasks = [...destinationColumn.tasks]
+    .sort((a, b) => a.position - b.position)
+    .map((task) => ({
+      id: task.id,
+      position: task.position,
+      columnId: task.columnId,
+    }));
+
+  // If moving within the same column, remove the dragged task from the list first
+  if (isSameColumn) {
+    destinationTasks = destinationTasks.filter(
+      (task) => task.id !== params.sourceTaskId,
+    );
+  }
+
+  // Now simulate dropping it at the destination index
+  destinationTasks.splice(params.destinationTaskIndex, 0, {
+    id: params.sourceTaskId,
+    position: 0, // temporary
+    columnId: destinationColumnId,
+  });
+
+  // Get before & after tasks around the new index
+  const beforeTask = destinationTasks[params.destinationTaskIndex - 1] ?? null;
+  const afterTask = destinationTasks[params.destinationTaskIndex + 1] ?? null;
+
+  let newPosition: number;
+
+  if (beforeTask && afterTask) {
+    newPosition = (beforeTask.position + afterTask.position) / 2;
+  } else if (!beforeTask && afterTask) {
+    newPosition = afterTask.position - 1;
+  } else if (beforeTask && !afterTask) {
+    newPosition = beforeTask.position + 1;
+  } else {
+    newPosition = 1000;
+  }
+
+  return {
+    id: params.sourceTaskId,
+    position: newPosition,
+    columnId: destinationColumn.id,
+  };
 }

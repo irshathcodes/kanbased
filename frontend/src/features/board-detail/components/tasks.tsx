@@ -76,7 +76,7 @@ export function Tasks(props: TasksProps) {
             nextPosition={
               sortedTasks.length
                 ? sortedTasks[sortedTasks.length - 1]!.position + 1
-                : 10
+                : 1000
             }
             onComplete={() => {
               setShowAddTask(false);
