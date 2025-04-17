@@ -9,34 +9,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { api } from "@/lib/openapi-react-query";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { ImportIcon, CheckCircle } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useActiveOrganizationId } from "@/queries/session";
 
 export function ImportBoards({ onClose }: ImportBoardsModal) {
   const queryClient = useQueryClient();
   const orgId = useActiveOrganizationId();
-  const importBoardsMutation = api.useMutation(
-    "post",
-    "/api/v1/boards/import",
-    {
-      meta: {
-        showToastOnMutationError: false,
-      },
-      onSuccess: () => {
-        toast.success("Boards imported successfully");
-        queryClient.invalidateQueries({
-          // queryKey: boardsQueryOptions({ orgId }).queryKey,
-        });
-      },
-      onError: () => {
-        toast.error("Error importing boards");
-      },
+  const importBoardsMutation = useMutation("post", "/api/v1/boards/import", {
+    meta: {
+      showToastOnMutationError: false,
     },
-  );
+    onSuccess: () => {
+      toast.success("Boards imported successfully");
+      queryClient.invalidateQueries({
+        // queryKey: boardsQueryOptions({ orgId }).queryKey,
+      });
+    },
+    onError: () => {
+      toast.error("Error importing boards");
+    },
+  });
 
   const handleImport = (data: any) => {
     importBoardsMutation.mutate({ body: { boards: data } });

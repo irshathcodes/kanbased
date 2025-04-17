@@ -1,9 +1,4 @@
 import { QueryClient, QueryCache, MutationCache } from "@tanstack/react-query";
-import { get, set, del } from "idb-keyval";
-import {
-  PersistedClient,
-  Persister,
-} from "@tanstack/react-query-persist-client";
 import { toast } from "sonner";
 import { AuthError, UserViewableError } from "@/lib/utils";
 
@@ -47,23 +42,6 @@ export const queryClient = new QueryClient({
     },
   }),
 });
-
-export const idbPersister = createIDBPersister();
-
-export function createIDBPersister() {
-  const idbValidKey = "reactQuery";
-  return {
-    persistClient: async (client: PersistedClient) => {
-      await set(idbValidKey, client);
-    },
-    restoreClient: async () => {
-      return await get<PersistedClient>(idbValidKey);
-    },
-    removeClient: async () => {
-      await del(idbValidKey);
-    },
-  } as Persister;
-}
 
 interface MyMeta extends Record<string, unknown> {
   showToastOnQueryError?: boolean;

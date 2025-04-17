@@ -5,11 +5,10 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { idbPersister, queryClient } from "@/lib/query-client";
-import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { queryClient } from "@/lib/query-client";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 import "./tailwind.css";
-import { useIsRestoring } from "@tanstack/react-query";
 import { DefaultPendingComponent } from "@/components/default-loader";
 
 // Set up a Router instance
@@ -42,19 +41,8 @@ function App() {
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister: idbPersister, maxAge: Infinity }}
-    >
-      <AppWrapper>
-        <App />
-      </AppWrapper>
-    </PersistQueryClientProvider>,
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>,
   );
-}
-
-function AppWrapper(props: React.PropsWithChildren) {
-  const isRestoring = useIsRestoring();
-  if (isRestoring) return null;
-  return props.children;
 }

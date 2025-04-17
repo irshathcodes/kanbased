@@ -1,5 +1,5 @@
 import { authClient } from "@/lib/auth";
-import { fetchClient } from "@/lib/fetch-client";
+import { post } from "@/lib/fetch-client";
 import { sessionQueryOptions } from "@/lib/query-options-factory";
 import { handleAuthResponse, UserViewableError } from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -26,21 +26,17 @@ export function useUploadUserImageMutation() {
         );
       }
 
-      const res = await fetchClient.POST(
-        "/api/v1/storage/user-image-presigned-url",
-        {
-          body: {
-            fileName: body.file.name,
-            contentType: body.file.type,
-          },
-        },
-      );
+      const res = await post("/api/v1/storage/user-image-presigned-url", {
+        fileName: body.file.name,
+        contentType: body.file.type,
+      });
 
-      if (res.error) {
+      if (!res.ok) {
         throw new UserViewableError("Failed to upload image");
       }
 
-      const url = res.data.url;
+      const data = await res.json();
+      const url = data.url;
 
       const uploadRes = await fetch(url, {
         method: "PUT",
@@ -54,7 +50,7 @@ export function useUploadUserImageMutation() {
         throw new UserViewableError("Failed to upload image");
       }
 
-      return { imageUrl: res.data.imageUrl };
+      return { imageUrl: data.imageUrl };
     },
   });
 }
