@@ -33,9 +33,3 @@ export function useGithubLoginMutation({
     },
   });
 }
-
-/*
-      callbackURL: search?.redirect
-        ? `${getOrigin()}${search?.redirect}`
-        : getOrigin(),
-*/

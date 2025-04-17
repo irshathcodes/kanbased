@@ -31,10 +31,6 @@ import { useMutation } from "@tanstack/react-query";
 import { getOrigin } from "@/lib/constants";
 import { router } from "@/main";
 import { toast } from "sonner";
-import {
-  useActiveOrganizationQuery,
-  useOrganizationsListQuery,
-} from "@/queries/organization";
 import { Link } from "@tanstack/react-router";
 import {
   SidebarMenu,
@@ -43,11 +39,17 @@ import {
 } from "@/components/ui/sidebar";
 import { sessionQueryOptions } from "@/lib/query-options-factory";
 import { queryClient } from "@/lib/query-client";
+import { useQuery } from "@rocicorp/zero/react";
+import { getOrganizationListQuery } from "@/lib/zero-queries";
+import { useZ } from "@/lib/zero-cache";
 
 export function NavUser() {
   const { user, session } = useSession();
-  const organizationQuery = useActiveOrganizationQuery();
-  const organizationListQuery = useOrganizationsListQuery();
+  const z = useZ();
+  const [organizationsList] = useQuery(getOrganizationListQuery(z));
+  const currentOrganization = organizationsList.find(
+    (org) => org.id === session.activeOrganizationId,
+  );
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -55,6 +57,7 @@ export function NavUser() {
       return handleAuthResponse(res);
     },
     onSuccess: () => {
+      localStorage.removeItem("token");
       queryClient.setQueryDefaults(sessionQueryOptions.queryKey, {
         staleTime: 0,
       });
@@ -90,7 +93,8 @@ export function NavUser() {
       return handleAuthResponse(res);
     },
     onSuccess: () => {
-      window.location.reload();
+      localStorage.removeItem("token");
+      window.location.href = "/";
     },
   });
 
@@ -146,14 +150,10 @@ export function NavUser() {
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="font-medium truncate">{user.name}</span>
 
-                {organizationQuery.isLoading ? (
-                  <div className="animate-pulse bg-gray-4 w-32 h-4 rounded-md" />
-                ) : (
+                {currentOrganization && (
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Building2 className="h-3 w-3 shrink-0" />
-                    <span className="truncate">
-                      {organizationQuery?.data?.name}
-                    </span>
+                    <span className="truncate">{currentOrganization.name}</span>
                   </div>
                 )}
               </div>
@@ -176,7 +176,7 @@ export function NavUser() {
                 Switch organization
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
-                {organizationListQuery.data?.map((org) => (
+                {organizationsList.map((org) => (
                   <DropdownMenuCheckboxItem
                     checked={org.id === session.activeOrganizationId}
                     key={org.id}

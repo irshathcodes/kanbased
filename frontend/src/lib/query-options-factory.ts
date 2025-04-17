@@ -1,5 +1,5 @@
 import { authClient } from "@/lib/auth";
-import { AuthError, handleAuthResponse } from "@/lib/utils";
+import { AuthError } from "@/lib/utils";
 import { queryOptions } from "@tanstack/react-query";
 import { isSessionLoaded, setSessionLoaded } from "@/lib/constants";
 
@@ -31,28 +31,3 @@ export const sessionQueryOptions = queryOptions({
   queryFn: async () => fetchSession({ shouldSetSessionLoaded: true }),
   staleTime: () => (isSessionLoaded() ? Infinity : 0),
 });
-
-export const activeOrganizationQueryOptions = (
-  organizationId: string | null | undefined,
-  userId: string,
-) =>
-  queryOptions({
-    queryKey: [userId, "organizations", organizationId],
-    queryFn: async () => {
-      const res = await authClient.organization.getFullOrganization({
-        query: { organizationId: organizationId! },
-      });
-      return handleAuthResponse(res);
-    },
-    enabled: !!organizationId,
-  });
-
-export const organizationsListQueryOptions = (userId: string) =>
-  queryOptions({
-    queryKey: [userId, "organizations"],
-    queryFn: async () => {
-      const res = await authClient.organization.list();
-      return handleAuthResponse(res);
-    },
-    enabled: !!userId,
-  });

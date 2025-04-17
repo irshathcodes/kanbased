@@ -162,10 +162,13 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
       ),
     );
 
-  const allowIfActiveOrg = (
+  const organizationsBelongToUser = (
     authData: AuthData,
-    { cmp }: ExpressionBuilder<Schema, "organizationsTable">,
-  ) => cmp("id", "=", authData.activeOrganizationId);
+    { exists }: ExpressionBuilder<Schema, "organizationsTable">,
+  ) =>
+    exists("members", (q) =>
+      q.where((eb) => eb.cmp("userId", "=", authData.sub)),
+    );
 
   const itemsBelongToActiveOrg = (
     authData: AuthData,
@@ -198,7 +201,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
     // Organizations table - users can only see orgs they are members of
     organizationsTable: {
       row: {
-        select: [and(userIsLoggedIn, allowIfActiveOrg)],
+        select: [and(userIsLoggedIn, organizationsBelongToUser)],
         insert: NOBODY_CAN, // Org creation handled elsewhere
         update: {
           preMutation: NOBODY_CAN,
@@ -211,7 +214,7 @@ export const permissions = definePermissions<AuthData, Schema>(schema, () => {
     // Members table - users can only see members of their active organization
     membersTable: {
       row: {
-        select: [userIsLoggedIn, itemsBelongToActiveOrg],
+        select: [and(userIsLoggedIn, itemsBelongToActiveOrg)],
         insert: NOBODY_CAN, // Member management handled elsewhere
         update: {
           preMutation: NOBODY_CAN,

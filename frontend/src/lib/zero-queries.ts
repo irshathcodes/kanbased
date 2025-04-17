@@ -51,3 +51,11 @@ export function getTaskQuery(z: Z, taskId: string) {
 }
 
 export type GetTaskQueryResult = ZeroQueryResult<typeof getTaskQuery>;
+
+export function getOrganizationListQuery(z: Z) {
+  return z.query.organizationsTable;
+}
+
+export type GetOrganizationListQueryResult = ZeroQueryResult<
+  typeof getOrganizationListQuery
+>[];
