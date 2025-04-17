@@ -1,29 +1,28 @@
-import { QueryClient, QueryCache, MutationCache } from "@tanstack/react-query";
+import { QueryClient, MutationCache } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AuthError, UserViewableError } from "@/lib/utils";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
-    queries: {
-      gcTime: 1000 * 60 * 60 * 24, // 24 hours
-      retry: (failureCount, error) => {
-        const statusCode = "statusCode" in error ? error.statusCode : undefined;
+    // queries: {
+    //   gcTime: 1000 * 60 * 60 * 24, // 24 hours
+    //   retry: (failureCount, error) => {
+    //     const statusCode = "statusCode" in error ? error.statusCode : undefined;
 
-        if (Number(statusCode) > 500) {
-          return true;
-        }
+    //     if (Number(statusCode) > 500) {
+    //       return true;
+    //     }
 
-        return false;
-      },
-      refetchOnWindowFocus: false,
-    },
+    //     return false;
+    //   },
+    //   refetchOnWindowFocus: false,
+    // },
     mutations: {
       meta: {
         showToastOnMutationError: true,
       },
     },
   },
-  queryCache: new QueryCache(),
   mutationCache: new MutationCache({
     onError: (error, _variables, _context, mutation) => {
       if (mutation.meta?.showToastOnMutationError) {
@@ -44,13 +43,13 @@ export const queryClient = new QueryClient({
 });
 
 interface MyMeta extends Record<string, unknown> {
-  showToastOnQueryError?: boolean;
+  // showToastOnQueryError?: boolean;
   showToastOnMutationError?: boolean;
 }
 
 declare module "@tanstack/react-query" {
   interface Register {
-    queryMeta: MyMeta;
+    // queryMeta: MyMeta;
     mutationMeta: MyMeta;
     defaultError: Error | UserViewableError | AuthError;
   }
