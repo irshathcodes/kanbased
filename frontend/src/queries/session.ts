@@ -1,6 +1,10 @@
 import { sessionQueryOptions } from "@/lib/query-options-factory";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "@tanstack/react-router";
+import {
+  QueryClient,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
 
 export function getSession(queryClient: QueryClient) {
   const queryData = queryClient.getQueryData(sessionQueryOptions.queryKey);
@@ -13,18 +17,8 @@ export function getSession(queryClient: QueryClient) {
 }
 
 export function useSession() {
-  const router = useRouter();
-  const { data } = useQuery(sessionQueryOptions);
-
-  const isSessionExpired = data?.session.expiresAt
-    ? new Date(data.session.expiresAt) < new Date()
-    : false;
-
-  if (!data || isSessionExpired) {
-    router.navigate({ to: "/login" });
-  }
-
-  return data!;
+  const { data } = useSuspenseQuery(sessionQueryOptions);
+  return data;
 }
 
 export function getActiveOrganizationId(queryClient: QueryClient) {
@@ -35,4 +29,13 @@ export function getActiveOrganizationId(queryClient: QueryClient) {
 export function useActiveOrganizationId() {
   const queryClient = useQueryClient();
   return getActiveOrganizationId(queryClient);
+}
+
+export function useResetSessionQueryCache() {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    localStorage.removeItem("session-detail");
+    queryClient.invalidateQueries(sessionQueryOptions);
+  }, []);
 }

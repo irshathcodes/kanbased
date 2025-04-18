@@ -13,18 +13,3 @@ export function getOrigin() {
 export const isMac =
   typeof window !== "undefined" &&
   navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-
-let sessionLoaded = false;
-
-export function setSessionLoaded() {
-  if (!window) {
-    sessionLoaded = false;
-    return;
-  }
-
-  sessionLoaded = true;
-}
-
-export function isSessionLoaded() {
-  return sessionLoaded;
-}

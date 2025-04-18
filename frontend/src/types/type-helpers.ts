@@ -1,12 +1,10 @@
-import { paths } from "@/types/api-schema";
+import { Session, User } from "better-auth/types";
 import { Query, Row, Schema, TableSchema } from "@rocicorp/zero";
 
-type AvailablePaths = keyof paths;
-export type Api200Response<
-  TPath extends AvailablePaths,
-  TMethod extends keyof paths[TPath],
-  // @ts-ignore
-> = paths[TPath][TMethod]["responses"]["200"]["content"]["application/json"];
+export type GetSessionResponse = {
+  session: Session & { activeOrganizationId: string | null };
+  user: User;
+};
 
 export type ZeroQueryResult<
   T extends (...args: any) => TableSchema | Query<Schema, string, any>,

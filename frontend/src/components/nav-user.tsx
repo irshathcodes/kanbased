@@ -58,8 +58,12 @@ export function NavUser() {
     },
     onSuccess: () => {
       localStorage.removeItem("token");
+      localStorage.removeItem("session-detail");
       queryClient.setQueryDefaults(sessionQueryOptions.queryKey, {
         staleTime: 0,
+        meta: {
+          isFetchedOnce: false,
+        },
       });
       router.navigate({ to: "/login" });
     },

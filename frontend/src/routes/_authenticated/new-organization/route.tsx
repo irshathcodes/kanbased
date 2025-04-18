@@ -16,10 +16,9 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth";
 import { useMutation } from "@tanstack/react-query";
 import { handleAuthResponse } from "@/lib/utils";
-import { sessionQueryOptions } from "@/lib/query-options-factory";
 import { queryClient } from "@/lib/query-client";
 import { BackButton } from "@/components/back-button";
-import { clearAndResetSessionQueryCache } from "@/lib/helpers";
+import { sessionQueryOptions } from "@/lib/query-options-factory";
 
 export const Route = createFileRoute("/_authenticated/new-organization")({
   component: Welcome,
@@ -56,7 +55,7 @@ function Welcome() {
         organizationId: res!.id,
       });
 
-      await clearAndResetSessionQueryCache(queryClient);
+      await queryClient.invalidateQueries(sessionQueryOptions);
 
       toast.success("Organization created successfully!");
 
