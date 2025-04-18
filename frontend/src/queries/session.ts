@@ -4,7 +4,7 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 
 export function getSession(queryClient: QueryClient) {
   const queryData = queryClient.getQueryData(sessionQueryOptions.queryKey);
