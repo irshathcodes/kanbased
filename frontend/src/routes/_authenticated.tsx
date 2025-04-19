@@ -1,26 +1,15 @@
-import { sessionQueryOptions } from "@/lib/query-options-factory";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { queryClient } from "@/lib/query-client";
-import { tryCatch } from "@/lib/utils";
+import { createFileRoute, Outlet, useRouter } from "@tanstack/react-router";
 import { AuthError } from "@/lib/utils";
-
-const updatedSessionQueryOptions = {
-  ...sessionQueryOptions,
-  revalidateIfStale: true,
-};
+import { useSession } from "@/queries/session";
 
 export const Route = createFileRoute("/_authenticated")({
-  beforeLoad: async ({ location }) => {
-    const { data, error } = await tryCatch(
-      queryClient.ensureQueryData(updatedSessionQueryOptions),
-    );
+  component: RouteComponent,
 
-    const isSessionExpired = data?.session.expiresAt
-      ? new Date(data.session.expiresAt) < new Date()
-      : false;
+  errorComponent: (error) => {
+    const router = useRouter();
 
-    if (error instanceof AuthError || isSessionExpired) {
-      throw redirect({
+    if (error instanceof AuthError) {
+      router.navigate({
         to: "/login",
         search: {
           redirect: location.href,
@@ -28,26 +17,6 @@ export const Route = createFileRoute("/_authenticated")({
       });
     }
 
-    if (error) {
-      throw error;
-    }
-
-    const hasNoActiveOrganization =
-      data?.session && !data.session.activeOrganizationId;
-
-    if (
-      hasNoActiveOrganization &&
-      !location.pathname?.includes("/new-organization")
-    ) {
-      throw redirect({
-        to: "/new-organization",
-      });
-    }
-  },
-
-  component: RouteComponent,
-
-  errorComponent: (error) => {
     return (
       <div className="h-screen flex items-center justify-center">
         <div className="max-w-96">
@@ -64,5 +33,36 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function RouteComponent() {
+  const router = useRouter();
+  const data = useSession();
+
+  const isSessionExpired = data?.session.expiresAt
+    ? new Date(data.session.expiresAt) < new Date()
+    : false;
+
+  if (isSessionExpired) {
+    router.navigate({
+      to: "/login",
+      search: {
+        redirect: location.href,
+      },
+    });
+    return null;
+  }
+
+  const hasNoActiveOrganization =
+    data?.session && !data.session.activeOrganizationId;
+
+  if (
+    hasNoActiveOrganization &&
+    !location.pathname?.includes("/new-organization")
+  ) {
+    router.navigate({
+      to: "/new-organization",
+    });
+
+    return null;
+  }
+
   return <Outlet />;
 }

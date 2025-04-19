@@ -1,40 +1,10 @@
 import { authClient } from "@/lib/auth";
-import { api } from "@/lib/openapi-react-query";
-import { queryClient } from "@/lib/query-client";
-import { AuthError, handleAuthResponse } from "@/lib/utils";
-import { ColumnsWithTasksResponse } from "@/types/api-response-types";
-import { QueryKey, queryOptions } from "@tanstack/react-query";
-import { isSessionLoaded, setSessionLoaded } from "@/lib/constants";
+import { AuthError, tryCatch } from "@/lib/utils";
+import { GetSessionResponse } from "@/types/type-helpers";
+import { queryOptions, QueryClient } from "@tanstack/react-query";
 
-export function columnsQueryOptions({
-  orgId,
-  boardUrl,
-}: {
-  orgId: string;
-  boardUrl: string;
-}) {
-  return queryOptions({
-    ...api.queryOptions("get", "/api/v1/columns", {
-      params: { query: { boardUrl } },
-      organizationId: orgId,
-    }),
-  });
-}
-
-export function boardsQueryOptions({ orgId }: { orgId: string }) {
-  return queryOptions({
-    ...api.queryOptions("get", "/api/v1/boards", {
-      organizationId: orgId,
-    }),
-  });
-}
-
-export async function fetchSession({
-  shouldSetSessionLoaded = false,
-}: {
-  shouldSetSessionLoaded?: boolean;
-} = {}) {
-  const { error, data } = await authClient.getSession();
+export async function fetchSession() {
+  const { data, error } = await authClient.getSession();
 
   if (error) {
     throw error;
@@ -47,84 +17,69 @@ export async function fetchSession({
     });
   }
 
-  shouldSetSessionLoaded && setSessionLoaded();
-
   return data;
+}
+
+// I'm doing this whole cache thing because On page reload, I don't want to wait for the
+// getSession API call to complete to render our app. But still fetch the session details
+// from the server in the background.
+export async function fetchSessionWithCache(queryClient: QueryClient) {
+  const stringifiedData = localStorage.getItem("session-detail");
+  const queryState = queryClient.getQueryState(sessionQueryOptions.queryKey);
+
+  let data: GetSessionResponse | null = null;
+
+  if (stringifiedData) {
+    const { data: cachedSession } = await tryCatch<GetSessionResponse>(
+      JSON.parse(stringifiedData),
+    );
+
+    if (
+      cachedSession &&
+      cachedSession?.session?.expiresAt &&
+      new Date(cachedSession.session.expiresAt) > new Date()
+    ) {
+      data = cachedSession;
+    }
+  }
+
+  if (!data || queryState?.isInvalidated) {
+    const res = await fetchSession();
+    localStorage.setItem("session-detail", JSON.stringify(res));
+
+    queryClient.setQueryDefaults(sessionQueryOptions.queryKey, {
+      meta: {
+        isFetchedOnce: true,
+      },
+    });
+
+    return res;
+  } else {
+    fetchSession()
+      .then((res) => {
+        localStorage.setItem("session-detail", JSON.stringify(res));
+
+        queryClient.setQueryDefaults(sessionQueryOptions.queryKey, {
+          meta: {
+            isFetchedOnce: true,
+          },
+        });
+
+        queryClient.setQueryData(sessionQueryOptions.queryKey, res);
+      })
+      .catch(() => {
+        localStorage.removeItem("session-detail");
+        queryClient.invalidateQueries(sessionQueryOptions);
+      });
+
+    return data;
+  }
 }
 
 export const sessionQueryOptions = queryOptions({
   queryKey: ["session"],
-  queryFn: async () => fetchSession({ shouldSetSessionLoaded: true }),
-  staleTime: () => (isSessionLoaded() ? Infinity : 0),
+  queryFn: async ({ client }) => fetchSessionWithCache(client),
+  staleTime: ({ meta }) => {
+    return meta?.isFetchedOnce ? Infinity : 0;
+  },
 });
-
-export const activeOrganizationQueryOptions = (
-  organizationId: string | null | undefined,
-  userId: string,
-) =>
-  queryOptions({
-    queryKey: [userId, "organizations", organizationId],
-    queryFn: async () => {
-      const res = await authClient.organization.getFullOrganization({
-        query: { organizationId: organizationId! },
-      });
-      return handleAuthResponse(res);
-    },
-    enabled: !!organizationId,
-  });
-
-export const organizationsListQueryOptions = (userId: string) =>
-  queryOptions({
-    queryKey: [userId, "organizations"],
-    queryFn: async () => {
-      const res = await authClient.organization.list();
-      return handleAuthResponse(res);
-    },
-    enabled: !!userId,
-  });
-
-export function taskDetailQueryOptions(params: {
-  taskId: string;
-  columnsQueryKey: QueryKey;
-  orgId: string;
-}) {
-  return queryOptions({
-    ...api.queryOptions("get", "/api/v1/tasks/{taskId}", {
-      params: { path: { taskId: params.taskId } },
-      organizationId: params.orgId,
-    }),
-    placeholderData: () => {
-      const columns = queryClient.getQueryData(
-        params.columnsQueryKey,
-      ) as ColumnsWithTasksResponse;
-      const task = columns?.tasks?.find((task) => task.id === params.taskId);
-
-      return {
-        columnId: task?.columnId ?? "",
-        content: "",
-        createdAt: "",
-        deletedAt: "",
-        id: task?.id ?? "",
-        name: task?.name ?? "",
-        position: task?.position ?? 0,
-        updatedAt: "",
-      };
-    },
-  });
-}
-
-export function getNoteQueryOptions(params: { noteId: string; orgId: string }) {
-  return queryOptions({
-    ...api.queryOptions("get", "/api/v1/notes/{noteId}", {
-      params: { path: { noteId: params.noteId } },
-      organizationId: params.orgId,
-    }),
-  });
-}
-
-export const getAllNotesQueryOptions = ({ orgId }: { orgId: string }) =>
-  queryOptions({
-    ...api.queryOptions("get", "/api/v1/notes", {
-      organizationId: orgId,
-    }),
-  });

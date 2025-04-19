@@ -8,8 +8,10 @@ import {
   verification as verificationsTable,
   member as membersTable,
   invitation as invitationsTable,
+  jwks as jwksTable,
 } from "./auth-schema.js";
 import { commonColumns } from "../helpers.js";
+import { relations } from "drizzle-orm";
 
 export {
   organizationsTable,
@@ -19,138 +21,156 @@ export {
   verificationsTable,
   membersTable,
   invitationsTable,
+  jwksTable,
 };
 
+export const organizationsRelations = relations(
+  organizationsTable,
+  ({ many }) => ({
+    invitations: many(invitationsTable),
+    members: many(membersTable),
+    boards: many(boardsTable),
+    columns: many(columnsTable),
+    tasks: many(tasksTable),
+    notes: many(notesTable),
+  }),
+);
+
+export const usersRelations = relations(usersTable, ({ many }) => ({
+  members: many(membersTable),
+  invitations: many(invitationsTable),
+  accounts: many(accountsTable),
+  boards: many(boardsTable),
+  columns: many(columnsTable),
+  tasks: many(tasksTable),
+  notes: many(notesTable),
+}));
+
+export const accountRelations = relations(accountsTable, ({ one }) => ({
+  user: one(usersTable, {
+    fields: [accountsTable.userId],
+    references: [usersTable.id],
+  }),
+}));
+
+export const memberRelations = relations(membersTable, ({ one }) => ({
+  organization: one(organizationsTable, {
+    fields: [membersTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  user: one(usersTable, {
+    fields: [membersTable.userId],
+    references: [usersTable.id],
+  }),
+}));
+
+export const invitationRelations = relations(invitationsTable, ({ one }) => ({
+  organization: one(organizationsTable, {
+    fields: [invitationsTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  inviter: one(usersTable, {
+    fields: [invitationsTable.inviterId],
+    references: [usersTable.id],
+  }),
+}));
+
 export const boardsTable = pgTable("boards", {
-  id: t.uuid().primaryKey(),
+  id: t.varchar({ length: 26 }).primaryKey(),
   name: t.varchar({ length: 255 }).notNull(),
   color: t.varchar({ length: 255 }),
-  createdAt: t.timestamp(),
-  updatedAt: t.timestamp().notNull(),
-  deletedAt: t.timestamp(),
-  boardUrl: t.text().notNull(),
-  organizationId: t
-    .text()
-    .references(() => organizationsTable.id, { onDelete: "cascade" })
-    .notNull(),
+  slug: t.text().notNull(),
+  ...commonColumns,
 });
+
+export const boardsRelations = relations(boardsTable, ({ one, many }) => ({
+  organization: one(organizationsTable, {
+    fields: [boardsTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  creator: one(usersTable, {
+    fields: [boardsTable.creatorId],
+    references: [usersTable.id],
+  }),
+  columns: many(columnsTable),
+}));
 
 export const columnsTable = pgTable(
   "columns",
   {
-    id: t.uuid().primaryKey(),
+    id: t.varchar({ length: 26 }).primaryKey(),
     name: t.varchar({ length: 100 }).notNull(),
     boardId: t
-      .uuid()
+      .varchar({ length: 26 })
       .references(() => boardsTable.id, { onDelete: "cascade" })
       .notNull(),
     position: t.integer().notNull(),
-    createdAt: t.timestamp(),
-    updatedAt: t.timestamp().notNull(),
-    deletedAt: t.timestamp(),
+    ...commonColumns,
   },
-  (table) => [t.index("column_board_idx").on(table.boardId)]
+  (table) => [t.index("column_board_idx").on(table.boardId)],
 );
+
+export const columnsRelations = relations(columnsTable, ({ one, many }) => ({
+  board: one(boardsTable, {
+    fields: [columnsTable.boardId],
+    references: [boardsTable.id],
+  }),
+  organization: one(organizationsTable, {
+    fields: [columnsTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  creator: one(usersTable, {
+    fields: [columnsTable.creatorId],
+    references: [usersTable.id],
+  }),
+  tasks: many(tasksTable),
+}));
 
 export const tasksTable = pgTable(
   "tasks",
   {
-    id: t.uuid().primaryKey(),
+    id: t.varchar({ length: 26 }).primaryKey(),
     name: t.text().notNull(),
+    content: t.text(),
     columnId: t
-      .uuid()
+      .varchar({ length: 26 })
       .references(() => columnsTable.id, { onDelete: "cascade" })
       .notNull(),
     position: t.doublePrecision().notNull(),
-    createdAt: t.timestamp().notNull(),
-    updatedAt: t.timestamp().notNull(),
-    deletedAt: t.timestamp(),
+    ...commonColumns,
   },
-  (table) => [t.index("column_id_idx").on(table.columnId)]
+  (table) => [t.index("column_id_idx").on(table.columnId)],
 );
 
-export const boardPermissionsTable = pgTable(
-  "board_permissions",
-  {
-    id: t.serial().primaryKey(),
-    boardId: t
-      .uuid()
-      .references(() => boardsTable.id, { onDelete: "cascade" })
-      .notNull(),
-    userId: t
-      .text()
-      .references(() => usersTable.id, { onDelete: "cascade" })
-      .notNull(),
-    organizationId: t
-      .text()
-      .references(() => organizationsTable.id, { onDelete: "cascade" })
-      .notNull(),
-    permission: t.varchar({ length: 255 }).notNull(),
-    createdAt: t.timestamp().notNull().defaultNow(),
-  },
-  (table) => [
-    // Ensure user can only have one role per board
-    t
-      .unique("unique_board_member")
-      .on(table.boardId, table.userId, table.organizationId),
-    t.index("board_members_user_idx").on(table.userId),
-    t.index("board_members_board_idx").on(table.boardId),
-    t.index("board_members_organization_idx").on(table.organizationId),
-  ]
-);
+export const tasksRelations = relations(tasksTable, ({ one }) => ({
+  column: one(columnsTable, {
+    fields: [tasksTable.columnId],
+    references: [columnsTable.id],
+  }),
+  organization: one(organizationsTable, {
+    fields: [tasksTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  creator: one(usersTable, {
+    fields: [tasksTable.creatorId],
+    references: [usersTable.id],
+  }),
+}));
 
-export const taskMarkdownTable = pgTable("task_markdown", {
-  taskId: t
-    .uuid()
-    .references(() => tasksTable.id, { onDelete: "cascade" })
-    .primaryKey(),
-  content: t.text(),
+export const notesTable = pgTable("notes", {
+  id: t.varchar({ length: 26 }).primaryKey(),
+  name: t.varchar({ length: 255 }).notNull(),
+  content: t.text().notNull(),
   ...commonColumns,
 });
 
-
-
-
-export const notesTable = pgTable("notes", {
-  id: t.uuid().primaryKey(),
-  name: t.varchar({ length: 255 }).notNull(),
-  content: t.text().notNull(),
-  createdAt: t.timestamp(),
-  updatedAt: t.timestamp().notNull(),
-  deletedAt: t.timestamp(),
-  organizationId: t
-    .text()
-    .references(() => organizationsTable.id, { onDelete: "cascade" })
-    .notNull(),
-});
-
-
-export const notePermissionsTable = pgTable(
-  "note_permissions",
-  {
-    id: t.serial().primaryKey(),
-    noteId: t
-      .uuid()
-      .references(() => notesTable.id, { onDelete: "cascade" })
-      .notNull(),
-    userId: t
-      .text()
-      .references(() => usersTable.id, { onDelete: "cascade" })
-      .notNull(),
-    organizationId: t
-      .text()
-      .references(() => organizationsTable.id, { onDelete: "cascade" })
-      .notNull(),
-    permission: t.varchar({ length: 255, enum: ["owner", "editor", "viewer"] }).notNull(),
-    createdAt: t.timestamp().notNull().defaultNow(),
-  },
-  (table) => [
-    // Ensure user can only have one role per board
-    t
-      .unique("unique_note_member")
-      .on(table.noteId, table.userId, table.organizationId),
-    t.index("note_members_user_idx").on(table.userId),
-    t.index("note_members_note_idx").on(table.noteId),
-    t.index("note_members_organization_idx").on(table.organizationId),
-  ]
-);
+export const notesRelations = relations(notesTable, ({ one }) => ({
+  organization: one(organizationsTable, {
+    fields: [notesTable.organizationId],
+    references: [organizationsTable.id],
+  }),
+  creator: one(usersTable, {
+    fields: [notesTable.creatorId],
+    references: [usersTable.id],
+  }),
+}));

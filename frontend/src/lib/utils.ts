@@ -1,49 +1,19 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { ulid } from "ulid";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function useBetterParams<TParams extends Record<string, any>>() {
-  return {};
-}
-
-export function getId() {
-  return crypto.randomUUID();
+export function createId() {
+  return ulid();
 }
 
 export async function promiseTimeout(delayInMs: number) {
   return new Promise((resolve) => {
     setTimeout(resolve, delayInMs);
   });
-}
-
-export async function fetchAndCacheImage(
-  cacheName: string,
-  imageUrl: string,
-): Promise<string | null> {
-  const cache = await caches.open(cacheName);
-
-  // Check if the image is already cached
-  const cachedResponse = await cache.match(imageUrl);
-
-  if (cachedResponse) {
-    const res = await cachedResponse.blob();
-    return URL.createObjectURL(res);
-  }
-
-  try {
-    const response = await fetch(imageUrl);
-    if (!response.ok) throw new Error("Failed to fetch image");
-
-    const blob = await response.blob();
-
-    cache.put(imageUrl, response.clone());
-    return URL.createObjectURL(blob);
-  } catch (err) {
-    return null;
-  }
 }
 
 export interface AuthErrorType {
@@ -88,7 +58,6 @@ export function getSidebarStateFromCookie(): boolean {
   return sidebarCookie ? sidebarCookie.split("=")[1] === "true" : false;
 }
 
-
 // Types for the result object with discriminated union
 type Success<T> = {
   data: T;
@@ -111,5 +80,35 @@ export async function tryCatch<T, E = Error>(
     return { data, error: null };
   } catch (error) {
     return { data: null, error: error as E };
+  }
+}
+
+const TOKEN_NAME = "token";
+
+export function getToken() {
+  return localStorage.getItem(TOKEN_NAME);
+}
+
+export function setToken(token: string) {
+  localStorage.setItem(TOKEN_NAME, token);
+}
+
+export function getRelativeTimeString(date: Date): string {
+  const formatter = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+  const now = new Date();
+  const diffInMs = date.getTime() - now.getTime();
+  const diffInSecs = Math.round(diffInMs / 1000);
+  const diffInMins = Math.round(diffInSecs / 60);
+  const diffInHours = Math.round(diffInMins / 60);
+  const diffInDays = Math.round(diffInHours / 24);
+
+  if (Math.abs(diffInSecs) < 60) {
+    return formatter.format(0, "seconds");
+  } else if (Math.abs(diffInMins) < 60) {
+    return formatter.format(diffInMins, "minutes");
+  } else if (Math.abs(diffInHours) < 24) {
+    return formatter.format(diffInHours, "hours");
+  } else {
+    return formatter.format(diffInDays, "days");
   }
 }
