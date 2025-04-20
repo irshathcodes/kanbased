@@ -64,7 +64,6 @@ export async function fetchSessionWithCache(queryClient: QueryClient) {
             isFetchedOnce: true,
           },
         });
-
         queryClient.setQueryData(sessionQueryOptions.queryKey, res);
       })
       .catch(() => {
