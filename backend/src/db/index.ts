@@ -8,8 +8,9 @@ export const db = drizzle({
   connection: {
     url: env.DATABASE_URL,
   },
-  casing: "snake_case",
 });
 
 export type Db = typeof db;
-export type DbTypeOrTransaction = Parameters<Parameters<Db['transaction']>[0]>[0] | Db;
+export type DbTypeOrTransaction =
+  | Parameters<Parameters<Db["transaction"]>[0]>[0]
+  | Db;
