@@ -1,5 +1,5 @@
 {
-  "id": "228a1372-0072-4ced-b84b-4b83ccb92a64",
+  "id": "24a194d0-8666-4f0a-8a77-4eb54709a76a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -131,26 +131,26 @@
           "primaryKey": false,
           "notNull": false
         },
-        "board_url": {
-          "name": "board_url",
+        "slug": {
+          "name": "slug",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
-        "deleted_at": {
-          "name": "deleted_at",
+        "deletedAt": {
+          "name": "deletedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
@@ -219,8 +219,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "board_id": {
-          "name": "board_id",
+        "boardId": {
+          "name": "boardId",
           "type": "varchar(26)",
           "primaryKey": false,
           "notNull": true
@@ -231,20 +231,20 @@
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
-        "deleted_at": {
-          "name": "deleted_at",
+        "deletedAt": {
+          "name": "deletedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
@@ -267,7 +267,7 @@
           "name": "column_board_idx",
           "columns": [
             {
-              "expression": "board_id",
+              "expression": "boardId",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -280,12 +280,12 @@
         }
       },
       "foreignKeys": {
-        "columns_board_id_boards_id_fk": {
-          "name": "columns_board_id_boards_id_fk",
+        "columns_boardId_boards_id_fk": {
+          "name": "columns_boardId_boards_id_fk",
           "tableFrom": "columns",
           "tableTo": "boards",
           "columnsFrom": [
-            "board_id"
+            "boardId"
           ],
           "columnsTo": [
             "id"
@@ -537,20 +537,20 @@
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
-        "deleted_at": {
-          "name": "deleted_at",
+        "deletedAt": {
+          "name": "deletedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
@@ -784,8 +784,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "column_id": {
-          "name": "column_id",
+        "columnId": {
+          "name": "columnId",
           "type": "varchar(26)",
           "primaryKey": false,
           "notNull": true
@@ -796,20 +796,20 @@
           "primaryKey": false,
           "notNull": true
         },
-        "created_at": {
-          "name": "created_at",
+        "createdAt": {
+          "name": "createdAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },
-        "updated_at": {
-          "name": "updated_at",
+        "updatedAt": {
+          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
-        "deleted_at": {
-          "name": "deleted_at",
+        "deletedAt": {
+          "name": "deletedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
@@ -832,7 +832,7 @@
           "name": "column_id_idx",
           "columns": [
             {
-              "expression": "column_id",
+              "expression": "columnId",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -845,12 +845,12 @@
         }
       },
       "foreignKeys": {
-        "tasks_column_id_columns_id_fk": {
-          "name": "tasks_column_id_columns_id_fk",
+        "tasks_columnId_columns_id_fk": {
+          "name": "tasks_columnId_columns_id_fk",
           "tableFrom": "tasks",
           "tableTo": "columns",
           "columnsFrom": [
-            "column_id"
+            "columnId"
           ],
           "columnsTo": [
             "id"

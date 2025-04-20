@@ -1,1 +1,0 @@
-ALTER TABLE "boards" RENAME COLUMN "board_url" TO "slug";

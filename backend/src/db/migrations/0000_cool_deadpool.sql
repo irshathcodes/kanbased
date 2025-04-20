@@ -18,10 +18,10 @@ CREATE TABLE "boards" (
 	"id" varchar(26) PRIMARY KEY NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"color" varchar(255),
-	"board_url" text NOT NULL,
-	"created_at" timestamp NOT NULL,
-	"updated_at" timestamp,
-	"deleted_at" timestamp,
+	"slug" text NOT NULL,
+	"createdAt" timestamp NOT NULL,
+	"updatedAt" timestamp,
+	"deletedAt" timestamp,
 	"creator_id" text,
 	"organization_id" text
 );
@@ -29,11 +29,11 @@ CREATE TABLE "boards" (
 CREATE TABLE "columns" (
 	"id" varchar(26) PRIMARY KEY NOT NULL,
 	"name" varchar(100) NOT NULL,
-	"board_id" varchar(26) NOT NULL,
+	"boardId" varchar(26) NOT NULL,
 	"position" integer NOT NULL,
-	"created_at" timestamp NOT NULL,
-	"updated_at" timestamp,
-	"deleted_at" timestamp,
+	"createdAt" timestamp NOT NULL,
+	"updatedAt" timestamp,
+	"deletedAt" timestamp,
 	"creator_id" text,
 	"organization_id" text
 );
@@ -67,9 +67,9 @@ CREATE TABLE "notes" (
 	"id" varchar(26) PRIMARY KEY NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"content" text NOT NULL,
-	"created_at" timestamp NOT NULL,
-	"updated_at" timestamp,
-	"deleted_at" timestamp,
+	"createdAt" timestamp NOT NULL,
+	"updatedAt" timestamp,
+	"deletedAt" timestamp,
 	"creator_id" text,
 	"organization_id" text
 );
@@ -101,11 +101,11 @@ CREATE TABLE "tasks" (
 	"id" varchar(26) PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"content" text,
-	"column_id" varchar(26) NOT NULL,
+	"columnId" varchar(26) NOT NULL,
 	"position" double precision NOT NULL,
-	"created_at" timestamp NOT NULL,
-	"updated_at" timestamp,
-	"deleted_at" timestamp,
+	"createdAt" timestamp NOT NULL,
+	"updatedAt" timestamp,
+	"deletedAt" timestamp,
 	"creator_id" text,
 	"organization_id" text
 );
@@ -133,7 +133,7 @@ CREATE TABLE "verification" (
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "boards" ADD CONSTRAINT "boards_creator_id_user_id_fk" FOREIGN KEY ("creator_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "boards" ADD CONSTRAINT "boards_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "columns" ADD CONSTRAINT "columns_board_id_boards_id_fk" FOREIGN KEY ("board_id") REFERENCES "public"."boards"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "columns" ADD CONSTRAINT "columns_boardId_boards_id_fk" FOREIGN KEY ("boardId") REFERENCES "public"."boards"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "columns" ADD CONSTRAINT "columns_creator_id_user_id_fk" FOREIGN KEY ("creator_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "columns" ADD CONSTRAINT "columns_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "invitation" ADD CONSTRAINT "invitation_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -144,8 +144,8 @@ ALTER TABLE "notes" ADD CONSTRAINT "notes_creator_id_user_id_fk" FOREIGN KEY ("c
 ALTER TABLE "notes" ADD CONSTRAINT "notes_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_active_organization_id_organization_id_fk" FOREIGN KEY ("active_organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "tasks" ADD CONSTRAINT "tasks_column_id_columns_id_fk" FOREIGN KEY ("column_id") REFERENCES "public"."columns"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "tasks" ADD CONSTRAINT "tasks_columnId_columns_id_fk" FOREIGN KEY ("columnId") REFERENCES "public"."columns"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "tasks" ADD CONSTRAINT "tasks_creator_id_user_id_fk" FOREIGN KEY ("creator_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "tasks" ADD CONSTRAINT "tasks_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-CREATE INDEX "column_board_idx" ON "columns" USING btree ("board_id");--> statement-breakpoint
-CREATE INDEX "column_id_idx" ON "tasks" USING btree ("column_id");
+CREATE INDEX "column_board_idx" ON "columns" USING btree ("boardId");--> statement-breakpoint
+CREATE INDEX "column_id_idx" ON "tasks" USING btree ("columnId");
