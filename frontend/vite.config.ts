@@ -15,7 +15,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ["@rocicorp/zero"],
+      external: ["@rocicorp/zero", "drizzle-zero"],
     },
   },
 });
