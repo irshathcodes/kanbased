@@ -1,9 +1,6 @@
 import { Zero } from "@rocicorp/zero";
 import { useZero } from "@rocicorp/zero/react";
-import {
-  schema,
-  type Schema,
-} from "../../../backend/src/zero-cache/zero-schema";
+import { schema, type Schema } from "../../../backend/zero-schema.gen";
 import { authClient } from "@/lib/auth";
 import { getToken, setToken } from "@/lib/utils";
 

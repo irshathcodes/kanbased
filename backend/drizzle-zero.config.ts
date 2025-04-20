@@ -1,0 +1,96 @@
+import { drizzleZeroConfig } from "drizzle-zero";
+import * as drizzleSchema from "./src/db/schema/index.js";
+
+export default drizzleZeroConfig(drizzleSchema, {
+  tables: {
+    usersTable: {
+      id: true,
+      email: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true,
+      emailVerified: true,
+      image: true,
+    },
+    organizationsTable: {
+      id: true,
+      name: true,
+      createdAt: true,
+      slug: true,
+      logo: true,
+      metadata: true,
+    },
+    accountsTable: false,
+    verificationsTable: false,
+    sessionsTable: false,
+    invitationsTable: false,
+    membersTable: {
+      id: true,
+      createdAt: true,
+      organizationId: true,
+      role: true,
+      userId: true,
+    },
+    boardsTable: {
+      id: true,
+      slug: true,
+      createdAt: true,
+      updatedAt: true,
+      organizationId: true,
+      creatorId: true,
+      name: true,
+      color: true,
+      deletedAt: true,
+    },
+    columnsTable: {
+      id: true,
+      boardId: true,
+      createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
+      name: true,
+      position: true,
+      organizationId: true,
+      creatorId: true,
+    },
+    tasksTable: {
+      id: true,
+      columnId: true,
+      createdAt: true,
+      deletedAt: true,
+      name: true,
+      position: true,
+      updatedAt: true,
+      organizationId: true,
+      creatorId: true,
+      content: true,
+    },
+    notesTable: {
+      id: true,
+      createdAt: true,
+      updatedAt: true,
+      organizationId: true,
+      name: true,
+      content: true,
+      deletedAt: true,
+      creatorId: true,
+    },
+    jwksTable: false,
+  },
+  manyToMany: {
+    organizationsTable: {
+      orgToUsers: [
+        {
+          sourceField: ["id"],
+          destTable: "membersTable",
+          destField: ["organizationId"],
+        },
+        {
+          sourceField: ["userId"],
+          destTable: "usersTable",
+          destField: ["id"],
+        },
+      ],
+    },
+  },
+});
