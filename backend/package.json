@@ -5,10 +5,10 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "prestart": "pnpm db:migrate && npx zero-deploy-permissions -p ./src/zero-cache/zero-permissions.ts",
+    "prestart": "pnpm db:migrate && npx zero-deploy-permissions -p ./src/zero-cache/zero-schema.ts",
     "start": "node --env-file=.env ./dist/src",
     "dev": "tsx watch --env-file=.env src/index.ts",
-    "dev:zero-cache": "zero-cache-dev -p ./src/zero-cache/zero-permissions.ts",
+    "dev:zero-cache": "zero-cache-dev -p ./src/zero-cache/zero-schema.ts",
     "zero:generate-schema": "drizzle-zero generate --format",
     "dev:db:start": "docker compose -f docker-compose.dev.yml up",
     "dev:db:clean": "docker volume rm -f docker_zstart_pgdata && rm -rf \"/tmp/hello_zero_replica.db\"*",

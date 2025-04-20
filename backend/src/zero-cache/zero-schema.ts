@@ -7,6 +7,8 @@ import {
 } from "@rocicorp/zero";
 import { schema, type Schema } from "../../zero-schema.gen.js";
 
+export { schema, type Schema };
+
 // Define the authentication data type that will be passed to permission rules
 type AuthData = {
   sub: string; // User ID
