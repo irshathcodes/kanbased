@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "prestart": "pnpm db:migrate",
+    "prestart": "pnpm db:migrate && npx zero-deploy-permissions -p ./src/zero-cache/zero-schema.ts",
     "start": "node --env-file=.env ./dist/src",
     "dev": "tsx watch --env-file=.env src/index.ts",
     "dev:zero-cache": "zero-cache-dev -p src/zero-cache/zero-schema.ts",
