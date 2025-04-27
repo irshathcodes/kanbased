@@ -12,6 +12,7 @@ import { CodeMirrorEditorRefData } from "@/components/md-editor/md-editor";
 import { Spinner } from "@/components/ui/spinner";
 import { useZ } from "@/lib/zero-cache";
 import { EditableText } from "@/components/editable-text";
+import { toast } from "sonner";
 
 const EditTaskContentLazy = lazy(
   () => import("@/features/board-detail/edit-task-content"),
@@ -33,6 +34,16 @@ export function TaskDetail(props: { onClose: () => void; taskId: string }) {
       id: data!.id,
       name: updatedTitle,
     });
+  };
+
+  const handleDelete = async () => {
+    await z.mutate.tasksTable.update({
+      id: data!.id,
+      deletedAt: Date.now(),
+    });
+
+    toast.success("Task deleted");
+    props.onClose();
   };
 
   return (
@@ -96,6 +107,7 @@ export function TaskDetail(props: { onClose: () => void; taskId: string }) {
                 <ViewTaskContentLazy
                   content={data?.content ?? ""}
                   onEdit={() => setIsEditing(true)}
+                  onDelete={handleDelete}
                 />
               </Suspense>
             )}

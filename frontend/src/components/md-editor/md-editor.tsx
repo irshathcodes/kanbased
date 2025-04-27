@@ -70,7 +70,7 @@ interface CodeMirrorEditorProps {
   onSave: () => void;
   onExitEditorWithoutSaving?: () => void;
   placeholder?: string;
-  viewStyle: "zen" | "normal";
+  viewStyle?: "zen" | "normal";
 }
 
 export default function CodeMirrorEditor(props: CodeMirrorEditorProps) {
