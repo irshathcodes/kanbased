@@ -63,10 +63,15 @@ export function EditableText({
           className={cn("w-full p-2 rounded-lg bg-muted", inputClassName)}
           onKeyDown={(event) => {
             if (event.key === "Escape") {
+              event.preventDefault();
               flushSync(() => {
                 setEdit(false);
               });
               buttonRef.current?.focus();
+            }
+
+            if (event.key === "e") {
+              event.stopPropagation();
             }
           }}
         />

@@ -10,9 +10,8 @@ import { getTaskQuery } from "@/lib/zero-queries";
 import { useQuery } from "@rocicorp/zero/react";
 import { CodeMirrorEditorRefData } from "@/components/md-editor/md-editor";
 import { Spinner } from "@/components/ui/spinner";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import { useZ } from "@/lib/zero-cache";
+import { EditableText } from "@/components/editable-text";
 
 const EditTaskContentLazy = lazy(
   () => import("@/features/board-detail/edit-task-content"),
@@ -23,27 +22,35 @@ const ViewTaskContentLazy = lazy(
 );
 
 export function TaskDetail(props: { onClose: () => void; taskId: string }) {
-  const z = useZ();
-  const [data, taskQueryDetail] = useQuery(getTaskQuery(z, props.taskId));
-
   const editorRef = useRef<CodeMirrorEditorRefData>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const isTaskContentLoading = taskQueryDetail.type !== "complete";
+  const z = useZ();
+  const [data] = useQuery(getTaskQuery(z, props.taskId));
 
-  const editorLoading = (
-    <div className="w-full h-full flex items-center justify-center gap-2">
-      <Spinner />
-      Loading editor...
-    </div>
-  );
+  const handleTitleChange = (updatedTitle: string) => {
+    z.mutate.tasksTable.update({
+      id: data!.id,
+      name: updatedTitle,
+    });
+  };
 
   return (
     <Dialog open onOpenChange={props.onClose}>
       <DialogContent
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+          const closeButton = document.querySelector("#dialog-close-button");
+          (closeButton as HTMLElement)?.focus();
+        }}
         onCloseAutoFocus={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => {
           const vimMode = editorRef.current?.getVimMode();
+
+          if (e.defaultPrevented) {
+            e.preventDefault();
+            return;
+          }
 
           // Always prevent Dialog from closing on Escape
           e.preventDefault();
@@ -60,8 +67,18 @@ export function TaskDetail(props: { onClose: () => void; taskId: string }) {
         className="min-w-[90%] h-[90%] flex flex-col"
       >
         <>
-          <DialogHeader className="shrink-0">
-            <DialogTitle>{data?.name}</DialogTitle>
+          <DialogHeader className="w-9/12">
+            <DialogTitle>
+              <EditableText
+                inputLabel="Task Name"
+                fieldName="name"
+                inputClassName="text-xl font-bold w-full"
+                buttonClassName="text-xl font-bold"
+                defaultValue={data?.name ?? ""}
+                defaultMode="view"
+                onSubmit={handleTitleChange}
+              />
+            </DialogTitle>
             <DialogDescription className="sr-only">
               Task detail for {data?.name}
             </DialogDescription>
@@ -72,32 +89,27 @@ export function TaskDetail(props: { onClose: () => void; taskId: string }) {
               <Suspense
                 fallback={
                   <div className="w-full h-full flex items-center justify-center">
-                    <Skeleton className="w-full h-full" />
+                    <Spinner size="md" />
                   </div>
                 }
               >
-                <div
-                  className={cn(
-                    "w-full h-full flex items-center justify-center",
-                    !isTaskContentLoading && "hidden",
-                  )}
-                >
-                  <Skeleton className="w-full h-full" />
-                </div>
-
                 <ViewTaskContentLazy
                   content={data?.content ?? ""}
-                  wrapperClassName={cn(isTaskContentLoading && "hidden")}
                   onEdit={() => setIsEditing(true)}
                 />
               </Suspense>
             )}
 
-            {isEditing &&
-              (isTaskContentLoading ? (
-                editorLoading
-              ) : !isTaskContentLoading && data !== undefined ? (
-                <Suspense fallback={editorLoading}>
+            {isEditing && (
+              <Suspense
+                fallback={
+                  <div className="w-full h-full flex items-center justify-center gap-2">
+                    <Spinner />
+                    Loading editor...
+                  </div>
+                }
+              >
+                {data !== undefined && (
                   <EditTaskContentLazy
                     defaultContent={data.content ?? ""}
                     editorRef={editorRef}
@@ -107,8 +119,9 @@ export function TaskDetail(props: { onClose: () => void; taskId: string }) {
                     }}
                     exitEditorWithoutSaving={() => setIsEditing(false)}
                   />
-                </Suspense>
-              ) : null)}
+                )}
+              </Suspense>
+            )}
           </div>
         </>
       </DialogContent>

@@ -23,7 +23,6 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-  WrappedTooltip,
 } from "@/components/ui/tooltip";
 
 export type TaskProps = {
