@@ -1,11 +1,13 @@
-import { Textarea, TextareaProps } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui/textarea";
 import * as React from "react";
 import { useCallback } from "react";
 
-export const CustomizedTextarea = React.forwardRef<
-  HTMLTextAreaElement,
-  TextareaProps
->(({ ...props }, ref) => {
+export const CustomizedTextarea = ({
+  ref,
+  ...props
+}: React.ComponentProps<"textarea"> & {
+  ref: React.Ref<HTMLTextAreaElement | null>;
+}) => {
   const onHeightChange = (input: HTMLTextAreaElement) => {
     let prevAlignment = input.style.alignSelf;
     let prevOverflow = input.style.overflow;
@@ -71,4 +73,4 @@ export const CustomizedTextarea = React.forwardRef<
       }}
     />
   );
-});
+};

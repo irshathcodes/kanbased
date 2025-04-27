@@ -57,8 +57,8 @@ function BoardPage() {
           <EditableText
             inputLabel="Edit board name"
             fieldName="boardName"
-            buttonClassName="text-2xl font-bold w-fit"
-            inputClassName="text-2xl font-bold w-56"
+            buttonClassName="text-2xl font-bold w-fit py-1.5!"
+            inputClassName="text-2xl font-bold w-56 py-1.5!"
             defaultValue={board.name}
             onSubmit={handleBoardNameChange}
           />

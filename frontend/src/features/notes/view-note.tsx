@@ -102,7 +102,7 @@ export function ViewNote(props: {
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={handleDelete}
-                className="!text-red-10 focus:!bg-red-3 dark:focus:!bg-red-2"
+                className="text-red-10! focus:bg-red-3! dark:focus:bg-red-2!"
               >
                 <Trash className="size-4 mr-2" />
                 Delete

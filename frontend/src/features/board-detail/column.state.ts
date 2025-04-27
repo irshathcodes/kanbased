@@ -9,6 +9,7 @@ export interface DeleteBoardModal {
   type: "delete-board";
   board: GetBoardsListQueryResult[number];
   onClose: () => void;
+  onDeleteSuccess: () => void;
 }
 
 type ColumnModalState = CreateColumnModal | DeleteBoardModal | null;

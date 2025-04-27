@@ -40,7 +40,7 @@ export function EditableColumnName(props: {
               setEdit(false);
             }
           }}
-          className="text-lg font-semibold px-1 focus:outline-none focus:border-none focus:ring focus:ring-offset-2 focus:ring-ring rounded w-full bg-background dark:bg-gray-3 focus:ring-offset-background dark:focus:ring-offset-gray-3"
+          className="text-lg font-semibold px-1 focus:outline-hidden focus:border-none focus:ring-3 focus:ring-offset-2 focus:ring-ring rounded w-full bg-background dark:bg-gray-3 focus:ring-offset-background dark:focus:ring-offset-gray-3"
         />
       </form>
     );
@@ -55,7 +55,7 @@ export function EditableColumnName(props: {
         });
         inputRef?.current?.select();
       }}
-      className="text-lg font-semibold flex-1 pl-1 text-left focus:outline-none focus:border-none focus:ring focus:ring-offset-2 focus:ring-offset-gray-2 focus:ring-ring rounded bg-inherit"
+      className="text-lg font-semibold flex-1 pl-1 text-left focus:outline-hidden focus:border-none focus:ring-3 focus:ring-offset-2 focus:ring-offset-gray-2 focus:ring-ring rounded bg-inherit"
     >
       {props.columnName}
     </button>

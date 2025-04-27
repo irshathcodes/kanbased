@@ -32,7 +32,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         <NavUser />
       </SidebarHeader>
 
-      <SidebarContent className="!gap-0 mt-3">
+      <SidebarContent className="gap-0! mt-3">
         <NavBoards />
         <NavNotes />
       </SidebarContent>

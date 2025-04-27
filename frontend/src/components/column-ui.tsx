@@ -1,10 +1,13 @@
 import { cn } from "@/lib/utils";
-import React, { forwardRef } from "react";
+import React, { Ref } from "react";
 
-export const ColumnWrapper = forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<"div">
->(({ className, ...rest }, ref) => {
+export const ColumnWrapper = ({
+  ref,
+  className,
+  ...rest
+}: React.ComponentProps<"div"> & {
+  ref?: Ref<HTMLDivElement>;
+}) => {
   return (
     <div
       className={cn(
@@ -15,4 +18,4 @@ export const ColumnWrapper = forwardRef<
       {...rest}
     ></div>
   );
-});
+};

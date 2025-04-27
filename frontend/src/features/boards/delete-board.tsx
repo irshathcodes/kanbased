@@ -22,8 +22,7 @@ export function DeleteBoard(props: DeleteBoardModal) {
     });
 
     toast.success(`${props.board.name} board deleted successfully`);
-
-    props.onClose();
+    props.onDeleteSuccess();
   };
 
   const handleOpenChange = () => {

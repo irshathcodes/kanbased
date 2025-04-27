@@ -23,12 +23,12 @@ function NoteItem({
     <Link
       to="/notes/$noteId"
       params={{ noteId: note.id }}
-      className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm transition-shadow hover:shadow-lg"
+      className="group relative overflow-hidden rounded-xl border bg-card text-card-foreground shadow-xs transition-shadow hover:shadow-lg"
       id={`note-item-${note.id}`}
     >
       <div className="relative p-6">
         {/* Decorative gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-50 transition-opacity group-hover:opacity-70" />
+        <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-primary/10 opacity-50 transition-opacity group-hover:opacity-70" />
 
         <div className="relative">
           {/* Header */}
@@ -57,7 +57,7 @@ function NoteItem({
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-                  className="!text-red-10 focus:!bg-red-3 dark:focus:!bg-red-2"
+                  className="text-red-10! focus:bg-red-3! dark:focus:bg-red-2!"
                   onClick={(e) => {
                     e.preventDefault();
                     onDelete();

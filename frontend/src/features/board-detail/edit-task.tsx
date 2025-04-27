@@ -58,7 +58,7 @@ export function EditTask(props: EditTaskProps) {
               props.onComplete();
             }
           }}
-          className="min-h-16 !px-2 resize-none !ring-transparent text-base"
+          className="min-h-17.5 px-2! resize-none ring-transparent! text-base!"
         />
       </form>
     </div>

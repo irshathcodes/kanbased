@@ -24,7 +24,7 @@ export function Columns({
   const containerRef = useRef<HTMLDivElement>(null);
   const { closeModal } = useColumnModalControls();
 
-  const lastColumnRef = useCallback((node: HTMLElement | null) => {
+  const lastColumnRef = useCallback((node: HTMLDivElement | null) => {
     /*
      * This callback is used to scroll to the end of the container whenever a new column is added.
      *

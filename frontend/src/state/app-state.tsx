@@ -56,9 +56,9 @@ export function AppContextProvider(props: React.PropsWithChildren) {
   }, [theme]);
 
   return (
-    <AppContext.Provider value={{ theme, updateTheme }}>
+    (<AppContext value={{ theme, updateTheme }}>
       {props.children}
-    </AppContext.Provider>
+    </AppContext>)
   );
 }
 

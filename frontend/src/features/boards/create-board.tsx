@@ -44,7 +44,7 @@ export function CreateBoard(props: CreateBoardModal) {
         <Link
           className={buttonVariants({
             size: "sm",
-            className: "!h-8",
+            className: "h-8!",
           })}
           to="/boards/$slug"
           params={{ slug }}
@@ -59,7 +59,7 @@ export function CreateBoard(props: CreateBoardModal) {
 
   return (
     <Dialog open onOpenChange={props.onClose}>
-      <DialogContent className="!gap-0 sm:max-w-[425px]">
+      <DialogContent className="gap-0! sm:max-w-[425px]">
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Create board</DialogTitle>
@@ -75,7 +75,7 @@ export function CreateBoard(props: CreateBoardModal) {
               value={boardName}
               onChange={(e) => setBoardName(e.target.value ?? "")}
             />
-            <DialogDescription className="!text-xs">
+            <DialogDescription className="text-xs!">
               Enter a unique name that reflects the purpose of this board.
             </DialogDescription>
 

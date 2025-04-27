@@ -27,7 +27,7 @@ function RootComponent() {
   return (
     <AppContextProvider>
       <Outlet />
-      <Toaster />
+      <Toaster closeButton />
       <TanStackRouterDevtools position="bottom-right" />
       <ReactQueryDevtools position="bottom" />
     </AppContextProvider>

@@ -1,112 +1,253 @@
-/* @import "@radix-ui/colors/gray.css";
-@import "@radix-ui/colors/gray-dark.css"; */
+@import "@radix-ui/colors/mauve.css" layer(base);
+@import "@radix-ui/colors/mauve-alpha.css" layer(base);
+@import "@radix-ui/colors/mauve-dark.css" layer(base);
+@import "@radix-ui/colors/mauve-dark-alpha.css" layer(base);
 
-@import "@radix-ui/colors/mauve.css";
-@import "@radix-ui/colors/mauve-alpha.css";
-@import "@radix-ui/colors/mauve-dark.css";
-@import "@radix-ui/colors/mauve-dark-alpha.css";
+@import "@radix-ui/colors/red.css" layer(base);
+@import "@radix-ui/colors/red-dark.css" layer(base);
 
-@import "@radix-ui/colors/red.css";
-@import "@radix-ui/colors/red-dark.css";
+@import "@radix-ui/colors/green.css" layer(base);
+@import "@radix-ui/colors/green-dark.css" layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
+@plugin 'tailwindcss-animate';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --color-*: initial;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-gray-1: var(--mauve-1);
+  --color-gray-2: var(--mauve-2);
+  --color-gray-3: var(--mauve-3);
+  --color-gray-4: var(--mauve-4);
+  --color-gray-5: var(--mauve-5);
+  --color-gray-6: var(--mauve-6);
+  --color-gray-7: var(--mauve-7);
+  --color-gray-8: var(--mauve-8);
+  --color-gray-9: var(--mauve-9);
+  --color-gray-10: var(--mauve-10);
+  --color-gray-11: var(--mauve-11);
+  --color-gray-12: var(--mauve-12);
+
+  --color-grayA-1: var(--mauve-a1);
+  --color-grayA-2: var(--mauve-a2);
+  --color-grayA-3: var(--mauve-a3);
+  --color-grayA-4: var(--mauve-a4);
+  --color-grayA-5: var(--mauve-a5);
+  --color-grayA-6: var(--mauve-a6);
+  --color-grayA-7: var(--mauve-a7);
+  --color-grayA-8: var(--mauve-a8);
+  --color-grayA-9: var(--mauve-a9);
+  --color-grayA-10: var(--mauve-a10);
+  --color-grayA-11: var(--mauve-a11);
+  --color-grayA-12: var(--mauve-a12);
+
+  --color-red-1: var(--red-1);
+  --color-red-2: var(--red-2);
+  --color-red-3: var(--red-3);
+  --color-red-4: var(--red-4);
+  --color-red-5: var(--red-5);
+  --color-red-6: var(--red-6);
+  --color-red-7: var(--red-7);
+  --color-red-8: var(--red-8);
+  --color-red-9: var(--red-9);
+  --color-red-10: var(--red-10);
+  --color-red-11: var(--red-11);
+  --color-red-12: var(--red-12);
+
+  --color-green-1: var(--green-1);
+  --color-green-2: var(--green-2);
+  --color-green-3: var(--green-3);
+  --color-green-4: var(--green-4);
+  --color-green-5: var(--green-5);
+  --color-green-6: var(--green-6);
+  --color-green-7: var(--green-7);
+  --color-green-8: var(--green-8);
+  --color-green-9: var(--green-9);
+  --color-green-10: var(--green-10);
+  --color-green-11: var(--green-11);
+  --color-green-12: var(--green-12);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent-1: var(--mauve-1);
+  --color-accent-2: var(--mauve-2);
+  --color-accent-3: var(--mauve-3);
+  --color-accent-4: var(--mauve-4);
+  --color-accent-5: var(--mauve-5);
+  --color-accent-6: var(--mauve-6);
+  --color-accent-7: var(--mauve-7);
+  --color-accent-8: var(--mauve-8);
+  --color-accent-9: var(--mauve-9);
+  --color-accent-10: var(--mauve-10);
+  --color-accent-11: var(--mauve-11);
+  --color-accent-12: var(--mauve-12);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --animate-spinner-leaf-fade: spinner-leaf-fade 800ms linear infinite;
+  --animate-collapsible-down: collapsible-down 200ms
+    cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-collapsible-up: collapsible-up 200ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  @keyframes spinner-leaf-fade {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  @keyframes collapsible-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+    }
+  }
+  @keyframes collapsible-up {
+    from {
+      height: var(--radix-collapsible-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
 @layer base {
-  :root {
-    /* My vars */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
-    --color-scheme: light;
-    --white: #fff;
-    --black: #000;
+@utility custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted)) transparent;
 
-    --gray-1: var(--mauve-1);
-    --gray-2: var(--mauve-2);
-    --gray-3: var(--mauve-3);
-    --gray-4: var(--mauve-4);
-    --gray-5: var(--mauve-5);
-    --gray-6: var(--mauve-6);
-    --gray-7: var(--mauve-7);
-    --gray-8: var(--mauve-8);
-    --gray-9: var(--mauve-9);
-    --gray-10: var(--mauve-10);
-    --gray-11: var(--mauve-11);
-    --gray-12: var(--mauve-12);
-
-    --gray-a1: var(--mauve-a1);
-    --gray-a2: var(--mauve-a2);
-    --gray-a3: var(--mauve-a3);
-    --gray-a4: var(--mauve-a4);
-    --gray-a5: var(--mauve-a5);
-    --gray-a6: var(--mauve-a6);
-    --gray-a7: var(--mauve-a7);
-    --gray-a8: var(--mauve-a8);
-    --gray-a9: var(--mauve-a9);
-    --gray-a10: var(--mauve-a10);
-    --gray-a11: var(--mauve-a11);
-    --gray-a12: var(--mauve-a12);
-
-    --accent-1: var(--gray-1);
-    --accent-2: var(--gray-2);
-    --accent-3: var(--gray-3);
-    --accent-4: var(--gray-4);
-    --accent-5: var(--gray-5);
-    --accent-6: var(--gray-6);
-    --accent-7: var(--gray-7);
-    --accent-8: var(--gray-8);
-    --accent-9: var(--gray-9);
-    --accent-10: var(--gray-10);
-    --accent-11: var(--gray-11);
-    --accent-12: var(--gray-12);
-    /* My vars end */
-
-    /* On light theme, prefer using white bg color */
-    --background: var(--white);
-    --foreground: var(--gray-12);
-    --muted: var(--gray-3);
-    --muted-foreground: var(--gray-11);
-    --popover: var(--white);
-    --popover-foreground: var(--gray-12);
-    --card: var(--gray-1);
-    --card-foreground: var(--gray-12);
-    --border: var(--gray-6);
-    --input: var(--gray-7);
-    --primary: var(--black);
-    --primary-foreground: var(--white);
-    --secondary: var(--accent-3);
-    --secondary-foreground: var(--accent-12);
-    --accent: var(--gray-4);
-    --accent-foreground: var(--gray-12);
-    --destructive: var(--red-9);
-    --destructive-foreground: var(--white);
-    --ring: var(--accent-8);
-    --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: var(--gray-a3);
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  &::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
   }
 
-  .dark {
-    --primary: var(--white);
-    --primary-foreground: var(--black);
-    --background: var(--accent-2);
-    --popover: var(--black);
-    --color-scheme: dark;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: var(--gray-4);
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+  &::-webkit-scrollbar-thumb {
+    @apply bg-muted rounded-full hover:bg-muted-foreground transition-colors duration-200;
   }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+:root {
+  /* My vars */
+  --color-scheme: light;
+  --color-white: #fff;
+  --color-black: #000;
+  /* My vars end */
+
+  /* On light theme, prefer using white bg color */
+  --background: var(--color-white);
+  --foreground: var(--color-gray-12);
+  --muted: var(--color-gray-3);
+  --muted-foreground: var(--color-gray-11);
+  --popover: var(--color-white);
+  --popover-foreground: var(--color-gray-12);
+  --card: var(--color-white);
+  --card-foreground: var(--color-gray-12);
+  --border: var(--color-gray-6);
+  --input: var(--color-gray-7);
+  --primary: var(--color-black);
+  --primary-foreground: var(--color-white);
+  --secondary: var(--color-accent-3);
+  --secondary-foreground: var(--color-accent-12);
+  --accent: var(--color-gray-4);
+  --accent-foreground: var(--color-gray-12);
+  --destructive: var(--color-red-9);
+  --destructive-foreground: var(--color-white);
+  --ring: var(--color-accent-8);
+  --radius: 0.5rem;
+  --sidebar-background: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: var(--color-grayA-3);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(0 0% 98%);
+}
+
+.dark {
+  --primary: var(--color-white);
+  --primary-foreground: var(--color-black);
+  --background: var(--color-accent-2);
+  --popover: var(--color-black);
+  --color-scheme: dark;
+  --sidebar-background: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: var(--color-gray-4);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: hsl(240 5.9% 10%);
+  --card: var(--color-gray-1);
 }
 
 @layer base {
@@ -127,28 +268,23 @@
   }
 }
 
-:root {
-  font-family: "Manrope", system-ui, sans-serif;
-  font-weight: 500;
-  color-scheme: var(--color-scheme);
+@layer utilities {
+  :root {
+    font-family: "Manrope", system-ui, sans-serif;
+    font-weight: 500;
+    color-scheme: var(--color-scheme);
+  }
 }
 
-@layer utilities {
-  .custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: hsl(var(--muted)) transparent;
+/*
+  ---break---
+*/
 
-    &::-webkit-scrollbar {
-      width: 6px;
-      background-color: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      @apply bg-muted rounded-full hover:bg-muted-foreground transition-colors duration-200;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

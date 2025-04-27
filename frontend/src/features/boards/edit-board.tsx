@@ -41,7 +41,7 @@ export function EditBoard(props: EditBoardModal) {
 
   return (
     <Dialog open={true} onOpenChange={handleOpenChange}>
-      <DialogContent className="!gap-0 sm:max-w-[425px]">
+      <DialogContent className="gap-0! sm:max-w-[425px]">
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Edit board</DialogTitle>
@@ -57,7 +57,7 @@ export function EditBoard(props: EditBoardModal) {
               value={boardName}
               onChange={(e) => setBoardName(e.target.value ?? "")}
             />
-            <DialogDescription className="!text-xs">
+            <DialogDescription className="text-xs!">
               Enter a unique name that reflects the purpose of this board.
             </DialogDescription>
 

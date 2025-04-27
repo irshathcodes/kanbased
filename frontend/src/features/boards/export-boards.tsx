@@ -16,7 +16,7 @@ import { allBoardsQuery } from "@/lib/zero-queries";
 export function ExportBoards({ onClose }: ExportBoardsModal) {
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl flex flex-col">
+      <DialogContent className="max-w-3xl! flex flex-col">
         <DialogHeader className="shrink-0">
           <DialogTitle>Export Data</DialogTitle>
         </DialogHeader>

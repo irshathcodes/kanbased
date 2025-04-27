@@ -140,7 +140,7 @@ export function NavUser() {
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground !py-0"
+                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground py-0!"
               >
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={userData.image!} alt={userData.name} />

@@ -50,11 +50,11 @@ export function ModalProvider<T>({ children }: ModalProviderProps<T>) {
   );
 
   return (
-    <ModalStateContext.Provider value={{ activeModal }}>
-      <ModalControlsContext.Provider value={controls}>
+    (<ModalStateContext value={{ activeModal }}>
+      <ModalControlsContext value={controls}>
         {children}
-      </ModalControlsContext.Provider>
-    </ModalStateContext.Provider>
+      </ModalControlsContext>
+    </ModalStateContext>)
   );
 }
 

@@ -42,7 +42,7 @@ export default function ViewTaskContent(props: {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon" className="w-10 h-10">
+            <Button variant="secondary" size="icon" className="size-8">
               <EllipsisVertical />
             </Button>
           </DropdownMenuTrigger>
@@ -50,7 +50,7 @@ export default function ViewTaskContent(props: {
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={props.onDelete}
-              className="!text-red-10 focus:!bg-red-3 dark:focus:!bg-red-2"
+              className="text-red-10! focus:bg-red-3! dark:focus:bg-red-2!"
             >
               Delete task
             </DropdownMenuItem>

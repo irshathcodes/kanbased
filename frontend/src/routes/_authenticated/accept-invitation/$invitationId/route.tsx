@@ -71,7 +71,7 @@ function RouteComponent() {
   if (!invitation) {
     return (
       <div className="container flex items-center justify-center min-h-screen py-12">
-        <Card className="w-full max-w-md shadow-lg border-0 bg-gradient-to-br from-slate-50 to-slate-100">
+        <Card className="w-full max-w-md shadow-lg border-0 bg-linear-to-br from-slate-50 to-slate-100">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center">
               Loading Invitation
@@ -89,9 +89,9 @@ function RouteComponent() {
   const timeLeft = getRelativeTimeString(new Date(invitation.expiresAt));
 
   return (
-    <div className="container mx-auto flex items-center justify-center min-h-screen py-12 bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="container mx-auto flex items-center justify-center min-h-screen py-12 bg-linear-to-br from-slate-50 to-slate-100">
       <Card className="w-full max-w-md shadow-lg border-0 overflow-hidden">
-        <div className="h-2 bg-gradient-to-r from-primary to-primary/70" />
+        <div className="h-2 bg-linear-to-r from-primary to-primary/70" />
         <CardHeader className="pb-2">
           <CardTitle className="text-2xl font-bold text-center">
             Organization Invitation

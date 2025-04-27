@@ -15,6 +15,7 @@ export interface EditBoardModal {
 export interface DeleteBoardModal {
   type: "delete-board";
   board: GetBoardsListQueryResult[number];
+  onDeleteSuccess: () => void;
   onClose: () => void;
 }
 

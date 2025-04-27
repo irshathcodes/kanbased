@@ -43,7 +43,7 @@ export function CreateColumn(props: CreateColumnProps) {
   };
 
   return (
-    <ColumnWrapper className="!h-[110px] !py-2">
+    <ColumnWrapper className="h-[110px]! py-2!">
       <form
         onBlur={(e) => {
           if (!e.currentTarget.contains(e.relatedTarget)) {

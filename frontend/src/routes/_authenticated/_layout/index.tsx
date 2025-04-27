@@ -11,7 +11,7 @@ function HomeComponent() {
   const userData = useAuthData();
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-4 bg-gradient-to-b from-background to-secondary/20">
+    <div className="min-h-screen flex flex-col items-center p-4 bg-linear-to-b from-background to-secondary/20">
       <Card className="w-full max-w-3xl shadow-lg border-t-4 border-t-primary mt-8">
         <CardHeader className="pb-2">
           <CardTitle className="text-3xl text-center font-bold">

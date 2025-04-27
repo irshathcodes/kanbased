@@ -82,7 +82,7 @@ export function EditableText({
           size="icon"
           type="button"
           variant="outline"
-          className="hover:border-destructive hover:text-destructive hover:bg-red-100"
+          className="hover:border-red-8 hover:text-red-9 hover:bg-red-4 active:bg-red-5"
           onClick={() => setEdit(false)}
         >
           <XIcon className="w-4 h-4" />
@@ -92,7 +92,7 @@ export function EditableText({
           size="icon"
           type="submit"
           variant="outline"
-          className="hover:border-green-500 hover:text-green-500 hover:bg-green-500/10"
+          className="hover:border-green-8 hover:text-green-9 hover:bg-green-4 active:bg-green-5"
         >
           <CheckIcon className="w-4 h-4" />
         </Button>

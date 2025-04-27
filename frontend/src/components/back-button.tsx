@@ -9,7 +9,9 @@ import { useCanGoBack, useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
 export function BackButton(
-  props: React.PropsWithChildren<{ variant?: ButtonVariant }>,
+  props: React.PropsWithChildren<{
+    variant?: ButtonVariant;
+  }>,
 ) {
   const router = useRouter();
   const canGoBack = useCanGoBack();

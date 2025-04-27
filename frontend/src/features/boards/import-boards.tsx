@@ -134,7 +134,7 @@ export function ImportBoards({ onClose }: ImportBoardsModal) {
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl flex flex-col">
+      <DialogContent className="max-w-3xl! flex flex-col">
         <DialogHeader className="shrink-0">
           <DialogTitle>Import Data</DialogTitle>
         </DialogHeader>

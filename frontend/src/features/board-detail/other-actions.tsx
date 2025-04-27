@@ -29,6 +29,10 @@ export function OtherActions({
       board,
       onClose: () => {
         closeModal();
+      },
+
+      onDeleteSuccess: () => {
+        closeModal();
         router.navigate({
           to: "/boards",
         });
@@ -47,7 +51,7 @@ export function OtherActions({
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             onClick={handleBoardDelete}
-            className="!text-red-10 focus:!bg-red-3 dark:focus:!bg-red-2"
+            className="text-red-10! focus:bg-red-3! dark:focus:bg-red-2!"
           >
             Delete board
           </DropdownMenuItem>

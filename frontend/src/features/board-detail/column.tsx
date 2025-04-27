@@ -17,7 +17,7 @@ import { GetBoardWithColumnsAndTasksQueryResult } from "@/lib/zero-queries";
 type ColumnProps = {
   column: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"][number];
   index: number;
-  columnRef?: (node: HTMLElement | null) => void;
+  columnRef?: React.Ref<HTMLDivElement | null>;
 };
 
 export function Column({ column, index, columnRef }: ColumnProps) {
@@ -26,20 +26,24 @@ export function Column({ column, index, columnRef }: ColumnProps) {
       {(provided, snapshot) => {
         return (
           <ColumnWrapper
-            ref={useCallback((node: HTMLElement | null) => {
+            ref={useCallback((node: HTMLDivElement | null) => {
               provided.innerRef(node);
-              columnRef?.(node);
+              if (typeof columnRef === "function") {
+                columnRef(node);
+              } else if (columnRef) {
+                columnRef.current = node;
+              }
             }, [])}
             {...provided.draggableProps}
             id={`col-${column.id}`}
             className={cn(
               "mx-2",
-              snapshot.isDragging && "!border-gray-10 !shadow-xl",
+              snapshot.isDragging && "border-gray-10! shadow-xl!",
             )}
           >
             <div className="flex items-center justify-between shrink-0 pt-1">
               <div
-                className="cursor-grab text-muted-foreground w-8 grid place-content-center h-8 hover:text-foreground shrink-0 hover:bg-gray-a-4 active:bg-gray-a-4 rounded-lg active:cursor-grabbing mr-1.5"
+                className="cursor-grab text-muted-foreground w-8 grid place-content-center h-8 hover:text-foreground shrink-0 hover:bg-grayA-4 active:bg-grayA-4 rounded-lg active:cursor-grabbing mr-1.5"
                 {...provided.dragHandleProps}
               >
                 <GripVertical size={16} />
@@ -53,7 +57,7 @@ export function Column({ column, index, columnRef }: ColumnProps) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="text-muted-foreground w-8 grid place-content-center h-8 hover:text-foreground shrink-0 hover:bg-gray-a-4 active:bg-gray-a-4 rounded-lg ml-2"
+                    className="text-muted-foreground w-8 grid place-content-center h-8 hover:text-foreground shrink-0 hover:bg-grayA-4 active:bg-grayA-4 rounded-lg ml-2"
                     type="button"
                   >
                     <MoreVertical size={16} />
