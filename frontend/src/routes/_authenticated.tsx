@@ -5,14 +5,14 @@ import {
   useRouter,
 } from "@tanstack/react-router";
 import {useSuspenseQuery} from "@tanstack/react-query";
+import {memo, useEffect, useMemo} from "react";
+import {ZeroProvider} from "@rocicorp/zero/react";
 import {AuthError} from "@/lib/utils";
 import {authQueryOptions} from "@/lib/query-options-factory";
 import {queryClient} from "@/lib/query-client";
 import {preloadAllBoards} from "@/lib/zero-queries";
-import {memo, useEffect, useMemo} from "react";
 import {createZeroCache} from "@/lib/zero-cache";
 import {useAuthData} from "@/queries/session";
-import {ZeroProvider} from "@rocicorp/zero/react";
 
 export const Route = createFileRoute("/_authenticated")({
   component: RouteComponent,

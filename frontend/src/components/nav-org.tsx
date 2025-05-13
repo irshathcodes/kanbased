@@ -1,11 +1,11 @@
 "use client";
 
-import {ChevronsUpDown, Mail, Plus, UserRound} from "lucide-react";
+import {ArrowUpDown, Plus, Users} from "lucide-react";
 import {useMutation} from "@tanstack/react-query";
 import {toast} from "sonner";
 import {Link} from "@tanstack/react-router";
 import {useQuery} from "@rocicorp/zero/react";
-import {handleAuthResponse} from "@/lib/utils";
+import {cn, handleAuthResponse} from "@/lib/utils";
 
 import {
   DropdownMenu,
@@ -32,11 +32,14 @@ import {useZ} from "@/lib/zero-cache";
 import {Dialog, DialogTrigger} from "@/components/ui/dialog";
 import {InviteMemberDialog} from "@/features/user/invite-member";
 import OrgAvatar from "@/components/org-avatar";
+import {Button} from "@/components/ui/button";
 
 export function NavOrganization() {
   const userData = useAuthData();
   const z = useZ();
   const {isMobile} = useSidebar();
+  const {state} = useSidebar();
+  const isSidebarCollapsed = state === "collapsed";
   const [organizationsList] = useQuery(getOrganizationListQuery(z));
   const currentOrganization = organizationsList.find(
     (org) => org.id === userData.activeOrganizationId,
@@ -69,46 +72,55 @@ export function NavOrganization() {
       <SidebarMenuItem>
         <Dialog>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size="lg"
-                className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground py-0!"
-              >
-                <OrgAvatar name={currentOrganization?.name ?? ""} />
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="font-medium truncate">
-                    {currentOrganization?.name}
-                  </span>
-                </div>
+            <div className="flex items-center">
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground py-0!"
+                >
+                  <OrgAvatar name={currentOrganization?.name ?? ""} />
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="font-medium truncate">
+                      {currentOrganization?.name}
+                    </span>
+                  </div>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
 
-                <ChevronsUpDown className="ml-auto h-4 w-4" />
-              </SidebarMenuButton>
-            </DropdownMenuTrigger>
+              <Button
+                type="button"
+                variant="ghost"
+                className={cn(isSidebarCollapsed && "hidden")}
+              >
+                <ArrowUpDown className="text-muted-foreground" />
+              </Button>
+            </div>
+
             <DropdownMenuContent
               className="w-56"
               align="start"
               side={isMobile ? "bottom" : "right"}
             >
-              <DropdownMenuLabel>Organization</DropdownMenuLabel>
+              <DropdownMenuLabel>Workspace</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link to="/new-organization">
                   <Plus className="mr-2 h-4 w-4" />
-                  Create new organization
+                  Create new workspace
                 </Link>
               </DropdownMenuItem>
 
               <DialogTrigger asChild>
                 <DropdownMenuItem className="w-full">
-                  <Mail className="mr-2 h-4 w-4" />
-                  Invite member
+                  <Users className="mr-2 h-4 w-4" />
+                  Manage members
                 </DropdownMenuItem>
               </DialogTrigger>
 
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  <UserRound className="mr-2 h-4 w-4" />
-                  Switch organization
+                  <ArrowUpDown className="mr-2 h-4 w-4 text-muted-foreground" />
+                  Switch workspace
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   {organizationsList.map((org) => (
@@ -122,7 +134,6 @@ export function NavOrganization() {
                   ))}
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
-              <DropdownMenuSeparator />
             </DropdownMenuContent>
           </DropdownMenu>
 

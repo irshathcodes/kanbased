@@ -23,12 +23,8 @@ import {Button, buttonVariants} from "@/components/ui/button";
 import {WrappedTooltip} from "@/components/ui/tooltip";
 import {KeyboardShortcutIndicator} from "@/components/keyboard-shortcut";
 
-const EditTaskContentLazy = lazy(
-  () => import("@/features/board-detail/edit-task-content"),
-);
-
-const ViewTaskContentLazy = lazy(
-  () => import("@/features/board-detail/view-task-content"),
+const MilkdownEditorLazy = lazy(
+  () => import("@/components/md-editor/markdown-editor"),
 );
 
 export function TaskDetail(props: {onClose: () => void; taskId: string}) {
@@ -168,44 +164,16 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
           </div>
 
           <div className="min-h-0 flex-1 h-full">
-            {!isEditing && (
-              <Suspense
-                fallback={
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Spinner size="md" />
-                  </div>
-                }
-              >
-                <ViewTaskContentLazy
-                  content={data?.content ?? ""}
-                  onEdit={() => setIsEditing(true)}
-                  onDelete={handleDelete}
-                />
-              </Suspense>
-            )}
-
-            {isEditing && (
-              <Suspense
-                fallback={
-                  <div className="w-full h-full flex items-center justify-center gap-2">
-                    <Spinner />
-                    Loading editor...
-                  </div>
-                }
-              >
-                {data !== undefined && (
-                  <EditTaskContentLazy
-                    defaultContent={data.content ?? ""}
-                    editorRef={editorRef}
-                    taskId={props.taskId}
-                    afterSave={() => {
-                      setIsEditing(false);
-                    }}
-                    exitEditorWithoutSaving={() => setIsEditing(false)}
-                  />
-                )}
-              </Suspense>
-            )}
+            <Suspense
+              fallback={
+                <div className="w-full h-full flex items-center justify-center gap-2">
+                  <Spinner />
+                  Loading editor...
+                </div>
+              }
+            >
+              <MilkdownEditorLazy defaultValue={data?.content ?? ""} />
+            </Suspense>
           </div>
         </>
       </DialogContent>

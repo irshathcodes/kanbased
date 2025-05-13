@@ -1,7 +1,7 @@
-import {useZ} from "@/lib/zero-cache";
-import {getOrganizationQuery} from "@/lib/zero-queries";
 import {useQuery} from "@rocicorp/zero/react";
 import {createFileRoute} from "@tanstack/react-router";
+import {useZ} from "@/lib/zero-cache";
+import {getOrganizationQuery} from "@/lib/zero-queries";
 
 export const Route = createFileRoute("/_authenticated/workspace/$slug")({
   component: RouteComponent,
