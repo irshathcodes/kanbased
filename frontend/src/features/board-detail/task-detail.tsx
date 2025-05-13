@@ -1,10 +1,9 @@
-import {Suspense, lazy, useRef, useState} from "react";
+import {Suspense, lazy} from "react";
 import {useQuery} from "@rocicorp/zero/react";
 import {toast} from "sonner";
 import {ArrowDown, ArrowUp} from "lucide-react";
 import {useHotkeys} from "react-hotkeys-hook";
 import {Link, useNavigate, useParams} from "@tanstack/react-router";
-import type {CodeMirrorEditorRefData} from "@/components/md-editor/md-editor";
 import {
   Dialog,
   DialogContent,
@@ -23,13 +22,19 @@ import {Button, buttonVariants} from "@/components/ui/button";
 import {WrappedTooltip} from "@/components/ui/tooltip";
 import {KeyboardShortcutIndicator} from "@/components/keyboard-shortcut";
 
-const MilkdownEditorLazy = lazy(
+import {EllipsisVertical, Trash2} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const MarkdownEditorLazy = lazy(
   () => import("@/components/md-editor/markdown-editor"),
 );
 
 export function TaskDetail(props: {onClose: () => void; taskId: string}) {
-  const editorRef = useRef<CodeMirrorEditorRefData>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
   const {slug} = useParams({from: "/_authenticated/_layout/boards_/$slug"});
   const z = useZ();
@@ -56,20 +61,15 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
 
   useHotkeys("j", () => nextTaskId && navigateToTask(nextTaskId), [nextTaskId]);
 
-  useHotkeys(
-    "Escape",
-    () => {
-      const vimMode = editorRef.current?.getVimMode();
+  const handleSave = () => {
+    z.mutate.tasksTable.update({
+      id: props.taskId,
+      updatedAt: Date.now(),
+      content: "Temp",
+    });
 
-      if (!vimMode) {
-        props.onClose();
-      } else {
-        // handle escape for vim, because it's not working in Codemirror editor
-        editorRef.current?.handleEscapeForVim();
-      }
-    },
-    {enableOnContentEditable: true},
-  );
+    toast.success("Task updated");
+  };
 
   const handleTitleChange = (updatedTitle: string) => {
     z.mutate.tasksTable.update({
@@ -100,7 +100,6 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
           e.preventDefault();
           document.body.style.pointerEvents = "";
         }}
-        onEscapeKeyDown={(e) => e.preventDefault()}
         className="min-w-11/12 h-11/12 flex flex-col"
       >
         <>
@@ -163,17 +162,53 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
             </WrappedTooltip>
           </div>
 
-          <div className="min-h-0 flex-1 h-full">
-            <Suspense
-              fallback={
-                <div className="w-full h-full flex items-center justify-center gap-2">
-                  <Spinner />
-                  Loading editor...
-                </div>
-              }
+          <div className="ml-auto shrink-0 flex items-center gap-3">
+            <Button
+              onClick={handleSave}
+              type="button"
+              size="sm"
+              className="h-9"
+              // disabled={!isDirty}
             >
-              <MilkdownEditorLazy defaultValue={data?.content ?? ""} />
-            </Suspense>
+              <>
+                <span>Save</span>
+                <KeyboardShortcutIndicator commandOrCtrlKey>
+                  S
+                </KeyboardShortcutIndicator>
+              </>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" size="icon" className="size-8">
+                  <EllipsisVertical />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={handleDelete}
+                  className="!text-destructive focus:bg-destructive/10"
+                >
+                  <Trash2 className="mr-2 h-4 w-4 text-destructive" />
+                  Delete task
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          <div className="overflow-y-auto">
+            <div className="min-h-0 flex-1 h-full mx-auto w-full md:w-4xl flex justify-center *:w-full">
+              <Suspense
+                fallback={
+                  <div className="w-full h-full flex items-center justify-center gap-2">
+                    <Spinner />
+                    Loading editor...
+                  </div>
+                }
+              >
+                <MarkdownEditorLazy defaultValue={data?.content ?? ""} />
+              </Suspense>
+            </div>
           </div>
         </>
       </DialogContent>

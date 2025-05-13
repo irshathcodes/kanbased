@@ -29,7 +29,7 @@ function MilkdownEditorImpl(props: MilkdownEditorProps) {
   return <Milkdown />;
 }
 
-export default function MilkdownEditor(props: MilkdownEditorProps) {
+export default function MarkdownEditor(props: MilkdownEditorProps) {
   return (
     <MilkdownProvider>
       <MilkdownEditorImpl {...props} />

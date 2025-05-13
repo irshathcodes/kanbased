@@ -19,8 +19,8 @@
   --crepe-color-selected: #d5d5d5;
   --crepe-color-inline-area: #cacaca;
 
-  --crepe-font-title: "Noto Serif", Cambria, "Times New Roman", Times, serif;
-  --crepe-font-default: "Noto Sans", Arial, Helvetica, sans-serif;
+  --crepe-font-title: "Manrope", system-ui, sans-serif;
+  --crepe-font-default: "Manrope", system-ui, sans-serif;
   --crepe-font-code:
     "Space Mono", Fira Code, Menlo, Monaco, "Courier New", Courier, monospace;
 
