@@ -1,9 +1,10 @@
-import React from "react";
+import {useEffect} from "react";
 import {Milkdown, MilkdownProvider, useEditor} from "@milkdown/react";
 import {Crepe} from "@/features/soja-editor";
 import {useAppContext} from "@/state/app-state";
 
 import "../../features/soja-editor/theme/common/style.css";
+import "../../features/soja-editor/theme/frame/style.css";
 
 type MilkdownEditorProps = {
   defaultValue?: string;
@@ -13,17 +14,26 @@ function MilkdownEditorImpl(props: MilkdownEditorProps) {
   const {defaultValue = ""} = props;
   const {theme} = useAppContext();
 
-  // Dynamically import theme CSS
-  React.useEffect(() => {
-    const isDark =
-      theme === "dark" ||
-      (theme === "system" &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
-    const themePath = isDark
-      ? "../../features/soja-editor/theme/frame-dark/style.css"
-      : "../../features/soja-editor/theme/frame/style.css";
+  const updateTheme = (currentTheme: typeof theme) => {
+    const milkdownEl = document.querySelector(".milkdown");
 
-    import(themePath);
+    if (currentTheme === "dark") {
+      milkdownEl?.classList.add("dark");
+    } else if (currentTheme === "light") {
+      milkdownEl?.classList.remove("dark");
+    } else {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+      if (mediaQuery.matches) {
+        milkdownEl?.classList.add("dark");
+      } else {
+        milkdownEl?.classList.remove("dark");
+      }
+    }
+  };
+
+  useEffect(() => {
+    updateTheme(theme);
   }, [theme]);
 
   // @ts-expect-error
@@ -37,6 +47,12 @@ function MilkdownEditorImpl(props: MilkdownEditorProps) {
           mode: "doc",
         },
       },
+    });
+
+    crepe.on((api) => {
+      api.mounted((ctx) => {
+        updateTheme(theme);
+      });
     });
 
     return crepe;
