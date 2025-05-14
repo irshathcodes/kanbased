@@ -1,4 +1,9 @@
-import {createFileRoute, linkOptions, useRouter} from "@tanstack/react-router";
+import {
+  createFileRoute,
+  linkOptions,
+  Outlet,
+  useRouter,
+} from "@tanstack/react-router";
 import {useQuery} from "@rocicorp/zero/react";
 import {Actions} from "./-actions";
 import {CreateNoteButton} from "@/features/notes/create-note-button";
@@ -80,6 +85,7 @@ function RouteComponent() {
           editNoteId ? notes.find((note) => note.id === editNoteId) : undefined
         }
       />
+      <Outlet />
     </ModalProvider>
   );
 }

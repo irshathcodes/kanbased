@@ -1,12 +1,23 @@
-import {createFileRoute, linkOptions} from "@tanstack/react-router";
+import {
+  createFileRoute,
+  linkOptions,
+  useNavigate,
+} from "@tanstack/react-router";
 import {useQuery} from "@rocicorp/zero/react";
 import {useEffect} from "react";
 import {Actions} from "./-actions";
 import {ViewNote} from "@/features/notes/view-note";
 import {useZ} from "@/lib/zero-cache";
 import {getNoteQuery} from "@/lib/zero-queries";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import NoteEditor from "@/features/notes/note-editor";
 
-export const Route = createFileRoute("/_authenticated/_layout/notes_/$noteId")({
+export const Route = createFileRoute("/_authenticated/_layout/notes/$noteId")({
   component: RouteComponent,
 
   loader: (ctx) => {
@@ -45,17 +56,16 @@ function RouteComponent() {
   const {noteId} = Route.useParams();
   const z = useZ();
   const [note] = useQuery(getNoteQuery(z, noteId));
+  const navigate = useNavigate();
 
   if (!note) {
     // TODO: Handle not found case
     return null;
   }
 
-  return (
-    <div className="py-4 px-6">
-      <ViewNote note={note} isEditing={!!editNoteId} />
+  const handleClose = () => {
+    navigate({to: "/notes"});
+  };
 
-      <Actions note={note} />
-    </div>
-  );
+  return <NoteEditor note={note} onClose={handleClose} mode="edit" />;
 }

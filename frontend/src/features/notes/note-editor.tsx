@@ -1,20 +1,18 @@
-import {Suspense, useRef, useState} from "react";
+import {lazy, Suspense, useRef, useState} from "react";
 import {toast} from "sonner";
 import {flushSync} from "react-dom";
-import {Expand, Eye, Fullscreen, Minimize2, Pencil, Save} from "lucide-react";
+import {
+  EllipsisVertical,
+  Expand,
+  Info,
+  Minimize2,
+  Save,
+  Trash2,
+} from "lucide-react";
 import {useHotkeys} from "react-hotkeys-hook";
-import type {
-  CodeMirrorEditorRefData,
-  EditorMode,
-} from "@/components/md-editor/md-editor";
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import {useMarkdownEditorPreviewToggle} from "@/hooks/use-markdown-editor";
 import {Button} from "@/components/ui/button";
 import {Spinner} from "@/components/ui/spinner";
 import {KeyboardShortcutIndicator} from "@/components/keyboard-shortcut";
-import MdPreview from "@/components/md-preview/md-preview";
-import CodeMirrorEditor from "@/components/md-editor/md-editor";
-import {useKeyDown} from "@/hooks/use-keydown";
 import {cn, createId} from "@/lib/utils";
 import {
   Dialog,
@@ -28,46 +26,43 @@ import {useZ} from "@/lib/zero-cache";
 import {useActiveOrganizationId} from "@/queries/session";
 import {WrappedTooltip} from "@/components/ui/tooltip";
 import {useLocalStorage} from "@/hooks/use-local-storage";
+import {GetNoteQueryResult} from "@/lib/zero-queries";
+import {MilkdownEditorRef} from "@/components/md-editor/markdown-editor";
+import {useDirtyEditorBlock} from "@/hooks/use-dirty-editor-block";
 
-type CommonProps = {
-  afterSave: (data: {noteId: string}) => void;
-  onClose: () => void;
-};
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const MarkdownEditorLazy = lazy(
+  () => import("@/components/md-editor/markdown-editor"),
+);
 
 type NoteEditorProps =
-  | ({
-      content: string;
-      title: string;
+  | {
+      note: NonNullable<GetNoteQueryResult>;
+      onClose: () => void;
       mode: "edit";
-      noteId: string;
-      defaultTab?: "write" | "preview";
-    } & CommonProps)
-  | ({
+    }
+  | {
       mode: "create";
-    } & CommonProps);
+      onClose: () => void;
+    };
 
 export default function NoteEditor(props: NoteEditorProps) {
-  const [isDirty, setIsDirty] = useState(false);
   const isCreate = props.mode === "create";
-  const editorRef = useRef<CodeMirrorEditorRefData>(null);
   const z = useZ();
+  const editorRef = useRef<MilkdownEditorRef>(null);
+  const [isDirty, setIsDirty] = useState(false);
 
-  const defaultTitle = isCreate ? "Untitled Note" : props.title;
-  const defaultContent = isCreate ? "" : props.content;
+  const [hasFocused, setHasFocused] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const {
-    parsedHtml,
-    mode,
-    handleModeChange,
-    toggleModeKey,
-    editorMode,
-    setEditorMode,
-  } = useMarkdownEditorPreviewToggle({
-    defaultContent,
-    editorRef,
-    isDirty,
-    defaultTab: !isCreate ? props.defaultTab : undefined,
-  });
+  const defaultTitle = isCreate ? "Untitled Note" : (props.note?.name ?? "");
+  const defaultContent = isCreate ? "" : (props.note?.content ?? "");
 
   const activeOrganizationId = useActiveOrganizationId();
   const [title, setTitle] = useState(defaultTitle);
@@ -77,39 +72,25 @@ export default function NoteEditor(props: NoteEditorProps) {
     false,
   );
 
-  useKeyDown((e) => {
-    const isCtrlKey = e.metaKey || e.ctrlKey;
-    if (isCtrlKey && e.key === "s") {
-      e.preventDefault();
-      if (!isDirty) return;
-
-      handleSave();
-    }
-
-    if (isCtrlKey && e.shiftKey && e.key === "e") {
-      e.preventDefault();
-      props.onClose();
-    }
-  });
-
   useHotkeys(
-    "Escape",
+    "f",
     () => {
-      const vimMode = editorRef.current?.getVimMode();
-
-      if (!vimMode || vimMode === "normal" || mode !== "write") {
-        props.onClose();
-      } else {
-        // handle escape for vim, because it's not working in Codemirror editor
-        editorRef.current?.handleEscapeForVim();
-      }
+      editorRef.current?.focus();
     },
-
-    {enableOnContentEditable: true},
+    {preventDefault: true},
   );
 
+  useHotkeys("Escape", () => props.onClose(), {enableOnContentEditable: true});
+
+  useHotkeys("mod+s", () => handleSave(), [isDirty], {
+    preventDefault: true,
+    enableOnContentEditable: true,
+  });
+
+  useDirtyEditorBlock(isDirty);
+
   const handleSave = () => {
-    const noteId = isCreate ? createId() : props.noteId;
+    const noteId = isCreate ? createId() : props.note.id;
     const now = Date.now();
 
     z.mutate.notesTable.upsert({
@@ -127,20 +108,18 @@ export default function NoteEditor(props: NoteEditorProps) {
     });
 
     toast.success(isCreate ? "Note created" : "Note updated");
-    props.afterSave({noteId});
   };
 
-  const handleEditorModeChange = (mode: EditorMode) => {
-    setEditorMode(mode);
+  const handleDelete = async () => {
+    if (!isCreate) {
+      await z.mutate.notesTable.update({
+        id: props.note.id,
+        deletedAt: Date.now(),
+      });
+    }
 
-    toast.info(`Editor mode changed to ${mode}`, {
-      position: "bottom-center",
-    });
-  };
-
-  const handleContentChange = (value: string) => {
-    content.current = value;
-    setIsDirty(true);
+    toast.success("Note deleted");
+    props.onClose();
   };
 
   return (
@@ -150,10 +129,17 @@ export default function NoteEditor(props: NoteEditorProps) {
           "flex flex-col",
           isFullscreen
             ? "min-w-full h-screen p-4 gap-0"
-            : "min-w-[95%] h-[95%] gap-2",
+            : "min-w-11/12 h-11/12 gap-2",
         )}
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        onCloseAutoFocus={(e) => e.preventDefault()}
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+          const closeButton = document.querySelector("#dialog-close-button");
+          (closeButton as HTMLElement | null)?.focus();
+        }}
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+          document.body.style.pointerEvents = "";
+        }}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader className="shrink-0">
@@ -174,46 +160,12 @@ export default function NoteEditor(props: NoteEditorProps) {
               }}
             />
           </DialogTitle>
-          <DialogDescription className="sr-only">Create Note</DialogDescription>
+          <DialogDescription className="sr-only">
+            Note for {title}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="absolute right-10 top-1.5">
-          {mode === "write" ? (
-            <WrappedTooltip tooltipContentProps={{side: "bottom"}}>
-              <Button
-                onClick={() => handleModeChange("preview")}
-                variant="ghost"
-                size="icon"
-              >
-                <Eye />
-              </Button>
-
-              <span>
-                See Preview
-                <KeyboardShortcutIndicator commandOrCtrlKey>
-                  M
-                </KeyboardShortcutIndicator>
-              </span>
-            </WrappedTooltip>
-          ) : (
-            <WrappedTooltip tooltipContentProps={{side: "bottom"}}>
-              <Button
-                onClick={() => handleModeChange("write")}
-                variant="ghost"
-                size="icon"
-              >
-                <Pencil />
-              </Button>
-
-              <span>
-                Edit
-                <KeyboardShortcutIndicator commandOrCtrlKey>
-                  M
-                </KeyboardShortcutIndicator>
-              </span>
-            </WrappedTooltip>
-          )}
-
           <WrappedTooltip tooltipContentProps={{side: "bottom"}}>
             <Button
               onClick={handleSave}
@@ -261,103 +213,87 @@ export default function NoteEditor(props: NoteEditorProps) {
           )}
         </div>
 
-        <div className="min-h-0 flex-1 h-full">
-          <Suspense
-            fallback={
-              <div className="w-full h-full flex items-center justify-center gap-2">
-                <Spinner />
-                Loading editor...
-              </div>
-            }
-          >
-            <div className="w-full h-full relative min-h-0">
-              <Tabs
-                className="w-full h-full flex flex-col"
-                value={mode}
-                onValueChange={(value) =>
-                  handleModeChange(value as "write" | "preview")
-                }
-              >
-                <div
-                  className={cn(
-                    "shrink-0 justify-between",
-                    isFullscreen ? "hidden" : "flex",
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <WrappedTooltip tooltipContentProps={{side: "bottom"}}>
-                      <TabsList className="shrink-0 self-start flex items-center gap-2">
-                        <TabsTrigger value="write">Write</TabsTrigger>
-                        <TabsTrigger value="preview">Preview</TabsTrigger>
-                      </TabsList>
+        {!hasFocused && (
+          <div className="absolute bottom-0 right-0 text-muted-foreground text-xs p-2 flex items-center gap-1">
+            <Info className="w-4 h-4" />
+            Pro tip: Press{" "}
+            <KeyboardShortcutIndicator>f</KeyboardShortcutIndicator> to focus on
+            the editor
+          </div>
+        )}
 
-                      <KeyboardShortcutIndicator
-                        label="Toggle mode"
-                        commandOrCtrlKey
-                      >
-                        {toggleModeKey}
-                      </KeyboardShortcutIndicator>
-                    </WrappedTooltip>
-                  </div>
+        <div className="ml-auto shrink-0 flex items-center gap-3">
+          {!isFullscreen && (
+            <Button
+              onClick={handleSave}
+              type="button"
+              size="sm"
+              className={cn(
+                "h-9 transition-opacity duration-300",
+                isDirty && !isFullscreen
+                  ? "visible opacity-100"
+                  : "invisible opacity-0",
+              )}
+            >
+              <>
+                <span>Save</span>
+                <KeyboardShortcutIndicator commandOrCtrlKey>
+                  S
+                </KeyboardShortcutIndicator>
+              </>
+            </Button>
+          )}
 
-                  <div className="flex items-center gap-3">
-                    <Button
-                      onClick={handleSave}
-                      type="button"
-                      size="sm"
-                      className="h-9"
-                      disabled={!isDirty}
-                    >
-                      <>
-                        <span>Save</span>
-                        <KeyboardShortcutIndicator commandOrCtrlKey>
-                          S
-                        </KeyboardShortcutIndicator>
-                      </>
-                    </Button>
-                  </div>
-                </div>
-                <TabsContent
-                  value="write"
-                  className={cn(
-                    "h-full flex-1 data-[state=inactive]:hidden min-h-0",
-                    isFullscreen && "mt-0",
-                  )}
-                  forceMount
-                >
-                  <div className="min-h-0 h-full">
-                    <CodeMirrorEditor
-                      ref={editorRef}
-                      defaultContent={content.current}
-                      defaultMode={editorMode}
-                      defaultAutoFocus={!isCreate}
-                      onModeChange={handleEditorModeChange}
-                      onChange={handleContentChange}
-                      key={editorMode}
-                      onSave={handleSave}
-                      onExitEditorWithoutSaving={props.onClose}
-                      placeholder="Write your note here"
-                      viewStyle={isFullscreen ? "zen" : "normal"}
-                    />
-                  </div>
-                </TabsContent>
+          {!isCreate && !isFullscreen && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" size="icon" className="size-8">
+                  <EllipsisVertical />
+                </Button>
+              </DropdownMenuTrigger>
 
-                <TabsContent
-                  value="preview"
-                  className={cn(
-                    "h-full w-full flex-1 min-h-0 data-[state=inactive]:hidden",
-                    isFullscreen && "mt-0",
-                  )}
-                  forceMount
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={handleDelete}
+                  className="!text-destructive focus:bg-destructive/10"
                 >
-                  <MdPreview
-                    html={parsedHtml}
-                    wrapperClassName="max-w-[1000px] mx-auto"
+                  <Trash2 className="mr-2 h-4 w-4 text-destructive" />
+                  Delete note
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+
+        <div className="overflow-y-auto" ref={containerRef}>
+          <div className="min-h-0 flex-1 h-full mx-auto w-full md:w-4xl flex justify-center *:w-full">
+            {isCreate ||
+              (props.note !== undefined && (
+                <Suspense
+                  fallback={
+                    <div className="w-full h-full flex items-center justify-center gap-2">
+                      <Spinner />
+                      Loading editor...
+                    </div>
+                  }
+                >
+                  <MarkdownEditorLazy
+                    defaultValue={isCreate ? "" : (props.note.content ?? "")}
+                    ref={editorRef}
+                    onChange={() => {
+                      setIsDirty(true);
+                    }}
+                    onFocus={() => {
+                      containerRef.current?.scrollTo({
+                        top: containerRef.current.scrollHeight,
+                      });
+                      setHasFocused(true);
+                    }}
+                    key={isCreate ? "create" : props.note.id}
                   />
-                </TabsContent>
-              </Tabs>
-            </div>
-          </Suspense>
+                </Suspense>
+              ))}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
