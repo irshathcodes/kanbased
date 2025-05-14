@@ -44,6 +44,7 @@ const MarkdownEditorLazy = lazy(
 type CreateNoteProps = {
   mode: "create";
   onClose: () => void;
+  afterSave: (noteId: string) => void;
 };
 
 type EditNoteProps = {
@@ -59,16 +60,11 @@ export default function NoteEditor(props: NoteEditorProps) {
   const z = useZ();
   const editorRef = useRef<MilkdownEditorRef>(null);
   const [isDirty, setIsDirty] = useState(false);
-
   const [hasFocused, setHasFocused] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const defaultTitle = isCreate ? "Untitled Note" : (props.note?.name ?? "");
-  const defaultContent = isCreate ? "" : (props.note?.content ?? "");
-
   const activeOrganizationId = useActiveOrganizationId();
+  const defaultTitle = isCreate ? "Untitled Note" : (props.note?.name ?? "");
   const [title, setTitle] = useState(defaultTitle);
-  const content = useRef(defaultContent);
   const [isFullscreen, setIsFullscreen] = useLocalStorage(
     "note-editor-fullscreen",
     false,
@@ -98,7 +94,7 @@ export default function NoteEditor(props: NoteEditorProps) {
     z.mutate.notesTable.upsert({
       id: noteId,
       name: title,
-      content: content.current,
+      content: editorRef.current!.getMarkdown(),
       createdAt: now,
       updatedAt: isCreate ? null : now,
       organizationId: activeOrganizationId,
@@ -110,6 +106,7 @@ export default function NoteEditor(props: NoteEditorProps) {
     });
 
     toast.success(isCreate ? "Note created" : "Note updated");
+    isCreate && props.afterSave(noteId);
   };
 
   const handleDelete = async () => {
@@ -276,32 +273,31 @@ export default function NoteEditor(props: NoteEditorProps) {
 
         <div className="overflow-y-auto" ref={containerRef}>
           <div className="min-h-0 flex-1 h-full mx-auto w-full md:w-4xl flex justify-center *:w-full">
-            {isCreate ||
-              (props.note !== undefined && (
-                <Suspense
-                  fallback={
-                    <div className="w-full h-full flex items-center justify-center gap-2">
-                      <Spinner />
-                      Loading editor...
-                    </div>
-                  }
-                >
-                  <MarkdownEditorLazy
-                    defaultValue={isCreate ? "" : (props.note.content ?? "")}
-                    ref={editorRef}
-                    onChange={() => {
-                      setIsDirty(true);
-                    }}
-                    onFocus={() => {
-                      containerRef.current?.scrollTo({
-                        top: containerRef.current.scrollHeight,
-                      });
-                      setHasFocused(true);
-                    }}
-                    key={isCreate ? "create" : props.note.id}
-                  />
-                </Suspense>
-              ))}
+            {isCreate || props.note !== undefined ? (
+              <Suspense
+                fallback={
+                  <div className="w-full h-full flex items-center justify-center gap-2">
+                    <Spinner />
+                    Loading editor...
+                  </div>
+                }
+              >
+                <MarkdownEditorLazy
+                  defaultValue={isCreate ? "" : (props.note.content ?? "")}
+                  ref={editorRef}
+                  onChange={() => {
+                    setIsDirty(true);
+                  }}
+                  onFocus={() => {
+                    containerRef.current?.scrollTo({
+                      top: containerRef.current.scrollHeight,
+                    });
+                    setHasFocused(true);
+                  }}
+                  key={isCreate ? "create" : props.note.id}
+                />
+              </Suspense>
+            ) : null}
           </div>
         </div>
       </DialogContent>

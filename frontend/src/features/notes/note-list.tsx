@@ -1,5 +1,5 @@
 import {Link} from "@tanstack/react-router";
-import {MoreHorizontal, Pencil, Trash2} from "lucide-react";
+import {MoreHorizontal, Trash2} from "lucide-react";
 import {toast} from "sonner";
 import type {GetNotesListQueryResult} from "@/lib/zero-queries";
 import {getRelativeTimeString} from "@/lib/utils";
@@ -49,13 +49,6 @@ function NoteItem({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link to="." search={{editNoteId: note.id}} replace>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Edit
-                  </Link>
-                </DropdownMenuItem>
-
                 <DropdownMenuItem
                   className="!text-destructive focus:bg-destructive/10"
                   onClick={(e) => {
