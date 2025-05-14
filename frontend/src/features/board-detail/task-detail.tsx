@@ -1,7 +1,7 @@
 import {Suspense, lazy, useRef, useState} from "react";
 import {useQuery} from "@rocicorp/zero/react";
 import {toast} from "sonner";
-import {ArrowDown, ArrowUp} from "lucide-react";
+import {ArrowDown, ArrowUp, Info} from "lucide-react";
 import {useHotkeys} from "react-hotkeys-hook";
 import {Link, useNavigate, useParams} from "@tanstack/react-router";
 import {
@@ -50,6 +50,8 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
   const nextTaskId = tasks[activeTaskIndex + 1]?.id;
   const editorRef = useRef<MilkdownEditorRef>(null);
   const [isDirty, setIsDirty] = useState(false);
+  const [hasFocused, setHasFocused] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const navigateToTask = (taskId: string) => {
     navigate({
@@ -65,6 +67,14 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
   ]);
 
   useHotkeys("j", () => nextTaskId && navigateToTask(nextTaskId), [nextTaskId]);
+
+  useHotkeys(
+    "f",
+    () => {
+      editorRef.current?.focus();
+    },
+    {preventDefault: true},
+  );
 
   useHotkeys("Escape", () => props.onClose(), {enableOnContentEditable: true});
 
@@ -178,6 +188,15 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
             </WrappedTooltip>
           </div>
 
+          {!hasFocused && (
+            <div className="absolute bottom-0 right-0 text-muted-foreground text-xs p-2 flex items-center gap-1">
+              <Info className="w-4 h-4" />
+              Pro tip: Press{" "}
+              <KeyboardShortcutIndicator>f</KeyboardShortcutIndicator> to focus
+              on the editor
+            </div>
+          )}
+
           <div className="ml-auto shrink-0 flex items-center gap-3">
             <Button
               onClick={handleSave}
@@ -214,7 +233,7 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
             </DropdownMenu>
           </div>
 
-          <div className="overflow-y-auto">
+          <div className="overflow-y-auto" ref={containerRef}>
             <div className="min-h-0 flex-1 h-full mx-auto w-full md:w-4xl flex justify-center *:w-full">
               {data !== undefined && (
                 <Suspense
@@ -230,6 +249,12 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
                     ref={editorRef}
                     onChange={() => {
                       setIsDirty(true);
+                    }}
+                    onFocus={() => {
+                      containerRef.current?.scrollTo({
+                        top: containerRef.current.scrollHeight,
+                      });
+                      setHasFocused(true);
                     }}
                     key={data.id}
                   />

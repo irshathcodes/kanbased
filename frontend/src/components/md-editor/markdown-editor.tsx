@@ -16,10 +16,11 @@ export type MilkdownEditorRef = {
 
 type MilkdownEditorProps = {
   defaultValue?: string;
-  onChange?: (markdown: string) => void;
   placeholder?: string;
   focusOnMount?: boolean;
   ref: RefObject<MilkdownEditorRef | null>;
+  onChange?: (markdown: string) => void;
+  onFocus?: () => void;
 };
 
 function MilkdownEditorImpl(props: MilkdownEditorProps) {
@@ -48,6 +49,7 @@ function MilkdownEditorImpl(props: MilkdownEditorProps) {
         // Fallback: if the above conditions are not met, just focus the editor
         view.focus();
       }
+      props.onFocus?.();
     }
   };
 
