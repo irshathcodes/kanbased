@@ -1,18 +1,55 @@
-import {useEffect} from "react";
+import {useEffect, useImperativeHandle, RefObject} from "react";
 import {Milkdown, MilkdownProvider, useEditor} from "@milkdown/react";
+import {editorViewCtx} from "@milkdown/kit/core";
+import type {ListenerManager} from "@milkdown/kit/plugin/listener";
 import {Crepe} from "@/features/soja-editor";
 import {useAppContext} from "@/state/app-state";
 
 import "../../features/soja-editor/theme/common/style.css";
 import "../../features/soja-editor/theme/frame/style.css";
+import {getMarkdown} from "@milkdown/kit/utils";
+
+export type MilkdownEditorRef = {
+  focus: () => void;
+  getMarkdown: () => string;
+};
 
 type MilkdownEditorProps = {
   defaultValue?: string;
+  onChange?: (markdown: string) => void;
+  placeholder?: string;
+  focusOnMount?: boolean;
+  ref: RefObject<MilkdownEditorRef | null>;
 };
 
 function MilkdownEditorImpl(props: MilkdownEditorProps) {
-  const {defaultValue = ""} = props;
+  const {defaultValue = "", placeholder = "Write something..."} = props;
   const {theme} = useAppContext();
+
+  const focusEditor = () => {
+    const editorInstance = editor.get();
+    if (editorInstance && editorInstance.ctx) {
+      const view = editorInstance.ctx.get(editorViewCtx);
+      if (
+        view &&
+        view.state &&
+        view.state.doc &&
+        view.state.selection &&
+        typeof (view.state.selection.constructor as any).atEnd === "function"
+      ) {
+        const {state} = view;
+        // Access Selection.atEnd via the constructor of the current selection instance
+        const selectionConstructor = state.selection.constructor as any;
+        const selectionAtEnd = selectionConstructor.atEnd(state.doc);
+        const tr = state.tr.setSelection(selectionAtEnd);
+        view.dispatch(tr);
+        view.focus(); // Ensure the editor has DOM focus
+      } else if (view) {
+        // Fallback: if the above conditions are not met, just focus the editor
+        view.focus();
+      }
+    }
+  };
 
   const updateTheme = (currentTheme: typeof theme) => {
     const milkdownEl = document.querySelector(".milkdown");
@@ -32,31 +69,53 @@ function MilkdownEditorImpl(props: MilkdownEditorProps) {
     }
   };
 
+  const getMarkdownContent = () => {
+    const editorInstance = editor.get();
+
+    if (!editorInstance || !editorInstance.ctx) {
+      console.error("Editor instance not found");
+      return "";
+    }
+
+    return editorInstance.action(getMarkdown());
+  };
+
   useEffect(() => {
     updateTheme(theme);
   }, [theme]);
 
   // @ts-expect-error
-  useEditor((root) => {
+  const editor = useEditor((root) => {
     const crepe = new Crepe({
       root,
       defaultValue,
       featureConfigs: {
         [Crepe.Feature.Placeholder]: {
-          text: "Write something...",
+          text: placeholder,
           mode: "doc",
         },
       },
     });
 
-    crepe.on((api) => {
-      api.mounted((ctx) => {
+    crepe.on((api: ListenerManager) => {
+      api.markdownUpdated((_, updatedMarkdown) => {
+        props.onChange?.(updatedMarkdown);
+      });
+      api.mounted(() => {
         updateTheme(theme);
+        if (props.focusOnMount) {
+          focusEditor();
+        }
       });
     });
 
     return crepe;
   }, []);
+
+  useImperativeHandle(props.ref, () => ({
+    focus: focusEditor,
+    getMarkdown: getMarkdownContent,
+  }));
 
   return <Milkdown />;
 }

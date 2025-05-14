@@ -1,4 +1,4 @@
-import {Suspense, lazy} from "react";
+import {Suspense, lazy, useRef, useState} from "react";
 import {useQuery} from "@rocicorp/zero/react";
 import {toast} from "sonner";
 import {ArrowDown, ArrowUp} from "lucide-react";
@@ -29,6 +29,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {MilkdownEditorRef} from "@/components/md-editor/markdown-editor";
+import {cn} from "@/lib/utils";
+import {useDirtyEditorBlock} from "@/hooks/use-dirty-editor-block";
 
 const MarkdownEditorLazy = lazy(
   () => import("@/components/md-editor/markdown-editor"),
@@ -45,6 +48,8 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
   const activeTaskIndex = tasks.findIndex((task) => task.id === data?.id);
   const previousTaskId = tasks[activeTaskIndex - 1]?.id;
   const nextTaskId = tasks[activeTaskIndex + 1]?.id;
+  const editorRef = useRef<MilkdownEditorRef>(null);
+  const [isDirty, setIsDirty] = useState(false);
 
   const navigateToTask = (taskId: string) => {
     navigate({
@@ -61,13 +66,23 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
 
   useHotkeys("j", () => nextTaskId && navigateToTask(nextTaskId), [nextTaskId]);
 
+  useHotkeys("Escape", () => props.onClose(), {enableOnContentEditable: true});
+
+  useHotkeys("mod+s", () => handleSave(), [isDirty], {
+    preventDefault: true,
+    enableOnContentEditable: true,
+  });
+
+  useDirtyEditorBlock(isDirty);
+
   const handleSave = () => {
     z.mutate.tasksTable.update({
       id: props.taskId,
       updatedAt: Date.now(),
-      content: "Temp",
+      content: editorRef.current?.getMarkdown(),
     });
 
+    setIsDirty(false);
     toast.success("Task updated");
   };
 
@@ -100,6 +115,7 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
           e.preventDefault();
           document.body.style.pointerEvents = "";
         }}
+        onEscapeKeyDown={(e) => e.preventDefault()}
         className="min-w-11/12 h-11/12 flex flex-col"
       >
         <>
@@ -167,8 +183,10 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
               onClick={handleSave}
               type="button"
               size="sm"
-              className="h-9"
-              // disabled={!isDirty}
+              className={cn(
+                "h-9 transition-opacity duration-300",
+                isDirty ? "visible opacity-100" : "invisible opacity-0",
+              )}
             >
               <>
                 <span>Save</span>
@@ -198,16 +216,25 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
 
           <div className="overflow-y-auto">
             <div className="min-h-0 flex-1 h-full mx-auto w-full md:w-4xl flex justify-center *:w-full">
-              <Suspense
-                fallback={
-                  <div className="w-full h-full flex items-center justify-center gap-2">
-                    <Spinner />
-                    Loading editor...
-                  </div>
-                }
-              >
-                <MarkdownEditorLazy defaultValue={data?.content ?? ""} />
-              </Suspense>
+              {data !== undefined && (
+                <Suspense
+                  fallback={
+                    <div className="w-full h-full flex items-center justify-center gap-2">
+                      <Spinner />
+                      Loading editor...
+                    </div>
+                  }
+                >
+                  <MarkdownEditorLazy
+                    defaultValue={data.content ?? ""}
+                    ref={editorRef}
+                    onChange={() => {
+                      setIsDirty(true);
+                    }}
+                    key={data.id}
+                  />
+                </Suspense>
+              )}
             </div>
           </div>
         </>
