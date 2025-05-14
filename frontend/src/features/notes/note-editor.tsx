@@ -41,16 +41,18 @@ const MarkdownEditorLazy = lazy(
   () => import("@/components/md-editor/markdown-editor"),
 );
 
-type NoteEditorProps =
-  | {
-      note: NonNullable<GetNoteQueryResult>;
-      onClose: () => void;
-      mode: "edit";
-    }
-  | {
-      mode: "create";
-      onClose: () => void;
-    };
+type CreateNoteProps = {
+  mode: "create";
+  onClose: () => void;
+};
+
+type EditNoteProps = {
+  mode: "edit";
+  note: NonNullable<GetNoteQueryResult>;
+  onClose: () => void;
+};
+
+type NoteEditorProps = CreateNoteProps | EditNoteProps;
 
 export default function NoteEditor(props: NoteEditorProps) {
   const isCreate = props.mode === "create";
@@ -122,6 +124,19 @@ export default function NoteEditor(props: NoteEditorProps) {
     props.onClose();
   };
 
+  const handleTitleSave = (updatedTitle: string) => {
+    setTitle(updatedTitle);
+
+    if (isCreate) {
+      editorRef.current?.focus();
+    } else {
+      z.mutate.notesTable.update({
+        id: props.note.id,
+        name: updatedTitle,
+      });
+    }
+  };
+
   return (
     <Dialog open onOpenChange={props.onClose}>
       <DialogContent
@@ -151,13 +166,7 @@ export default function NoteEditor(props: NoteEditorProps) {
               buttonClassName="text-xl font-bold"
               defaultValue={title}
               defaultMode={isCreate ? "edit" : "view"}
-              onSubmit={(updatedTitle) => {
-                setTitle(updatedTitle);
-                if (updatedTitle !== title) {
-                  setIsDirty(true);
-                }
-                editorRef.current?.focus();
-              }}
+              onSubmit={handleTitleSave}
             />
           </DialogTitle>
           <DialogDescription className="sr-only">
