@@ -78,6 +78,7 @@ export const Menu = defineComponent<MenuProps>({
       if (e.key === "Escape") {
         e.preventDefault();
         hide?.();
+        e.stopImmediatePropagation();
         return;
       }
       if (e.key === "ArrowDown") {

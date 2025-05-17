@@ -77,7 +77,7 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
     {preventDefault: true},
   );
 
-  // useHotkeys("Escape", () => props.onClose(), {enableOnContentEditable: true});
+  useHotkeys("Escape", () => props.onClose(), {enableOnContentEditable: true});
 
   useHotkeys("mod+s", () => handleSave(), [isDirty], {
     preventDefault: true,
@@ -244,7 +244,7 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
             </div>
 
             <div className="overflow-y-auto flex-1" ref={containerRef}>
-              <div className="min-h-0 flex-1 h-full mx-auto w-full lg:w-4xl flex justify-center *:w-full *:h-full">
+              <div className="min-h-0 flex-1 h-full mx-auto w-full max-w-3xl flex justify-center *:w-full *:h-full">
                 {data !== undefined && (
                   <Suspense
                     fallback={
@@ -263,10 +263,6 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
                         }
 
                         timeoutRef.current = setTimeout(() => {
-                          console.log({
-                            updatedMarkdown,
-                            dataContent: data.content,
-                          });
                           setIsDirty(updatedMarkdown !== (data.content ?? ""));
                         }, 1000);
                       }}
