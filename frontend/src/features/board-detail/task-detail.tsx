@@ -77,7 +77,7 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
     {preventDefault: true},
   );
 
-  useHotkeys("Escape", () => props.onClose(), {enableOnContentEditable: true});
+  // useHotkeys("Escape", () => props.onClose(), {enableOnContentEditable: true});
 
   useHotkeys("mod+s", () => handleSave(), [isDirty], {
     preventDefault: true,
@@ -206,79 +206,81 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
             </div>
           )}
 
-          <div className="ml-auto shrink-0 flex items-center gap-3">
-            <Button
-              onClick={handleSave}
-              type="button"
-              size="sm"
-              className={cn(
-                "h-9 transition-opacity duration-300",
-                isDirty ? "visible opacity-100" : "invisible opacity-0",
-              )}
-            >
-              <>
-                <span>Save</span>
-                <KeyboardShortcutIndicator commandOrCtrlKey>
-                  S
-                </KeyboardShortcutIndicator>
-              </>
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="icon" className="size-8">
-                  <EllipsisVertical />
-                </Button>
-              </DropdownMenuTrigger>
+          <div className="flex-1 h-full flex flex-col min-h-0">
+            <div className="ml-auto shrink-0 flex items-center gap-3">
+              <Button
+                onClick={handleSave}
+                type="button"
+                size="sm"
+                className={cn(
+                  "h-9 transition-opacity duration-300",
+                  isDirty ? "visible opacity-100" : "invisible opacity-0",
+                )}
+              >
+                <>
+                  <span>Save</span>
+                  <KeyboardShortcutIndicator commandOrCtrlKey>
+                    S
+                  </KeyboardShortcutIndicator>
+                </>
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="secondary" size="icon" className="size-8">
+                    <EllipsisVertical />
+                  </Button>
+                </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={handleDelete}
-                  className="!text-destructive focus:bg-destructive/10"
-                >
-                  <Trash2 className="mr-2 h-4 w-4 text-destructive" />
-                  Delete task
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={handleDelete}
+                    className="!text-destructive focus:bg-destructive/10"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4 text-destructive" />
+                    Delete task
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
 
-          <div className="overflow-y-auto" ref={containerRef}>
-            <div className="min-h-0 flex-1 h-full mx-auto w-full md:w-4xl flex justify-center *:w-full">
-              {data !== undefined && (
-                <Suspense
-                  fallback={
-                    <div className="w-full h-full flex items-center justify-center gap-2">
-                      <Spinner />
-                      Loading editor...
-                    </div>
-                  }
-                >
-                  <MarkdownEditorLazy
-                    defaultValue={data.content ?? ""}
-                    ref={editorRef}
-                    onChange={(updatedMarkdown) => {
-                      if (timeoutRef.current) {
-                        clearTimeout(timeoutRef.current);
-                      }
+            <div className="overflow-y-auto flex-1" ref={containerRef}>
+              <div className="min-h-0 flex-1 h-full mx-auto w-full lg:w-4xl flex justify-center *:w-full *:h-full">
+                {data !== undefined && (
+                  <Suspense
+                    fallback={
+                      <div className="w-full h-full flex items-center justify-center gap-2">
+                        <Spinner />
+                        Loading editor...
+                      </div>
+                    }
+                  >
+                    <MarkdownEditorLazy
+                      defaultValue={data.content ?? ""}
+                      ref={editorRef}
+                      onChange={(updatedMarkdown) => {
+                        if (timeoutRef.current) {
+                          clearTimeout(timeoutRef.current);
+                        }
 
-                      timeoutRef.current = setTimeout(() => {
-                        console.log({
-                          updatedMarkdown,
-                          dataContent: data.content,
+                        timeoutRef.current = setTimeout(() => {
+                          console.log({
+                            updatedMarkdown,
+                            dataContent: data.content,
+                          });
+                          setIsDirty(updatedMarkdown !== (data.content ?? ""));
+                        }, 1000);
+                      }}
+                      onFocus={() => {
+                        containerRef.current?.scrollTo({
+                          top: containerRef.current.scrollHeight,
                         });
-                        setIsDirty(updatedMarkdown !== (data.content ?? ""));
-                      }, 1000);
-                    }}
-                    onFocus={() => {
-                      containerRef.current?.scrollTo({
-                        top: containerRef.current.scrollHeight,
-                      });
-                      setHasFocused(true);
-                    }}
-                    key={data.id}
-                  />
-                </Suspense>
-              )}
+                        setHasFocused(true);
+                      }}
+                      key={data.id}
+                    />
+                  </Suspense>
+                )}
+              </div>
             </div>
           </div>
         </>

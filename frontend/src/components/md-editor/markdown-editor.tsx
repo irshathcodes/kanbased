@@ -24,7 +24,7 @@ type MilkdownEditorProps = {
 };
 
 function MilkdownEditorImpl(props: MilkdownEditorProps) {
-  const {defaultValue = "", placeholder = "Write something..."} = props;
+  const {defaultValue = "", placeholder = "Type / for commands"} = props;
   const {theme} = useAppContext();
 
   const focusEditor = () => {
@@ -94,7 +94,7 @@ function MilkdownEditorImpl(props: MilkdownEditorProps) {
       featureConfigs: {
         [Crepe.Feature.Placeholder]: {
           text: placeholder,
-          mode: "doc",
+          mode: "block",
         },
       },
     });

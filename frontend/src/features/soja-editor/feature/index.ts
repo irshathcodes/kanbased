@@ -7,6 +7,7 @@ import type {ListItemFeatureConfig} from "./list-item";
 import type {PlaceHolderFeatureConfig} from "./placeholder";
 import type {TableFeatureConfig} from "./table";
 import {BlockEditFeatureConfig} from "@/features/soja-editor/feature/block-edit";
+import {ToolbarFeatureConfig} from "@/features/soja-editor/feature/toolbar";
 
 export enum CrepeFeature {
   ListItem = "list-item",
@@ -16,6 +17,7 @@ export enum CrepeFeature {
   Placeholder = "placeholder",
   Table = "table",
   BlockEdit = "block-edit",
+  Toolbar = "toolbar",
 }
 
 export interface CrepeFeatureConfig {
@@ -26,6 +28,7 @@ export interface CrepeFeatureConfig {
   [CrepeFeature.Placeholder]?: PlaceHolderFeatureConfig;
   [CrepeFeature.Table]?: TableFeatureConfig;
   [CrepeFeature.BlockEdit]?: BlockEditFeatureConfig;
+  [CrepeFeature.Toolbar]?: ToolbarFeatureConfig;
 }
 
 export const defaultFeatures: Record<CrepeFeature, boolean> = {
@@ -36,6 +39,7 @@ export const defaultFeatures: Record<CrepeFeature, boolean> = {
   [CrepeFeature.Placeholder]: true,
   [CrepeFeature.Table]: true,
   [CrepeFeature.BlockEdit]: true,
+  [CrepeFeature.Toolbar]: true,
 };
 
 export async function loadFeature(
@@ -70,6 +74,10 @@ export async function loadFeature(
     }
     case CrepeFeature.BlockEdit: {
       const {defineFeature} = await import("./block-edit");
+      return defineFeature(editor, config);
+    }
+    case CrepeFeature.Toolbar: {
+      const {defineFeature} = await import("./toolbar");
       return defineFeature(editor, config);
     }
   }

@@ -1,6 +1,6 @@
 .milkdown {
   .milkdown-block-handle {
-    &[data-show='false'] {
+    &[data-show="false"] {
       opacity: 0;
       pointer-events: none;
     }
@@ -35,7 +35,7 @@
   }
 
   .milkdown-slash-menu {
-    &[data-show='false'] {
+    &[data-show="false"] {
       display: none;
     }
     position: absolute;
@@ -84,7 +84,7 @@
 
     .menu-groups {
       padding: 0 12px 12px;
-      max-height: 420px;
+      max-height: 300px;
       overflow: auto;
       overscroll-behavior: contain;
       scroll-behavior: smooth;
@@ -134,7 +134,7 @@
       }
 
       .menu-group + .menu-group::before {
-        content: '';
+        content: "";
         display: block;
         height: 1px;
         background: color-mix(
