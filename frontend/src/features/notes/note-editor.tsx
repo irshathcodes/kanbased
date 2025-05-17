@@ -234,82 +234,95 @@ export default function NoteEditor(props: NoteEditorProps) {
           </div>
         )}
 
-        <div className="ml-auto shrink-0 flex items-center gap-3">
-          {!isFullscreen && (
-            <Button
-              onClick={handleSave}
-              type="button"
-              size="sm"
-              className={cn(
-                "h-9 transition-opacity duration-300",
-                isDirty && !isFullscreen
-                  ? "visible opacity-100"
-                  : "invisible opacity-0",
-              )}
-            >
-              <>
-                <span>Save</span>
-                <KeyboardShortcutIndicator commandOrCtrlKey>
-                  S
-                </KeyboardShortcutIndicator>
-              </>
-            </Button>
-          )}
-
-          {!isCreate && !isFullscreen && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="icon" className="size-8">
-                  <EllipsisVertical />
-                </Button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={handleDelete}
-                  className="!text-destructive focus:bg-destructive/10"
-                >
-                  <Trash2 className="mr-2 h-4 w-4 text-destructive" />
-                  Delete note
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-
-        <div className="overflow-y-auto" ref={containerRef}>
-          <div className="min-h-0 flex-1 h-full mx-auto w-full md:w-4xl flex justify-center *:w-full">
-            {isCreate || props.note !== undefined ? (
-              <Suspense
-                fallback={
-                  <div className="w-full h-full flex items-center justify-center gap-2">
-                    <Spinner />
-                    Loading editor...
-                  </div>
-                }
+        <div className="flex-1 h-full flex flex-col min-h-0">
+          <div className="ml-auto shrink-0 flex items-center gap-3">
+            {!isFullscreen && (
+              <Button
+                onClick={handleSave}
+                type="button"
+                size="sm"
+                className={cn(
+                  "h-9 transition-opacity duration-300",
+                  isDirty && !isFullscreen
+                    ? "visible opacity-100"
+                    : "invisible opacity-0",
+                )}
               >
-                <MarkdownEditorLazy
-                  defaultValue={defaultContent}
-                  ref={editorRef}
-                  onChange={(updatedMarkdown) => {
-                    if (timeoutRef.current) {
-                      clearTimeout(timeoutRef.current);
-                    }
+                <>
+                  <span>Save</span>
+                  <KeyboardShortcutIndicator commandOrCtrlKey>
+                    S
+                  </KeyboardShortcutIndicator>
+                </>
+              </Button>
+            )}
 
-                    timeoutRef.current = setTimeout(() => {
-                      setIsDirty(updatedMarkdown !== defaultContent);
-                    }, 1000);
-                  }}
-                  onFocus={() => {
-                    containerRef.current?.scrollTo({
-                      top: containerRef.current.scrollHeight,
-                    });
-                    setHasFocused(true);
-                  }}
-                  key={isCreate ? "create" : props.note.id}
-                />
-              </Suspense>
-            ) : null}
+            {!isCreate && !isFullscreen && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="secondary" size="icon" className="size-8">
+                    <EllipsisVertical />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={handleDelete}
+                    className="!text-destructive focus:bg-destructive/10"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4 text-destructive" />
+                    Delete note
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
+
+          <div
+            className="overflow-y-auto flex-1"
+            ref={containerRef}
+            tabIndex={-1}
+            onClick={(e) => {
+              // Only focus if clicking outside the editor content area
+              const editorElement = document.querySelector(".milkdown");
+              if (editorElement && !editorElement.contains(e.target as Node)) {
+                editorRef.current?.focus();
+              }
+            }}
+          >
+            <div className="min-h-0 flex-1 h-full mx-auto w-full max-w-3xl flex justify-center *:w-full *:h-full">
+              {isCreate || props.note !== undefined ? (
+                <Suspense
+                  fallback={
+                    <div className="w-full h-full flex items-center justify-center gap-2">
+                      <Spinner />
+                      Loading editor...
+                    </div>
+                  }
+                >
+                  <MarkdownEditorLazy
+                    defaultValue={defaultContent}
+                    ref={editorRef}
+                    onChange={(updatedMarkdown) => {
+                      if (timeoutRef.current) {
+                        clearTimeout(timeoutRef.current);
+                      }
+
+                      timeoutRef.current = setTimeout(() => {
+                        setIsDirty(updatedMarkdown !== defaultContent);
+                      }, 1000);
+                    }}
+                    onFocus={() => {
+                      containerRef.current?.scrollTo({
+                        top: containerRef.current.scrollHeight,
+                      });
+                      setHasFocused(true);
+                    }}
+                    key={isCreate ? "create" : props.note.id}
+                  />
+                </Suspense>
+              ) : null}
+            </div>
           </div>
         </div>
       </DialogContent>
