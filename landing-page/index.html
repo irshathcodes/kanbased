@@ -9,6 +9,13 @@
       content="A minimal, fast kanban board app with instant sync, keyboard shortcuts, and rich markdown editing. Free and open source."
     />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap"
+      rel="stylesheet"
+    />
+
     <link
       rel="icon"
       type="image/png"
@@ -30,19 +37,25 @@
     <!-- Navigation -->
     <nav class="nav">
       <div class="nav-container">
-        <div class="nav-brand">
-          <span class="logo">KanBased</span>
-        </div>
+        <a href="/" class="nav-brand">
+          <img
+            src="/public/web-app-manifest-512x512.png"
+            alt="KanBased Logo"
+            width="36"
+            height="36"
+          />
+          <span>KanBased</span>
+        </a>
         <div class="nav-links">
-          <a href="#features" class="nav-link">Features</a>
-          <a href="#demo" class="nav-link">Demo</a>
           <a
-            href="https://github.com/your-username/kanbased"
+            href="https://app.kanbased.com/login"
             class="nav-link"
             target="_blank"
-            >GitHub</a
+            >Login</a
           >
-          <a href="#get-started" class="btn btn-primary">Get Started</a>
+          <a href="https://app.kanbased.com/signup" class="btn btn-primary"
+            >Get Started</a
+          >
         </div>
       </div>
     </nav>
@@ -51,24 +64,24 @@
     <section class="hero">
       <div class="hero-container">
         <div class="hero-content">
-          <h1 class="hero-title">
-            Minimal Kanban Boards with
-            <span class="gradient-text">Instant Sync</span>
-          </h1>
+          <h1 class="hero-title">Minimal Kanban Boards with instant sync</h1>
           <p class="hero-description">
             A fast, keyboard-driven kanban app that updates instantly. No
             loading spinners, no refresh needed. Your boards stay in perfect
             sync with rich markdown editing and seamless collaboration.
           </p>
           <div class="hero-buttons">
-            <a href="#get-started" class="btn btn-primary btn-large">
-              Try KanBased Free
+            <a
+              href="https://app.kanbased.com/signup"
+              class="btn btn-primary btn-large"
+            >
+              Get Started - It's free
             </a>
-            <a href="#demo" class="btn btn-secondary btn-large"> View Demo </a>
           </div>
-          <div class="hero-badge">
+
+          <!-- <div class="hero-badge">
             <span class="badge">🚀 Free & Open Source</span>
-          </div>
+          </div> -->
         </div>
       </div>
     </section>
@@ -285,7 +298,7 @@
               <h4>Product</h4>
               <a href="#features">Features</a>
               <a href="#demo">Demo</a>
-              <a href="#get-started">Get Started</a>
+              <a href="#get-started">Get Started - It's free</a>
             </div>
             <div class="footer-section">
               <h4>Community</h4>
