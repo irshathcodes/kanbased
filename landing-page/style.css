@@ -95,7 +95,6 @@ p {
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(253, 252, 253, 0.95);
   backdrop-filter: blur(10px);
   z-index: 1000;
   transition: border-bottom-color 0.3s ease;
@@ -189,52 +188,41 @@ p {
 
 /* Hero Section */
 .hero {
-  min-height: 100vh;
   display: flex;
-  align-items: center;
-  background: linear-gradient(
-    135deg,
-    var(--primary-1) 0%,
-    var(--primary-3) 100%
-  );
-  position: relative;
+  justify-content: center;
   overflow: hidden;
-}
-
-.hero::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")
-    repeat;
 }
 
 .hero-container {
   max-width: 1200px;
   margin: 0 auto;
-  margin-top: 60px;
+  margin-top: 10rem;
   padding: 0 2rem;
   position: relative;
   z-index: 1;
 }
 
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .hero-title {
   font-size: 96px;
   font-weight: 800;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   color: var(--primary-12);
   letter-spacing: -0.07em;
   line-height: 1;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .hero-description {
   font-size: 1.25rem;
   color: var(--primary-11);
-  margin-top: 2.2rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
   line-height: 1.7;
   max-width: 1000px;
 }
@@ -261,17 +249,19 @@ p {
 
 /* App Image Section */
 .app-image-section {
-  padding: 6rem 0;
-  background: var(--primary-1);
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 .app-image {
+  width: 90%;
   object-fit: contain;
   border: 1px solid var(--primary-6);
   border-radius: 1rem;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
 }
 
 /* Section Styles */
@@ -294,7 +284,6 @@ p {
 /* Features Section */
 .features {
   padding: 6rem 0;
-  background: white;
 }
 
 .features-grid {
@@ -304,7 +293,6 @@ p {
 }
 
 .feature-card {
-  background: var(--primary-1);
   padding: 2.5rem;
   border-radius: 16px;
   border: 1px solid var(--primary-6);
