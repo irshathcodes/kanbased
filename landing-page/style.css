@@ -97,9 +97,14 @@ p {
   right: 0;
   background: rgba(253, 252, 253, 0.95);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--primary-6);
   z-index: 1000;
-  transition: all 0.3s ease;
+  transition: border-bottom-color 0.3s ease;
+  border-bottom: 1px solid transparent;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav.scrolled {
+  border-bottom-color: var(--primary-6);
 }
 
 .nav-container {
@@ -210,6 +215,7 @@ p {
 .hero-container {
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 60px;
   padding: 0 2rem;
   position: relative;
   z-index: 1;
@@ -251,6 +257,21 @@ p {
   font-size: 0.9rem;
   font-weight: 600;
   border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+/* App Image Section */
+.app-image-section {
+  padding: 6rem 0;
+  background: var(--primary-1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-image {
+  object-fit: contain;
+  border: 1px solid var(--primary-6);
+  border-radius: 1rem;
 }
 
 /* Section Styles */
