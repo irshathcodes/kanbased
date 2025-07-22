@@ -191,6 +191,7 @@ p {
   display: flex;
   justify-content: center;
   overflow: hidden;
+  padding-bottom: 4rem;
 }
 
 .hero-container {
@@ -253,15 +254,16 @@ p {
   justify-content: center;
   align-items: center;
   width: 100%;
+  height: auto;
 }
 
 .app-image {
   width: 90%;
+  height: auto;
   object-fit: contain;
   border: 1px solid var(--primary-6);
   border-radius: 1rem;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
-    rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 /* Section Styles */
