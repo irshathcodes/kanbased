@@ -280,6 +280,11 @@ export default function EditNote(props: {
                       });
                       setHasFocused(true);
                     }}
+                    placeholder={
+                      props.note.content
+                        ? "Type / for commands"
+                        : "Enter note..."
+                    }
                     key={props.note.id}
                   />
                 </Suspense>

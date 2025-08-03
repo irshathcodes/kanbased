@@ -310,6 +310,11 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
                         setHasFocused(true);
                       }}
                       key={data.id}
+                      placeholder={
+                        data.content
+                          ? "Type / for commands"
+                          : "Enter description..."
+                      }
                     />
                   </Suspense>
                 )}

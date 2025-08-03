@@ -14,6 +14,7 @@ import {useAppContext} from "@/state/app-state";
 import "../../features/soja-editor/theme/common/style.css";
 import "../../features/soja-editor/theme/frame/style.css";
 import {getMarkdown} from "@milkdown/kit/utils";
+import {placeholderConfig} from "@/features/soja-editor/feature/placeholder";
 
 export type MilkdownEditorRef = {
   focus: () => void;
@@ -22,7 +23,7 @@ export type MilkdownEditorRef = {
 
 type MilkdownEditorProps = {
   defaultValue?: string;
-  placeholder?: string;
+  placeholder: string;
   focusOnMount?: boolean;
   ref: RefObject<MilkdownEditorRef | null>;
   onChange?: (markdown: string) => void;
@@ -31,11 +32,9 @@ type MilkdownEditorProps = {
 };
 
 function MilkdownEditorImpl(props: MilkdownEditorProps) {
-  const {
-    defaultValue = "",
-    placeholder = props.defaultReadOnly ? "" : "Type / for commands",
-  } = props;
+  const {defaultValue = ""} = props;
   const {theme} = useAppContext();
+  const placeholder = props.defaultReadOnly ? "" : props.placeholder;
 
   const focusEditor = () => {
     const editorInstance = editor.get();
@@ -60,6 +59,18 @@ function MilkdownEditorImpl(props: MilkdownEditorProps) {
         view.focus();
       }
       props.onFocus?.();
+    }
+  };
+
+  const setPlaceholder = (placeholder: string) => {
+    const editorInstance = editor.get();
+    if (editorInstance && editorInstance.ctx) {
+      editorInstance.ctx.update(placeholderConfig.key, (prev) => {
+        return {
+          ...prev,
+          text: placeholder,
+        };
+      });
     }
   };
 
@@ -95,6 +106,10 @@ function MilkdownEditorImpl(props: MilkdownEditorProps) {
   useEffect(() => {
     updateTheme(theme);
   }, [theme]);
+
+  useEffect(() => {
+    setPlaceholder(props.placeholder ?? "");
+  }, [props.placeholder]);
 
   // @ts-expect-error
   const editor = useEditor((root) => {

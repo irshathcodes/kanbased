@@ -262,6 +262,7 @@ export default function CreateNote(props: {
                     });
                     setHasFocused(true);
                   }}
+                  placeholder="Enter note..."
                 />
               </Suspense>
             </div>
