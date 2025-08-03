@@ -95,6 +95,10 @@ export type GetOrganizationMembersQueryResult = Array<
   ZeroQueryResult<typeof getOrganizationMembersQuery>
 >;
 
+export type OrganizationMember = NonNullable<
+  NonNullable<GetOrganizationMembersQueryResult>[number]["user"]
+>;
+
 let didPreloadAllBoards = false;
 
 export function preloadAllBoards(z: Z) {

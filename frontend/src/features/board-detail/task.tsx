@@ -21,13 +21,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {useZ} from "@/lib/zero-cache";
-import UserAvatar from "@/components/user-avatar";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip";
 import {useFocusManager} from "@/components/focus-scope";
 import {useUndoManager} from "@/state/undo-manager";
 import {FOCUS_TOOLTIP_CLASS, ModKey} from "@/lib/constants";
 import {useDelayedFocusIndicator} from "@/hooks/use-focus-indicator";
 import {KeyboardShortcutIndicator} from "@/components/keyboard-shortcut";
+import {AssigneeCombobox} from "@/features/board-detail/assignee-combobox";
 
 export type TaskProps = {
   task: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"][number]["tasks"][number];
@@ -146,7 +145,7 @@ function ViewTask(props: {
                     <DropdownMenuTrigger asChild>
                       <Button
                         onClick={(e) => e.stopPropagation()}
-                        className="opacity-0 group-hover:opacity-100 shrink-0 transition-opacity text-muted-foreground hover:text-foreground w-7 h-7 hover:bg-gray-5 focus:opacity-100"
+                        className="shrink-0 text-muted-foreground hover:text-foreground w-7 h-7 hover:bg-gray-5 opacity-0 group-hover:opacity-90 transition-opacity group-focus:opacity-90 self-end"
                         variant="ghost"
                         size="icon"
                       >
@@ -177,22 +176,14 @@ function ViewTask(props: {
                   </DropdownMenu>
                 )}
 
-                <Tooltip delayDuration={300}>
-                  <TooltipTrigger
-                    className="self-end h-fit mt-auto"
-                    tabIndex={-1}
-                  >
-                    <UserAvatar
-                      name={task.creator?.name ?? ""}
-                      imageUrl={task.creator?.image ?? ""}
-                      className="w-5 h-5 opacity-0 group-hover:opacity-90 shrink-0 transition-opacity group-focus:opacity-90"
-                    />
-                  </TooltipTrigger>
-
-                  <TooltipContent>
-                    <span>Created by: {task.creator?.name}</span>
-                  </TooltipContent>
-                </Tooltip>
+                <AssigneeCombobox
+                  assignee={task.creator ?? null}
+                  onAssigneeChange={(assigneeId) => {
+                    // TODO: Implement assignee change logic
+                    console.log("Assignee changed to:", assigneeId);
+                  }}
+                  className="opacity-0 group-hover:opacity-90 transition-opacity group-focus:opacity-90"
+                />
               </div>
             </div>
           </RadixTooltip.Trigger>
