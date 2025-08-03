@@ -172,8 +172,8 @@ p {
 
 .btn-outline {
   background: transparent;
-  color: var(--primary-9);
-  border: 2px solid var(--primary-9);
+  color: var(--primary-3);
+  border: 2px solid var(--primary-3);
 }
 
 .btn-outline:hover {
@@ -690,10 +690,6 @@ p {
 }
 
 @media (max-width: 480px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-
   .hero-description {
     font-size: 1.1rem;
   }

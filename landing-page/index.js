@@ -10,4 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   window.addEventListener("scroll", onScroll);
+
+  const year = document.getElementById("year");
+  year.textContent = new Date().getFullYear();
 });
