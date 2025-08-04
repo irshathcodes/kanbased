@@ -27,6 +27,7 @@ import {FOCUS_TOOLTIP_CLASS, ModKey} from "@/lib/constants";
 import {useDelayedFocusIndicator} from "@/hooks/use-focus-indicator";
 import {KeyboardShortcutIndicator} from "@/components/keyboard-shortcut";
 import {AssigneeCombobox} from "@/features/board-detail/assignee-combobox";
+import {useAssignee} from "@/features/board-detail/use-assignee";
 
 export type TaskProps = {
   task: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"][number]["tasks"][number];
@@ -45,10 +46,14 @@ function ViewTask(props: {
   const z = useZ();
   const focusManager = useFocusManager();
   const undoManager = useUndoManager();
-  const [assigneeComboboxOpen, setAssigneeComboboxOpen] = useState(false);
   const {isFocused, showIndicatorDelayed, hideIndicator} =
     useDelayedFocusIndicator({
       isDisabled: props.readonly,
+    });
+
+  const {assigneeComboboxOpen, setAssigneeComboboxOpen, handleAssigneeChange} =
+    useAssignee({
+      taskId: task.id,
     });
 
   const editHotkeyRef = useHotkeys(
@@ -115,16 +120,6 @@ function ViewTask(props: {
     });
 
     focusManager.focusNext();
-  };
-
-  const handleAssigneeChange = (assigneeId: string | null) => {
-    z.mutate.tasksTable.update({
-      id: task.id,
-      assigneeId,
-      updatedAt: Date.now(),
-    });
-
-    setAssigneeComboboxOpen(false);
   };
 
   return (
@@ -205,6 +200,7 @@ function ViewTask(props: {
                   onAssigneeChange={handleAssigneeChange}
                   isOpen={assigneeComboboxOpen}
                   onOpenChange={setAssigneeComboboxOpen}
+                  isDisabled={props.readonly}
                 />
               </div>
             </div>

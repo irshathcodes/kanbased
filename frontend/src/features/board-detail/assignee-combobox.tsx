@@ -23,6 +23,7 @@ interface AssigneeComboboxProps {
   onAssigneeChange: (assigneeId: string | null) => void;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  isDisabled?: boolean;
   className?: string;
 }
 
@@ -32,6 +33,7 @@ export function AssigneeCombobox({
   isOpen,
   onOpenChange,
   className,
+  isDisabled,
 }: AssigneeComboboxProps) {
   const userData = useAuthData();
   const z = useZ();
@@ -62,6 +64,7 @@ export function AssigneeCombobox({
             className,
           )}
           title="Assignee"
+          disabled={isDisabled}
         >
           <div className="flex items-center gap-0.5">
             {selectedMember?.user ? (

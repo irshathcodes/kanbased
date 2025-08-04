@@ -38,6 +38,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {useDirtyEditorBlock} from "@/hooks/use-dirty-editor-block";
 import {useAuthData} from "@/queries/session";
+import {AssigneeCombobox} from "@/features/board-detail/assignee-combobox";
+import {useAssignee} from "@/features/board-detail/use-assignee";
 
 const MarkdownEditorLazy = lazy(
   () => import("@/components/md-editor/markdown-editor"),
@@ -62,6 +64,11 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isMember = userData.role === "member";
   const timeoutRef = useRef<NodeJS.Timeout>(null);
+
+  const {assigneeComboboxOpen, setAssigneeComboboxOpen, handleAssigneeChange} =
+    useAssignee({
+      taskId: data?.id ?? "",
+    });
 
   const navigateToTask = (taskId: string) => {
     navigate({
@@ -97,6 +104,18 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
     {
       preventDefault: true,
       enableOnContentEditable: true,
+    },
+  );
+
+  useHotkeys(
+    "a",
+    () => {
+      if (!isMember) {
+        setAssigneeComboboxOpen(true);
+      }
+    },
+    {
+      preventDefault: true,
     },
   );
 
@@ -237,6 +256,13 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
 
           <div className="flex-1 h-full flex flex-col min-h-0">
             <div className="ml-auto shrink-0 flex items-center gap-3">
+              <AssigneeCombobox
+                assignee={data?.assignee ?? null}
+                onAssigneeChange={handleAssigneeChange}
+                isOpen={assigneeComboboxOpen}
+                onOpenChange={setAssigneeComboboxOpen}
+                isDisabled={isMember}
+              />
               {!isMember && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

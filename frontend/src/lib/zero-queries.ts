@@ -50,6 +50,7 @@ export function getTaskQuery(z: Z, taskId: string) {
   return z.query.tasksTable
     .where("id", taskId)
     .where("deletedAt", "IS", null)
+    .related("assignee")
     .one();
 }
 
