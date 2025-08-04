@@ -137,6 +137,7 @@ export const tasksTable = pgTable(
       .references(() => columnsTable.id, { onDelete: "cascade" })
       .notNull(),
     position: t.doublePrecision().notNull(),
+    assigneeId: t.text().references(() => usersTable.id),
     ...commonColumns,
   },
   (table) => [t.index("column_id_idx").on(table.columnId)],

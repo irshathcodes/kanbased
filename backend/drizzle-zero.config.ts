@@ -64,6 +64,7 @@ export default drizzleZeroConfig(drizzleSchema, {
       organizationId: true,
       creatorId: true,
       content: true,
+      assigneeId: false,
     },
     notesTable: {
       id: true,

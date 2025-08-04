@@ -412,6 +412,7 @@ export type Schema = {
             | "position"
             | "content"
             | "columnId"
+            | "assigneeId"
           )[];
           readonly destSchema: "tasksTable";
           readonly cardinality: "many";
@@ -500,6 +501,7 @@ export type Schema = {
             | "position"
             | "content"
             | "columnId"
+            | "assigneeId"
           )[];
           readonly destSchema: "tasksTable";
           readonly cardinality: "many";
@@ -666,6 +668,7 @@ export type Schema = {
             | "position"
             | "content"
             | "columnId"
+            | "assigneeId"
           )[];
           readonly destSchema: "tasksTable";
           readonly cardinality: "many";
