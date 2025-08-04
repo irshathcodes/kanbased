@@ -42,7 +42,12 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
   accounts: many(accountsTable),
   boards: many(boardsTable),
   columns: many(columnsTable),
-  tasks: many(tasksTable),
+  tasks: many(tasksTable, {
+    relationName: "userCreatedTasks",
+  }), // Tasks created by this user
+  assignedTasks: many(tasksTable, {
+    relationName: "userAssignedTasks",
+  }), // Tasks assigned to this user
   notes: many(notesTable),
 }));
 
@@ -155,6 +160,12 @@ export const tasksRelations = relations(tasksTable, ({ one }) => ({
   creator: one(usersTable, {
     fields: [tasksTable.creatorId],
     references: [usersTable.id],
+    relationName: "userCreatedTasks",
+  }),
+  assignee: one(usersTable, {
+    fields: [tasksTable.assigneeId],
+    references: [usersTable.id],
+    relationName: "userAssignedTasks",
   }),
 }));
 

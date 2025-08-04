@@ -440,6 +440,26 @@ export type Schema = {
           readonly cardinality: "many";
         },
       ];
+      assignedTasks: [
+        {
+          readonly sourceField: string[];
+          readonly destField: (
+            | "id"
+            | "name"
+            | "createdAt"
+            | "updatedAt"
+            | "organizationId"
+            | "creatorId"
+            | "deletedAt"
+            | "position"
+            | "content"
+            | "columnId"
+            | "assigneeId"
+          )[];
+          readonly destSchema: "tasksTable";
+          readonly cardinality: "many";
+        },
+      ];
     };
     organizationsTable: {
       columns: [
@@ -761,6 +781,22 @@ export type Schema = {
             | "position"
           )[];
           readonly destSchema: "columnsTable";
+          readonly cardinality: "one";
+        },
+      ];
+      assignee: [
+        {
+          readonly sourceField: string[];
+          readonly destField: (
+            | "id"
+            | "name"
+            | "email"
+            | "emailVerified"
+            | "image"
+            | "createdAt"
+            | "updatedAt"
+          )[];
+          readonly destSchema: "usersTable";
           readonly cardinality: "one";
         },
       ];
@@ -1321,6 +1357,14 @@ export const schema = {
           cardinality: "one",
         },
       ],
+      assignee: [
+        {
+          sourceField: ["assigneeId"],
+          destField: ["id"],
+          destSchema: "usersTable",
+          cardinality: "one",
+        },
+      ],
     },
     usersTable: {
       members: [
@@ -1351,6 +1395,14 @@ export const schema = {
         {
           sourceField: ["id"],
           destField: ["creatorId"],
+          destSchema: "tasksTable",
+          cardinality: "many",
+        },
+      ],
+      assignedTasks: [
+        {
+          sourceField: ["id"],
+          destField: ["assigneeId"],
           destSchema: "tasksTable",
           cardinality: "many",
         },
