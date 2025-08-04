@@ -45,6 +45,7 @@ function ViewTask(props: {
   const z = useZ();
   const focusManager = useFocusManager();
   const undoManager = useUndoManager();
+  const [assigneeComboboxOpen, setAssigneeComboboxOpen] = useState(false);
   const {isFocused, showIndicatorDelayed, hideIndicator} =
     useDelayedFocusIndicator({
       isDisabled: props.readonly,
@@ -67,6 +68,18 @@ function ViewTask(props: {
     () => {
       if (!props.readonly) {
         handleDeleteTask();
+      }
+    },
+    {
+      preventDefault: true,
+    },
+  );
+
+  const openAssigneeComboboxHotkeyRef = useHotkeys(
+    "a",
+    () => {
+      if (!props.readonly) {
+        setAssigneeComboboxOpen(true);
       }
     },
     {
@@ -104,12 +117,23 @@ function ViewTask(props: {
     focusManager.focusNext();
   };
 
+  const handleAssigneeChange = (assigneeId: string | null) => {
+    z.mutate.tasksTable.update({
+      id: task.id,
+      assigneeId,
+      updatedAt: Date.now(),
+    });
+
+    setAssigneeComboboxOpen(false);
+  };
+
   return (
     <Link
       ref={useCallback((el: HTMLAnchorElement) => {
         provided.innerRef(el);
         editHotkeyRef.current = el;
         deleteHotkeyRef.current = el;
+        openAssigneeComboboxHotkeyRef.current = el;
       }, [])}
       {...provided.draggableProps}
       {...provided.dragHandleProps}
@@ -145,7 +169,7 @@ function ViewTask(props: {
                     <DropdownMenuTrigger asChild>
                       <Button
                         onClick={(e) => e.stopPropagation()}
-                        className="shrink-0 text-muted-foreground hover:text-foreground w-7 h-7 hover:bg-gray-5 opacity-0 group-hover:opacity-90 transition-opacity group-focus:opacity-90 self-end"
+                        className="shrink-0 text-muted-foreground hover:text-foreground w-7 h-7 hover:bg-gray-5 opacity-0 group-hover:opacity-90 transition-opacity group-focus:opacity-90 self-end aria-expanded:opacity-90"
                         variant="ghost"
                         size="icon"
                       >
@@ -177,12 +201,10 @@ function ViewTask(props: {
                 )}
 
                 <AssigneeCombobox
-                  assignee={task.creator ?? null}
-                  onAssigneeChange={(assigneeId) => {
-                    // TODO: Implement assignee change logic
-                    console.log("Assignee changed to:", assigneeId);
-                  }}
-                  className="opacity-0 group-hover:opacity-90 transition-opacity group-focus:opacity-90"
+                  assignee={task.assignee ?? null}
+                  onAssigneeChange={handleAssigneeChange}
+                  isOpen={assigneeComboboxOpen}
+                  onOpenChange={setAssigneeComboboxOpen}
                 />
               </div>
             </div>

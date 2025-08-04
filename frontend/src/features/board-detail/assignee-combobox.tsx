@@ -1,5 +1,4 @@
-import {useState} from "react";
-import {Check, ChevronDown, UserMinus} from "lucide-react";
+import {Check, UserMinus} from "lucide-react";
 import {useQuery} from "@rocicorp/zero/react";
 import {cn} from "@/lib/utils";
 import {
@@ -22,15 +21,18 @@ import UserAvatar from "@/components/user-avatar";
 interface AssigneeComboboxProps {
   assignee: OrganizationMember | null;
   onAssigneeChange: (assigneeId: string | null) => void;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
   className?: string;
 }
 
 export function AssigneeCombobox({
   assignee,
   onAssigneeChange,
+  isOpen,
+  onOpenChange,
   className,
 }: AssigneeComboboxProps) {
-  const [open, setOpen] = useState(false);
   const userData = useAuthData();
   const z = useZ();
   const [members] = useQuery(
@@ -51,16 +53,17 @@ export function AssigneeCombobox({
         e.stopPropagation();
       }}
     >
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={isOpen} onOpenChange={onOpenChange}>
         <PopoverTrigger
-          aria-expanded={open}
+          aria-expanded={isOpen}
           role="combobox"
           className={cn(
             "justify-start gap-1 p-1 h-auto text-left font-normal",
             className,
           )}
+          title="Assignee"
         >
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             {selectedMember?.user ? (
               <UserAvatar
                 name={selectedMember.user.name ?? ""}
@@ -69,10 +72,9 @@ export function AssigneeCombobox({
               />
             ) : (
               <div className="w-5 h-5 rounded-full bg-muted border border-border flex items-center justify-center">
-                <UserMinus className="w-2 h-2 text-muted-foreground" />
+                <UserMinus className="w-4 h-4 text-muted-foreground" />
               </div>
             )}
-            <ChevronDown className="ml-auto h-3 w-3 shrink-0 opacity-50" />
           </div>
         </PopoverTrigger>
 
@@ -88,9 +90,9 @@ export function AssigneeCombobox({
                     onAssigneeChange(null);
                   }}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
                     <div className="w-5 h-5 rounded-full bg-muted border border-border flex items-center justify-center">
-                      <UserMinus className="w-3 h-3 text-muted-foreground" />
+                      <UserMinus className="w-4 h-4 text-muted-foreground" />
                     </div>
                     <span>Unassigned</span>
                   </div>
@@ -107,10 +109,8 @@ export function AssigneeCombobox({
                     value={member.id}
                     onSelect={() => {
                       if (member.user?.id !== assignee?.id) {
-                        onAssigneeChange(member.user?.id || null);
+                        onAssigneeChange(member.user?.id ?? null);
                       }
-
-                      setOpen(false);
                     }}
                   >
                     <div className="flex items-center gap-2">

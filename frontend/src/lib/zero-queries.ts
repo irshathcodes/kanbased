@@ -33,7 +33,7 @@ export function getBoardWithColumnsAndTasksQuery(z: Z, boardId: string) {
         .related("tasks", (q) =>
           q
             .where("deletedAt", "IS", null)
-            .related("creator")
+            .related("assignee")
             .orderBy("position", "asc"),
         )
         .orderBy("position", "asc"),

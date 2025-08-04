@@ -116,7 +116,7 @@ export function Tasks(props: {
             variant="secondary"
             ref={addTaskButtonRef}
             disabled={props.readonly}
-            title="Press 'a' to add a task"
+            title="Press 't' to add a task"
           >
             + Add a task
           </Button>

@@ -75,7 +75,7 @@ export function Column({column, index}: ColumnProps) {
         document.documentElement.scrollTo({
           left: 0,
         });
-    } else if (event.key === "a") {
+    } else if (event.key === "t") {
       if (event.ctrlKey || event.metaKey || isMember) return;
       event.preventDefault();
       tasksRef.current?.openAddTaskForm();
@@ -158,7 +158,7 @@ export function Column({column, index}: ColumnProps) {
                   >
                     <div className="flex gap-2 items-center text-xs">
                       <div>
-                        <KeyboardShortcutIndicator>a</KeyboardShortcutIndicator>
+                        <KeyboardShortcutIndicator>t</KeyboardShortcutIndicator>
                         {"  "}
                         to add
                       </div>
