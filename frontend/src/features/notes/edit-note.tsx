@@ -35,6 +35,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Editor from "@/components/editor";
+import type {EditorRef} from "@/components/editor";
 
 const MarkdownEditorLazy = lazy(
   () => import("@/components/md-editor/markdown-editor"),
@@ -45,7 +47,7 @@ export default function EditNote(props: {
   onClose: () => void;
 }) {
   const z = useZ();
-  const editorRef = useRef<MilkdownEditorRef>(null);
+  const editorRef = useRef<EditorRef>(null);
   const [hasFocused, setHasFocused] = useState(false);
   const [isFullscreen, setIsFullscreen] = useLocalStorage(
     "note-editor-fullscreen",
@@ -86,6 +88,8 @@ export default function EditNote(props: {
 
     const hasChanges =
       currentContent !== undefined && currentContent !== defaultContent;
+
+    console.log("currentContent", currentContent);
 
     if (hasChanges) {
       handleMarkdownSave(currentContent);
@@ -248,7 +252,7 @@ export default function EditNote(props: {
                     </div>
                   }
                 >
-                  <MarkdownEditorLazy
+                  <Editor
                     defaultValue={defaultContent}
                     defaultReadOnly={isMember}
                     ref={editorRef}

@@ -21,6 +21,7 @@ import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-pas
 import { Route as authLoginRouteImport } from './routes/(auth)/login/route'
 import { Route as authForgotPasswordRouteImport } from './routes/(auth)/forgot-password/route'
 import { Route as AuthenticatedLayoutIndexImport } from './routes/_authenticated/_layout/index'
+import { Route as AuthenticatedLayoutNovelImport } from './routes/_authenticated/_layout/novel'
 import { Route as AuthenticatedAcceptInvitationInvitationIdRouteImport } from './routes/_authenticated/accept-invitation/$invitationId/route'
 import { Route as AuthenticatedLayoutNotesRouteImport } from './routes/_authenticated/_layout/notes/route'
 import { Route as AuthenticatedLayoutBoardsRouteImport } from './routes/_authenticated/_layout/boards/route'
@@ -88,6 +89,12 @@ const authForgotPasswordRouteRoute = authForgotPasswordRouteImport.update({
 const AuthenticatedLayoutIndexRoute = AuthenticatedLayoutIndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedLayoutRoute,
+} as any)
+
+const AuthenticatedLayoutNovelRoute = AuthenticatedLayoutNovelImport.update({
+  id: '/novel',
+  path: '/novel',
   getParentRoute: () => AuthenticatedLayoutRoute,
 } as any)
 
@@ -214,6 +221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAcceptInvitationInvitationIdRouteImport
       parentRoute: typeof AuthenticatedImport
     }
+    '/_authenticated/_layout/novel': {
+      id: '/_authenticated/_layout/novel'
+      path: '/novel'
+      fullPath: '/novel'
+      preLoaderRoute: typeof AuthenticatedLayoutNovelImport
+      parentRoute: typeof AuthenticatedLayoutImport
+    }
     '/_authenticated/_layout/': {
       id: '/_authenticated/_layout/'
       path: '/'
@@ -258,6 +272,7 @@ const AuthenticatedLayoutNotesRouteRouteWithChildren =
 interface AuthenticatedLayoutRouteChildren {
   AuthenticatedLayoutBoardsRouteRoute: typeof AuthenticatedLayoutBoardsRouteRoute
   AuthenticatedLayoutNotesRouteRoute: typeof AuthenticatedLayoutNotesRouteRouteWithChildren
+  AuthenticatedLayoutNovelRoute: typeof AuthenticatedLayoutNovelRoute
   AuthenticatedLayoutIndexRoute: typeof AuthenticatedLayoutIndexRoute
   AuthenticatedLayoutBoardsBoardIdRouteRoute: typeof AuthenticatedLayoutBoardsBoardIdRouteRoute
 }
@@ -266,6 +281,7 @@ const AuthenticatedLayoutRouteChildren: AuthenticatedLayoutRouteChildren = {
   AuthenticatedLayoutBoardsRouteRoute: AuthenticatedLayoutBoardsRouteRoute,
   AuthenticatedLayoutNotesRouteRoute:
     AuthenticatedLayoutNotesRouteRouteWithChildren,
+  AuthenticatedLayoutNovelRoute: AuthenticatedLayoutNovelRoute,
   AuthenticatedLayoutIndexRoute: AuthenticatedLayoutIndexRoute,
   AuthenticatedLayoutBoardsBoardIdRouteRoute:
     AuthenticatedLayoutBoardsBoardIdRouteRoute,
@@ -308,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/boards': typeof AuthenticatedLayoutBoardsRouteRoute
   '/notes': typeof AuthenticatedLayoutNotesRouteRouteWithChildren
   '/accept-invitation/$invitationId': typeof AuthenticatedAcceptInvitationInvitationIdRouteRoute
+  '/novel': typeof AuthenticatedLayoutNovelRoute
   '/': typeof AuthenticatedLayoutIndexRoute
   '/boards/$boardId': typeof AuthenticatedLayoutBoardsBoardIdRouteRoute
   '/notes/$noteId': typeof AuthenticatedLayoutNotesNoteIdRouteRoute
@@ -325,6 +342,7 @@ export interface FileRoutesByTo {
   '/boards': typeof AuthenticatedLayoutBoardsRouteRoute
   '/notes': typeof AuthenticatedLayoutNotesRouteRouteWithChildren
   '/accept-invitation/$invitationId': typeof AuthenticatedAcceptInvitationInvitationIdRouteRoute
+  '/novel': typeof AuthenticatedLayoutNovelRoute
   '/': typeof AuthenticatedLayoutIndexRoute
   '/boards/$boardId': typeof AuthenticatedLayoutBoardsBoardIdRouteRoute
   '/notes/$noteId': typeof AuthenticatedLayoutNotesNoteIdRouteRoute
@@ -344,6 +362,7 @@ export interface FileRoutesById {
   '/_authenticated/_layout/boards': typeof AuthenticatedLayoutBoardsRouteRoute
   '/_authenticated/_layout/notes': typeof AuthenticatedLayoutNotesRouteRouteWithChildren
   '/_authenticated/accept-invitation/$invitationId': typeof AuthenticatedAcceptInvitationInvitationIdRouteRoute
+  '/_authenticated/_layout/novel': typeof AuthenticatedLayoutNovelRoute
   '/_authenticated/_layout/': typeof AuthenticatedLayoutIndexRoute
   '/_authenticated/_layout/boards_/$boardId': typeof AuthenticatedLayoutBoardsBoardIdRouteRoute
   '/_authenticated/_layout/notes/$noteId': typeof AuthenticatedLayoutNotesNoteIdRouteRoute
@@ -363,6 +382,7 @@ export interface FileRouteTypes {
     | '/boards'
     | '/notes'
     | '/accept-invitation/$invitationId'
+    | '/novel'
     | '/'
     | '/boards/$boardId'
     | '/notes/$noteId'
@@ -379,6 +399,7 @@ export interface FileRouteTypes {
     | '/boards'
     | '/notes'
     | '/accept-invitation/$invitationId'
+    | '/novel'
     | '/'
     | '/boards/$boardId'
     | '/notes/$noteId'
@@ -396,6 +417,7 @@ export interface FileRouteTypes {
     | '/_authenticated/_layout/boards'
     | '/_authenticated/_layout/notes'
     | '/_authenticated/accept-invitation/$invitationId'
+    | '/_authenticated/_layout/novel'
     | '/_authenticated/_layout/'
     | '/_authenticated/_layout/boards_/$boardId'
     | '/_authenticated/_layout/notes/$noteId'
@@ -475,6 +497,7 @@ export const routeTree = rootRoute
       "children": [
         "/_authenticated/_layout/boards",
         "/_authenticated/_layout/notes",
+        "/_authenticated/_layout/novel",
         "/_authenticated/_layout/",
         "/_authenticated/_layout/boards_/$boardId"
       ]
@@ -493,6 +516,10 @@ export const routeTree = rootRoute
     "/_authenticated/accept-invitation/$invitationId": {
       "filePath": "_authenticated/accept-invitation/$invitationId/route.tsx",
       "parent": "/_authenticated"
+    },
+    "/_authenticated/_layout/novel": {
+      "filePath": "_authenticated/_layout/novel.tsx",
+      "parent": "/_authenticated/_layout"
     },
     "/_authenticated/_layout/": {
       "filePath": "_authenticated/_layout/index.tsx",
