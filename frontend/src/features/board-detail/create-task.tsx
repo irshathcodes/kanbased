@@ -6,16 +6,12 @@ import {useInteractiveOutside} from "@/hooks/use-interactive-outside";
 import {createId} from "@/lib/utils";
 import {useZ} from "@/lib/zero-cache";
 import {useActiveOrganizationId} from "@/queries/session";
-import {isMac} from "@/lib/constants";
-
-type InsertPosition = "append" | "prepend";
 
 export type CreateCardProps = {
   columnId: string;
-  nextPosition: number;
-  firstPosition: number;
+  insertPosition: number;
   onComplete: () => void;
-  onAdd: (insertPosition: InsertPosition) => void;
+  onAdd: () => void;
 };
 
 export function CreateTask(props: CreateCardProps) {
@@ -24,7 +20,6 @@ export function CreateTask(props: CreateCardProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const z = useZ();
   const organizationId = useActiveOrganizationId();
-  const insertPosition = useRef<InsertPosition>("append");
 
   useInteractiveOutside(wrapperRef, () => {
     props.onComplete();
@@ -39,17 +34,14 @@ export function CreateTask(props: CreateCardProps) {
       id: createId(),
       columnId: props.columnId,
       name,
-      position:
-        insertPosition.current === "prepend"
-          ? props.firstPosition - 1
-          : props.nextPosition,
+      position: props.insertPosition,
       createdAt: Date.now(),
       creatorId: z.userID,
       assigneeId: z.userID,
       organizationId,
     });
 
-    props.onAdd(insertPosition.current);
+    props.onAdd();
   };
 
   return (
@@ -63,11 +55,6 @@ export function CreateTask(props: CreateCardProps) {
             if (event.key === "Enter") {
               event.preventDefault();
               if (event.shiftKey) return;
-              if (event.metaKey || event.ctrlKey) {
-                insertPosition.current = "prepend";
-              } else {
-                insertPosition.current = "append";
-              }
               buttonRef.current!.click();
             }
             if (event.key === "Escape") {
@@ -76,8 +63,7 @@ export function CreateTask(props: CreateCardProps) {
           }}
           autoFocus
           className="min-h-17.5 px-2! resize-none overflow-hidden ring-transparent! text-base! placeholder:text-xs"
-          placeholder={`↵ to append, ${isMac ? "⌘" : "Ctrl"}↵ to prepend`}
-          title={`Add task, Enter to append, ${isMac ? "⌘" : "Ctrl"}Enter to prepend`}
+          placeholder={`↵ to add a task`}
         />
         <div className="flex gap-4 w-fit ml-auto">
           <Button

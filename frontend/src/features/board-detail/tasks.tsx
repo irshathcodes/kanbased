@@ -26,14 +26,19 @@ function TaskList(props: {
 
 const MemoizedTaskList = memo<React.ComponentProps<typeof TaskList>>(TaskList);
 
-export type TasksRefValue = {openAddTaskForm: () => void};
+export type TasksRefValue = {
+  openAddTaskFormAtEnd: () => void;
+  openAddTaskFormAtStart: () => void;
+};
 export function Tasks(props: {
   tasks: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"][number]["tasks"];
   columnId: string;
   readonly?: boolean;
   ref: React.Ref<TasksRefValue>;
 }) {
-  const [showAddTask, setShowAddTask] = useState(false);
+  const [showAddTask, setShowAddTask] = useState<"first" | "last" | false>(
+    false,
+  );
   const containerRef = useRef<HTMLDivElement | null>(null);
   const addTaskButtonRef = useRef<HTMLButtonElement | null>(null);
   const sortedTasks = props.tasks;
@@ -42,19 +47,62 @@ export function Tasks(props: {
     containerRef.current?.scrollTo({top: containerRef.current.scrollHeight});
   };
 
-  const openAddTaskForm = () => {
+  const scrollListToStart = () => {
+    containerRef.current?.scrollTo({top: 0});
+  };
+
+  const openAddTaskFormAtEnd = () => {
     flushSync(() => {
-      setShowAddTask(true);
+      setShowAddTask("last");
     });
     scrollListToEnd();
   };
 
+  const openAddTaskFormAtStart = () => {
+    flushSync(() => {
+      setShowAddTask("first");
+    });
+    scrollListToStart();
+  };
+
   useImperativeHandle(props.ref, () => ({
-    openAddTaskForm,
+    openAddTaskFormAtStart,
+    openAddTaskFormAtEnd,
   }));
+
+  const firstPosition = sortedTasks.length ? sortedTasks[0]!.position : 1000;
+  const nextPosition = sortedTasks.length
+    ? sortedTasks[sortedTasks.length - 1]!.position + 1
+    : 1000;
+
+  const createTaskElement = showAddTask ? (
+    <CreateTask
+      columnId={props.columnId}
+      onComplete={() => {
+        flushSync(() => {
+          setShowAddTask(false);
+        });
+
+        addTaskButtonRef.current?.focus();
+      }}
+      onAdd={() => {
+        if (showAddTask === "first") {
+          containerRef.current?.scrollTo({top: 0});
+        } else {
+          scrollListToEnd();
+        }
+      }}
+      insertPosition={
+        showAddTask === "first" ? firstPosition - 1 : nextPosition
+      }
+    />
+  ) : null;
 
   return (
     <div className="flex-1 flex flex-col min-h-0">
+      {showAddTask === "first" && (
+        <div className="shrink-0 mx-2 mb-3">{createTaskElement}</div>
+      )}
       <Droppable
         droppableId={props.columnId}
         type="TASK"
@@ -84,33 +132,11 @@ export function Tasks(props: {
       </Droppable>
 
       <div className="shrink-0 mx-2 mt-3">
-        {showAddTask ? (
-          <CreateTask
-            columnId={props.columnId}
-            nextPosition={
-              sortedTasks.length
-                ? sortedTasks[sortedTasks.length - 1]!.position + 1
-                : 1000
-            }
-            firstPosition={sortedTasks.length ? sortedTasks[0]!.position : 1000}
-            onComplete={() => {
-              flushSync(() => {
-                setShowAddTask(false);
-              });
+        {showAddTask === "last" && createTaskElement}
 
-              addTaskButtonRef.current?.focus();
-            }}
-            onAdd={(insertPosition) => {
-              if (insertPosition === "prepend") {
-                containerRef.current?.scrollTo({top: 0});
-              } else {
-                scrollListToEnd();
-              }
-            }}
-          />
-        ) : (
+        {!showAddTask && (
           <Button
-            onClick={openAddTaskForm}
+            onClick={openAddTaskFormAtEnd}
             className="w-full"
             type="button"
             variant="secondary"
