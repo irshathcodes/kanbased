@@ -78,7 +78,7 @@ export function WrappedTooltip({
 
   return (
     <TooltipProvider {...(providerProps ?? {})}>
-      <Tooltip {...tooltipProps}>
+      <Tooltip delayDuration={700} {...tooltipProps}>
         {asChild ? <TooltipTrigger asChild>{trigger}</TooltipTrigger> : trigger}
         <TooltipContent {...tooltipContentProps}>{content}</TooltipContent>
       </Tooltip>

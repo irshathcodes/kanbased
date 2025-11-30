@@ -1,6 +1,5 @@
 import {createFileRoute, linkOptions, useRouter} from "@tanstack/react-router";
 import {useQuery} from "@rocicorp/zero/react";
-import {useEffect} from "react";
 import {Columns} from "@/features/board-detail/columns";
 import {ModalProvider} from "@/state/modals";
 import {CreateColumnButton} from "@/features/board-detail/create-column-button";
@@ -66,12 +65,10 @@ function BoardPage() {
   const routeCtx = Route.useRouteContext();
   const {taskId} = Route.useSearch();
 
-  useEffect(() => {
-    if (board?.name) {
-      routeCtx.setBoardName(board.name);
-      router.invalidate();
-    }
-  }, [board?.name]);
+  if (board?.name && routeCtx.getBoardName() !== board.name) {
+    routeCtx.setBoardName(board.name);
+    router.invalidate();
+  }
 
   if (!board) {
     return null;
