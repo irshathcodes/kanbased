@@ -79,11 +79,25 @@ export function Tasks(props: {
     <CreateTask
       columnId={props.columnId}
       onComplete={() => {
+        const prevShowAddTask = showAddTask;
+
         flushSync(() => {
           setShowAddTask(false);
         });
 
-        addTaskButtonRef.current?.focus();
+        const tasks = containerRef.current!.querySelectorAll("[data-kb-focus]");
+        let focusEl: HTMLElement | null = null;
+
+        if (prevShowAddTask === "first") {
+          focusEl = tasks[0] as HTMLElement;
+          scrollListToStart();
+        } else {
+          focusEl = tasks[tasks.length - 1] as HTMLElement;
+          scrollListToEnd();
+        }
+
+        focusEl?.focus();
+        focusEl?.scrollIntoView();
       }}
       onAdd={() => {
         if (showAddTask === "first") {
