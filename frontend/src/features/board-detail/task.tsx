@@ -5,7 +5,6 @@ import {Link} from "@tanstack/react-router";
 import {useHotkeys} from "react-hotkeys-hook";
 import {flushSync} from "react-dom";
 import {toast} from "sonner";
-import {Tooltip as RadixTooltip} from "radix-ui";
 import type {
   DraggableProvided,
   DraggableStateSnapshot,
@@ -23,9 +22,7 @@ import {
 import {useZ} from "@/lib/zero-cache";
 import {useFocusManager} from "@/components/focus-scope";
 import {useUndoManager} from "@/state/undo-manager";
-import {FOCUS_TOOLTIP_CLASS, ModKey} from "@/lib/constants";
-import {useDelayedFocusIndicator} from "@/hooks/use-focus-indicator";
-import {KeyboardShortcutIndicator} from "@/components/keyboard-shortcut";
+import {ModKey} from "@/lib/constants";
 import {AssigneeCombobox} from "@/features/board-detail/assignee-combobox";
 import {useAssignee} from "@/features/board-detail/use-assignee";
 
@@ -46,10 +43,6 @@ function ViewTask(props: {
   const z = useZ();
   const focusManager = useFocusManager();
   const undoManager = useUndoManager();
-  const {isFocused, showIndicatorDelayed, hideIndicator} =
-    useDelayedFocusIndicator({
-      isDisabled: props.readonly,
-    });
 
   const {assigneeComboboxOpen, setAssigneeComboboxOpen, handleAssigneeChange} =
     useAssignee({
@@ -143,87 +136,62 @@ function ViewTask(props: {
       search={{taskId: task.id}}
       replace
       data-kb-focus
-      onFocus={showIndicatorDelayed}
-      onBlur={hideIndicator}
     >
-      <RadixTooltip.Provider>
-        <RadixTooltip.Root open={isFocused} delayDuration={1000}>
-          <RadixTooltip.Trigger asChild>
-            <div className={cn("p-2 min-h-16 flex justify-between gap-1")}>
-              <span
-                style={{
-                  overflowWrap: "anywhere",
-                }}
-              >
-                {task.name}
-              </span>
+      <div className={cn("p-2 min-h-16 flex justify-between gap-1")}>
+        <span
+          style={{
+            overflowWrap: "anywhere",
+          }}
+        >
+          {task.name}
+        </span>
 
-              <div className="shrink-0 flex flex-col justify-between gap-1.5">
-                {!props.readonly && (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        onClick={(e) => e.stopPropagation()}
-                        className="shrink-0 text-muted-foreground hover:text-foreground w-7 h-7 hover:bg-gray-5 opacity-0 group-hover:opacity-90 transition-opacity group-focus:opacity-90 self-end aria-expanded:opacity-90"
-                        variant="ghost"
-                        size="icon"
-                      >
-                        <MoreVertical className="w-4 h-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          props.onEdit();
-                        }}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit Task
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteTask();
-                        }}
-                        className="!text-destructive focus:bg-destructive/10"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4 text-destructive" />
-                        Delete Task
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                )}
+        <div className="shrink-0 flex flex-col justify-between gap-1.5">
+          {!props.readonly && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  onClick={(e) => e.stopPropagation()}
+                  className="shrink-0 text-muted-foreground hover:text-foreground w-7 h-7 hover:bg-gray-5 opacity-0 group-hover:opacity-90 transition-opacity group-focus:opacity-90 self-end aria-expanded:opacity-90"
+                  variant="ghost"
+                  size="icon"
+                >
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    props.onEdit();
+                  }}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit Task
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteTask();
+                  }}
+                  className="!text-destructive focus:bg-destructive/10"
+                >
+                  <Trash2 className="mr-2 h-4 w-4 text-destructive" />
+                  Delete Task
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
 
-                <AssigneeCombobox
-                  assignee={task.assignee ?? null}
-                  onAssigneeChange={handleAssigneeChange}
-                  isOpen={assigneeComboboxOpen}
-                  onOpenChange={setAssigneeComboboxOpen}
-                  isDisabled={props.readonly}
-                />
-              </div>
-            </div>
-          </RadixTooltip.Trigger>
-
-          <RadixTooltip.Content
-            side="bottom"
-            className={FOCUS_TOOLTIP_CLASS}
-            sideOffset={6}
-          >
-            <div className="flex gap-4 items-center text-xs">
-              <div>
-                <KeyboardShortcutIndicator>i</KeyboardShortcutIndicator> to edit
-              </div>
-
-              <div>
-                <KeyboardShortcutIndicator>shift + D</KeyboardShortcutIndicator>{" "}
-                to delete
-              </div>
-            </div>
-          </RadixTooltip.Content>
-        </RadixTooltip.Root>
-      </RadixTooltip.Provider>
+          <AssigneeCombobox
+            assignee={task.assignee ?? null}
+            onAssigneeChange={handleAssigneeChange}
+            isOpen={assigneeComboboxOpen}
+            onOpenChange={setAssigneeComboboxOpen}
+            isDisabled={props.readonly}
+          />
+        </div>
+      </div>
     </Link>
   );
 }

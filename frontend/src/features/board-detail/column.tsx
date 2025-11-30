@@ -1,14 +1,6 @@
 import {Draggable} from "@hello-pangea/dnd";
-import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
-  ArrowUp,
-  GripVertical,
-  MoreVertical,
-} from "lucide-react";
-import {useRef, useState} from "react";
-import {Tooltip as RadixTooltip} from "radix-ui";
+import {GripVertical, MoreVertical} from "lucide-react";
+import {useRef} from "react";
 import type {GetBoardWithColumnsAndTasksQueryResult} from "@/lib/zero-queries";
 import type {TasksRefValue} from "@/features/board-detail/tasks";
 import {ColumnWrapper} from "@/components/column-ui";
@@ -24,9 +16,6 @@ import {
 import {DeleteColumn} from "@/features/board-detail/delete-column";
 import {useAuthData} from "@/queries/session";
 import {FocusScope} from "@/components/focus-scope";
-import {KeyboardShortcutIndicator} from "@/components/keyboard-shortcut";
-import {FOCUS_TOOLTIP_CLASS} from "@/lib/constants";
-import {Separator} from "@/components/ui/separator";
 
 type ColumnProps = {
   column: NonNullable<GetBoardWithColumnsAndTasksQueryResult>["columns"][number];
@@ -37,7 +26,6 @@ export function Column({column, index}: ColumnProps) {
   const userData = useAuthData();
   const isMember = userData.role === "member";
   const tasksRef = useRef<TasksRefValue>(null);
-  const [isFocused, setIsFocused] = useState(false);
 
   const handleUnknownKeyDown = (event: KeyboardEvent) => {
     if (event.key === "ArrowRight" || event.key === "l") {
@@ -78,7 +66,11 @@ export function Column({column, index}: ColumnProps) {
     } else if (event.key === "t") {
       if (event.ctrlKey || event.metaKey || isMember) return;
       event.preventDefault();
-      tasksRef.current?.openAddTaskForm();
+      tasksRef.current?.openAddTaskFormAtEnd();
+    } else if (event.key === "T") {
+      if (event.ctrlKey || event.metaKey || isMember) return;
+      event.preventDefault();
+      tasksRef.current?.openAddTaskFormAtStart();
     }
   };
 
@@ -106,87 +98,39 @@ export function Column({column, index}: ColumnProps) {
               data-kb-focus
               tabIndex={-1}
               data-column-index={index}
-              onFocus={(e) => {
-                if (e.target === e.currentTarget) {
-                  setIsFocused(true);
-                }
-              }}
-              onBlur={() => setIsFocused(false)}
             >
-              <RadixTooltip.Provider>
-                <RadixTooltip.Root open={isFocused} delayDuration={1000}>
-                  <RadixTooltip.Trigger asChild>
-                    <div className="flex items-center justify-between shrink-0 pt-1">
-                      <div
-                        className="cursor-grab text-muted-foreground w-8 grid place-content-center h-8 hover:text-foreground shrink-0 hover:bg-grayA-4 active:bg-grayA-4 rounded-lg active:cursor-grabbing mr-1.5"
-                        {...provided.dragHandleProps}
+              <div className="flex items-center justify-between shrink-0 pt-1">
+                <div
+                  className="cursor-grab text-muted-foreground w-8 grid place-content-center h-8 hover:text-foreground shrink-0 hover:bg-grayA-4 active:bg-grayA-4 rounded-lg active:cursor-grabbing mr-1.5"
+                  {...provided.dragHandleProps}
+                >
+                  <GripVertical size={16} />
+                </div>
+
+                <EditableColumnName
+                  columnName={column.name}
+                  columnId={column.id}
+                  readonly={isMember}
+                />
+
+                {!isMember && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className="text-muted-foreground w-8 grid place-content-center h-8 hover:text-foreground shrink-0 hover:bg-grayA-4 active:bg-grayA-4 rounded-lg ml-2"
+                        type="button"
                       >
-                        <GripVertical size={16} />
-                      </div>
-
-                      <EditableColumnName
-                        columnName={column.name}
-                        columnId={column.id}
-                        readonly={isMember}
-                      />
-
-                      {!isMember && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button
-                              className="text-muted-foreground w-8 grid place-content-center h-8 hover:text-foreground shrink-0 hover:bg-grayA-4 active:bg-grayA-4 rounded-lg ml-2"
-                              type="button"
-                            >
-                              <MoreVertical size={16} />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <DeleteColumn columnId={column.id} />
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                  </RadixTooltip.Trigger>
-
-                  <RadixTooltip.Content
-                    side="top"
-                    sideOffset={12}
-                    className={FOCUS_TOOLTIP_CLASS}
-                    hidden={isMember}
-                  >
-                    <div className="flex gap-2 items-center text-xs">
-                      <div>
-                        <KeyboardShortcutIndicator>t</KeyboardShortcutIndicator>
-                        {"  "}
-                        to add
-                      </div>
-
-                      <Separator orientation="vertical" className="h-4" />
-
-                      <div className="flex items-center gap-1">
-                        <div className="flex items-center gap-1">
-                          <KeyboardShortcutIndicator>
-                            <ArrowUp size={12} />
-                          </KeyboardShortcutIndicator>
-                          <KeyboardShortcutIndicator>
-                            <ArrowDown size={12} />
-                          </KeyboardShortcutIndicator>
-                          <KeyboardShortcutIndicator>
-                            <ArrowLeft size={12} />
-                          </KeyboardShortcutIndicator>
-                          <KeyboardShortcutIndicator>
-                            <ArrowRight size={12} />
-                          </KeyboardShortcutIndicator>
-                        </div>
-
-                        <span>to navigate</span>
-                      </div>
-                    </div>
-                  </RadixTooltip.Content>
-                </RadixTooltip.Root>
-              </RadixTooltip.Provider>
+                        <MoreVertical size={16} />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <DeleteColumn columnId={column.id} />
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+              </div>
 
               <Tasks
                 tasks={column.tasks}
