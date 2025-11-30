@@ -5,7 +5,7 @@ import {WrappedTooltip} from "@/components/ui/tooltip";
 import {Separator} from "@/components/ui/separator";
 import {KeyboardShortcutIndicator} from "@/components/keyboard-shortcut";
 import {useAppContext} from "@/state/app-state";
-import {ThemeToggle} from "@/components/theme-toggle";
+import {UserMenu} from "./user-menu";
 
 export function TopSection() {
   const {isMobile, state} = useSidebar();
@@ -55,8 +55,7 @@ export function TopSection() {
             K
           </KeyboardShortcutIndicator>
         </button>
-
-        <ThemeToggle />
+        <UserMenu />
       </div>
     </div>
   );
