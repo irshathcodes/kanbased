@@ -10,6 +10,7 @@ import {OtherActions} from "@/features/board-detail/other-actions";
 import {useAuthData} from "@/queries/session";
 import {UndoManagerProvider} from "@/state/undo-manager";
 import {TaskDetail} from "@/features/board-detail/task-detail";
+import useDebounce from "@/hooks/use-debounce";
 
 export const Route = createFileRoute(
   "/_authenticated/_layout/boards_/$boardId",
@@ -65,10 +66,26 @@ function BoardPage() {
   const routeCtx = Route.useRouteContext();
   const {taskId} = Route.useSearch();
 
-  if (board?.name && routeCtx.getBoardName() !== board.name) {
+  const setBoardNameOnBreadcrumbs = () => {
+    if (!board?.name) return;
     routeCtx.setBoardName(board.name);
     router.invalidate();
+  };
+
+  if (board?.name && routeCtx.getBoardName() !== board.name) {
+    setBoardNameOnBreadcrumbs();
   }
+
+  // I had to do it, For some reason
+  // the router.invalidate not invalidating:w-fit, this only happens on production build as well
+  // can't reproduce it locally
+  useDebounce(
+    () => {
+      setBoardNameOnBreadcrumbs();
+    },
+    500,
+    [board?.name],
+  );
 
   if (!board) {
     return null;
