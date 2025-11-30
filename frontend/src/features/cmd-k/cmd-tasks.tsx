@@ -25,6 +25,7 @@ export function CommandTasks(props: {
       {props.allTasks.map((task) => (
         <CommandItem
           key={task.id}
+          value={`${task.name} ${task.id}`}
           onSelect={() => {
             navigate({
               to: "/boards/$boardId",
