@@ -2,6 +2,7 @@
 
 import {
   ChevronsUpDown,
+  Keyboard,
   Lock,
   LogOut,
   Moon,
@@ -38,7 +39,7 @@ import {useAppContext} from "@/state/app-state";
 
 export function UserMenu() {
   const userData = useAuthData();
-  const {theme, updateTheme} = useAppContext();
+  const {theme, updateTheme, openHelp} = useAppContext();
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -125,16 +126,21 @@ export function UserMenu() {
             </DropdownMenuSubContent>
           </DropdownMenuSub>
 
-          <DropdownMenuItem asChild>
-            <Link to="/settings">
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-            </Link>
+          <DropdownMenuItem onClick={openHelp}>
+            <Keyboard className="mr-2 h-4 w-4" />
+            Keyboard Shortcuts
           </DropdownMenuItem>
 
           <DropdownMenuItem onClick={handleResetPassword}>
             <Lock className="mr-2 h-4 w-4" />
             Reset Password
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <Link to="/settings">
+              <Settings className="mr-2 h-4 w-4" />
+              Settings
+            </Link>
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

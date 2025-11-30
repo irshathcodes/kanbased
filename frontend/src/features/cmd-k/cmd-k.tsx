@@ -5,6 +5,7 @@ import {
   ArrowUpDown,
   FileText,
   KanbanSquare,
+  Keyboard,
   SquareCheck,
   SunMoon,
 } from "lucide-react";
@@ -40,7 +41,7 @@ import {CommandTasks} from "@/features/cmd-k/cmd-tasks";
 type Page = "boards" | "notes" | "tasks" | "theme" | "organization";
 
 export function CommandDialog() {
-  const {isCmdKOpen, openCmdK, closeCmdK} = useAppContext();
+  const {isCmdKOpen, openCmdK, closeCmdK, openHelp} = useAppContext();
   const [pages, setPages] = useState<Array<Page>>([]);
   const page = pages[pages.length - 1];
   const router = useRouter();
@@ -160,6 +161,16 @@ export function CommandDialog() {
 
                   <CommandItem
                     onSelect={() => {
+                      openHelp();
+                      closeCmdK();
+                    }}
+                  >
+                    <Keyboard />
+                    Keyboard Shortcuts
+                  </CommandItem>
+
+                  <CommandItem
+                    onSelect={() => {
                       router.navigate({to: "/boards"});
                       closeCmdK();
                     }}
@@ -196,6 +207,7 @@ export function CommandDialog() {
                     {boards.map((board) => (
                       <CommandItem
                         key={board.id}
+                        value={`${board.name} ${board.id}`}
                         onSelect={() => {
                           router.navigate({
                             to: "/boards/$boardId",
@@ -219,6 +231,7 @@ export function CommandDialog() {
                     {notes.map((note) => (
                       <CommandItem
                         key={note.id}
+                        value={`${note.name} ${note.id}`}
                         onSelect={() => {
                           router.navigate({
                             to: "/notes/$noteId",
