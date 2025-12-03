@@ -1,12 +1,16 @@
-import {useEffect, useEffectEvent, useRef} from "react";
+import {useEffect, useRef} from "react";
 
-export default function useDebounce<T>(
+export default function useDebounce(
   callback: () => void,
   delay: number,
   deps: React.DependencyList,
 ) {
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const cb = useEffectEvent(callback);
+  const cbRef = useRef(callback);
+
+  useEffect(() => {
+    cbRef.current = callback;
+  });
 
   useEffect(() => {
     if (timeout.current) {
@@ -14,7 +18,7 @@ export default function useDebounce<T>(
     }
 
     timeout.current = setTimeout(() => {
-      cb();
+      cbRef.current();
       timeout.current = null;
     }, delay);
 
