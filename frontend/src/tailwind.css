@@ -10,6 +10,7 @@
 @import "@radix-ui/colors/green-dark.css" layer(base);
 
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @plugin 'tailwindcss-animate';
 
@@ -77,6 +78,8 @@
   --color-green-10: var(--green-10);
   --color-green-11: var(--green-11);
   --color-green-12: var(--green-12);
+
+  --font-sans: "Manrope", system-ui, sans-serif;
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
@@ -270,7 +273,7 @@
 
 @layer utilities {
   :root {
-    font-family: "Manrope", system-ui, sans-serif;
+    font-family: var(--font-sans);
     font-weight: 500;
     color-scheme: var(--color-scheme);
   }

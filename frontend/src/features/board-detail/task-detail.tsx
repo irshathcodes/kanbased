@@ -321,6 +321,7 @@ export function TaskDetail(props: {onClose: () => void; taskId: string}) {
                         });
                         setHasFocused(true);
                       }}
+                      focusOnMount={!data.content?.trim()}
                       key={data.id}
                       placeholder={
                         data.content

@@ -1,20 +1,10 @@
-import {useEffect, useImperativeHandle} from "react";
-import {
-  Milkdown,
-  MilkdownProvider,
-  useEditor,
-  useInstance,
-} from "@milkdown/react";
-import {editorViewCtx} from "@milkdown/kit/core";
+import {useEffect, useImperativeHandle, useRef} from "react";
+import {useEditor, EditorContent} from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import {Markdown} from "@tiptap/markdown";
+import Placeholder from "@tiptap/extension-placeholder";
 import type {RefObject} from "react";
-import type {ListenerManager} from "@milkdown/kit/plugin/listener";
-import {Crepe} from "@/features/soja-editor";
 import {useAppContext} from "@/state/app-state";
-
-import "../../features/soja-editor/theme/common/style.css";
-import "../../features/soja-editor/theme/frame/style.css";
-import {getMarkdown} from "@milkdown/kit/utils";
-import {placeholderConfig} from "@/features/soja-editor/feature/placeholder";
 
 export type MilkdownEditorRef = {
   focus: () => void;
@@ -32,132 +22,113 @@ type MilkdownEditorProps = {
 };
 
 function MilkdownEditorImpl(props: MilkdownEditorProps) {
-  const {defaultValue = ""} = props;
+  const {
+    defaultValue = "",
+    placeholder,
+    focusOnMount,
+    onChange,
+    onFocus,
+    defaultReadOnly,
+  } = props;
   const {theme} = useAppContext();
-  const placeholder = props.defaultReadOnly ? "" : props.placeholder;
+  const editorRef = useRef<HTMLDivElement>(null);
 
-  const focusEditor = () => {
-    const editorInstance = editor.get();
-    if (editorInstance && editorInstance.ctx) {
-      const view = editorInstance.ctx.get(editorViewCtx);
-      if (
-        view &&
-        view.state &&
-        view.state.doc &&
-        view.state.selection &&
-        typeof (view.state.selection.constructor as any).atEnd === "function"
-      ) {
-        const {state} = view;
-        // Access Selection.atEnd via the constructor of the current selection instance
-        const selectionConstructor = state.selection.constructor as any;
-        const selectionAtEnd = selectionConstructor.atEnd(state.doc);
-        const tr = state.tr.setSelection(selectionAtEnd);
-        view.dispatch(tr);
-        view.focus(); // Ensure the editor has DOM focus
-      } else if (view) {
-        // Fallback: if the above conditions are not met, just focus the editor
-        view.focus();
-      }
-      props.onFocus?.();
-    }
-  };
+  // Determine placeholder text based on readonly mode
+  const effectivePlaceholder = defaultReadOnly ? "" : placeholder;
 
-  const setPlaceholder = (placeholder: string) => {
-    const editorInstance = editor.get();
-    if (editorInstance && editorInstance.ctx) {
-      editorInstance.ctx.update(placeholderConfig.key, (prev) => {
-        return {
-          ...prev,
-          text: placeholder,
-        };
-      });
-    }
-  };
+  const editor = useEditor({
+    editorProps: {
+      attributes: {
+        class:
+          "prose dark:prose-invert md:prose-lg lg:prose-xl focus:outline-none font-sans font-medium",
+      },
+    },
+    extensions: [
+      StarterKit.configure({
+        // Configure heading levels similar to Milkdown setup
+        heading: {
+          levels: [1, 2, 3, 4, 5, 6],
+        },
+      }),
+      Markdown.configure({
+        // Enable GitHub Flavored Markdown
+        markedOptions: {
+          gfm: true,
+        },
+      }),
+      Placeholder.configure({
+        placeholder: effectivePlaceholder,
+      }),
+    ],
+    content: defaultValue,
+    contentType: "markdown",
+    editable: !defaultReadOnly,
+    immediatelyRender: true,
+    autofocus: focusOnMount ? "end" : false,
+    injectCSS: false,
+    onUpdate: ({editor}) => {
+      // Get markdown content and call onChange callback
+      const markdown = editor.getMarkdown();
+      onChange?.(markdown);
+    },
+    onFocus: () => {
+      onFocus?.();
+    },
+  });
 
-  const updateTheme = (currentTheme: typeof theme) => {
-    const milkdownEl = document.querySelector(".milkdown");
-
-    if (currentTheme === "dark") {
-      milkdownEl?.classList.add("dark");
-    } else if (currentTheme === "light") {
-      milkdownEl?.classList.remove("dark");
-    } else {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-      if (mediaQuery.matches) {
-        milkdownEl?.classList.add("dark");
-      } else {
-        milkdownEl?.classList.remove("dark");
-      }
-    }
-  };
-
-  const getMarkdownContent = () => {
-    const editorInstance = editor.get();
-
-    if (!editorInstance || !editorInstance.ctx) {
-      console.error("Editor instance not found");
-      return "";
-    }
-
-    return editorInstance.action(getMarkdown());
-  };
-
+  // Update theme when it changes
   useEffect(() => {
-    updateTheme(theme);
+    if (!editorRef.current) return;
+
+    const editorElement = editorRef.current.querySelector(".tiptap");
+    if (!editorElement) return;
+
+    if (theme === "dark") {
+      editorElement.classList.add("dark");
+    } else if (theme === "light") {
+      editorElement.classList.remove("dark");
+    } else {
+      // System theme
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      if (mediaQuery.matches) {
+        editorElement.classList.add("dark");
+      } else {
+        editorElement.classList.remove("dark");
+      }
+    }
   }, [theme]);
 
-  useEffect(() => {
-    setPlaceholder(props.placeholder ?? "");
-  }, [props.placeholder]);
-
-  // @ts-expect-error
-  const editor = useEditor((root) => {
-    const crepe = new Crepe({
-      root,
-      defaultValue,
-      featureConfigs: {
-        [Crepe.Feature.Placeholder]: {
-          text: placeholder,
-          mode: "block",
-        },
-        [Crepe.Feature.BlockEdit]: {
-          slashMenuH1Label: "H1",
-          slashMenuH2Label: "H2",
-          slashMenuH3Label: "H3",
-        },
-      },
-    });
-
-    props.defaultReadOnly && crepe.setReadonly(true);
-
-    crepe.on((api: ListenerManager) => {
-      api.markdownUpdated((_, updatedMarkdown) => {
-        props.onChange?.(updatedMarkdown);
-      });
-      api.mounted(() => {
-        updateTheme(theme);
-        if (props.focusOnMount) {
-          focusEditor();
-        }
-      });
-    });
-
-    return crepe;
-  }, []);
-
+  // Expose ref methods
   useImperativeHandle(props.ref, () => ({
-    focus: focusEditor,
-    getMarkdown: getMarkdownContent,
+    focus: () => {
+      if (editor) {
+        editor.commands.focus("end");
+        onFocus?.();
+      }
+    },
+    getMarkdown: () => {
+      if (!editor) {
+        console.error("Editor instance not found");
+        return "";
+      }
+      return editor.getMarkdown();
+    },
   }));
 
-  return <Milkdown />;
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      editor?.destroy();
+    };
+  }, [editor]);
+
+  return (
+    <div ref={editorRef} className="tiptap-editor-wrapper">
+      <EditorContent editor={editor} />
+    </div>
+  );
 }
 
 export default function MarkdownEditor(props: MilkdownEditorProps) {
-  return (
-    <MilkdownProvider>
-      <MilkdownEditorImpl {...props} />
-    </MilkdownProvider>
-  );
+  return <MilkdownEditorImpl {...props} />;
 }
