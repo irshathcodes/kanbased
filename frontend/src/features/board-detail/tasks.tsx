@@ -96,8 +96,15 @@ export function Tasks(props: {
           scrollListToEnd();
         }
 
-        focusEl?.focus();
-        focusEl?.scrollIntoView();
+        if (tasks.length === 0) {
+          const currentColumn = document.getElementById(
+            `col-${props.columnId}`,
+          );
+          currentColumn?.focus();
+        } else {
+          focusEl?.focus();
+          focusEl?.scrollIntoView();
+        }
       }}
       onAdd={() => {
         if (showAddTask === "first") {

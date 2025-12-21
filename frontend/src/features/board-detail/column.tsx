@@ -95,7 +95,7 @@ export function Column({column, index}: ColumnProps) {
                 "mx-2 default-focus-ring",
                 snapshot.isDragging && "border-gray-10! shadow-xl!",
               )}
-              data-kb-focus
+              data-kb-focus={column.tasks.length === 0 ? true : undefined}
               tabIndex={-1}
               data-column-index={index}
             >
