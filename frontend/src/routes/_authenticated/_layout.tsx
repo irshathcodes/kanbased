@@ -6,6 +6,7 @@ import {SidebarProvider} from "@/components/ui/sidebar";
 import {getSidebarStateFromCookie} from "@/lib/utils";
 import {TopSection} from "@/components/top-section";
 import {CommandDialog} from "@/features/cmd-k/cmd-k";
+import {ShutdownBanner} from "@/components/shutdown-banner";
 import {OrganizationDedicatedSwitch} from "@/features/cmd-k/organization-dedicated-switch";
 import {KeyboardShortcutsDialog} from "@/features/help/keyboard-shortcuts-dialog";
 
@@ -30,6 +31,8 @@ function RouteComponent() {
 
       <main className="flex flex-col h-svh flex-1">
         <TopSection />
+
+        <ShutdownBanner />
 
         <div className="flex-1 min-h-0 h-full">
           <Outlet />

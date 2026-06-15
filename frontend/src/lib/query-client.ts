@@ -34,7 +34,7 @@ export const queryClient = new QueryClient({
           const message =
             typeof error.message === "string"
               ? error.message
-              : "An unexpected error occurred, please try again later or contact us at irshathv2@gmail.com";
+              : "An unexpected error occurred, please try again later or contact us at irshath700@gmail.com";
           toast.error(message);
         }
       }
