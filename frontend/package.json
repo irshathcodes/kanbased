@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "version": "0.0.0",
+  "packageManager": "pnpm@10.15.0",
   "scripts": {
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
@@ -61,7 +62,6 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@rocicorp/zero-sqlite3",
       "esbuild",
       "protobufjs",
       "unrs-resolver"
